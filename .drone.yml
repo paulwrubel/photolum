@@ -1,0 +1,14 @@
+kind: pipeline
+type: docker
+name: photolum
+
+steps:
+- name: build
+  image: golang:1.15-buster
+  commands:
+  - go build -o photolum cmd/main.go
+  when:
+    branch:
+    - master
+    event:
+    - push
