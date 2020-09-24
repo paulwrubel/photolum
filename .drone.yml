@@ -12,3 +12,13 @@ steps:
     - master
     event:
     - push
+- name: publish
+  image: plugins/docker
+  settings:
+    username:
+      from_secret: docker_username
+    password: 
+      from_secret: docker_password
+    repo: paulwrubel/photolum
+    tags:
+    - latest
