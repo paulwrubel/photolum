@@ -6,7 +6,9 @@ steps:
 - name: build
   image: golang:1.15-buster
   commands:
-  - export GO111MODULE=on && 
+  - export GO111MODULE=on &&
+    export GOOS=linux &&
+	  export GOARCH=amd64 &&
     go build -o photolum cmd/main.go
   when:
     branch:
