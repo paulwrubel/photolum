@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/paulwrubel/photolum/api/helloworld"
+	"github.com/paulwrubel/photolum/api/scenes"
 )
 
 // ListenAndServe starts the API server on port 8080
@@ -22,7 +24,13 @@ func getRouter() *mux.Router {
 	router := mux.NewRouter()
 
 	helloWorldRouter := router.PathPrefix("/helloworld").Subrouter()
-	helloWorldRouter.HandleFunc("/", HelloWorldHandler).Methods("GET")
+	helloWorldRouter.HandleFunc("", helloworld.GetHandler).Methods("GET")
+
+	scenesRouter := router.PathPrefix("/scenes").Subrouter()
+	scenesRouter.HandleFunc("", scenes.ScenePostHandler).Methods("POST")
+	scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDGetHandler).Methods("GET")
+	scenesRouter.HandleFunc("/{scene_id}/image", scenes.SceneIDImageGetHandler).Methods("GET")
+	//scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDDeleteHandler).Methods("DELETE")
 
 	return router
 }
