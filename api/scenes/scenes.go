@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/persistence"
 	"github.com/paulwrubel/photolum/tracing"
@@ -46,12 +47,9 @@ func ScenePostHandler(response http.ResponseWriter, request *http.Request) {
 // SceneIDGetHandler handles the /scenes/{scene_id} GET endpoint
 func SceneIDGetHandler(response http.ResponseWriter, request *http.Request) {
 	// decode request
-	var sceneIDGetRequest SceneIDGetRequest
-	json.NewDecoder(request.Body).Decode(sceneIDGetRequest)
-	defer request.Body.Close()
-
+	params := mux.Vars(request)
 	// assemble and save scene
-	sceneID, err := uuid.Parse(sceneIDGetRequest.SceneID)
+	sceneID, err := uuid.Parse(params["scene_id"])
 	if err != nil {
 		fmt.Printf("Error parsing uuid: %s\n", err.Error())
 		response.WriteHeader(http.StatusBadRequest)
@@ -86,8 +84,10 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 	json.NewDecoder(request.Body).Decode(sceneIDImageGetRequest)
 	defer request.Body.Close()
 
+	params := mux.Vars(request)
+
 	// assemble and save scene
-	sceneID, err := uuid.Parse(sceneIDImageGetRequest.SceneID)
+	sceneID, err := uuid.Parse(params["scene_id"])
 	if err != nil {
 		fmt.Printf("Error parsing uuid: %s\n", err.Error())
 		response.WriteHeader(http.StatusBadRequest)
