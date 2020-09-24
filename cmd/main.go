@@ -9,12 +9,12 @@ import (
 )
 
 func main() {
-	fmt.Printf("Starting Photolum...")
+	fmt.Println("Starting Photolum...")
 
-	fmt.Printf("Starting API Server...")
+	fmt.Println("Starting API Server...")
 	api.ListenAndServe()
 
-	fmt.Printf("Blocking until signalled to shutdown...")
+	fmt.Println("Blocking until signalled to shutdown...")
 	// make channel for interrupt signal
 	c := make(chan os.Signal, 1)
 	// tell os to send to chan when signal received
@@ -22,6 +22,6 @@ func main() {
 	// wait for signal
 	<-c
 
-	fmt.Printf("Shutting down...")
+	fmt.Println("Shutting down...")
 	os.Exit(0)
 }
