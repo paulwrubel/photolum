@@ -3,14 +3,25 @@ package main
 import (
 	"fmt"
 	"os"
+	"os/signal"
+
+	"github.com/paulwrubel/photolum/api"
 )
 
 func main() {
-	fmt.Printf("Hey, it works!\n")
-	envVar, isSet := os.LookupEnv("PRINT_THIS_VAR")
-	if isSet {
-		fmt.Printf("You can find your requested env var [PRINT_THIS_VAR] here: %s\n", envVar)
-	} else {
-		fmt.Printf("You blew it! Your requested env var [PRINT_THIS_VAR] has not been set!\n")
-	}
+	fmt.Printf("Starting Photolum...")
+
+	fmt.Printf("Starting API Server...")
+	api.ListenAndServe()
+
+	fmt.Printf("Blocking until signalled to shutdown...")
+	// make channel for interrupt signal
+	c := make(chan os.Signal, 1)
+	// tell os to send to chan when signal received
+	signal.Notify(c, os.Interrupt)
+	// wait for signal
+	<-c
+
+	fmt.Printf("Shutting down...")
+	os.Exit(0)
 }

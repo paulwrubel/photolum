@@ -5,7 +5,7 @@ FROM alpine:3.12
 COPY photolum /app/photolum
 
 # expose port for API access
-EXPOSE 50001
+EXPOSE 8080
 
 # set go binary as entrypoint
 CMD ["/app/photolum"]
