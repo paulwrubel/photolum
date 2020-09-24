@@ -11,4 +11,5 @@ build:
 	export GO111MODULE=on && \
 	export GOOS=linux && \
 	export GOARCH=amd64 && \
+	export CGO_ENABLED=0 && \
 	$(GOBUILD) -o $(BINARY_NAME) cmd/main.go
