@@ -7,7 +7,7 @@ steps:
   image: golang:1.15-buster
   commands:
   - export GO111MODULE=on && 
-    build -o photolum cmd/main.go
+    go build -o photolum cmd/main.go
   when:
     branch:
     - master
