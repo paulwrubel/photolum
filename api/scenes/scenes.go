@@ -18,7 +18,17 @@ import (
 func ScenePostHandler(response http.ResponseWriter, request *http.Request) {
 	// decode request
 	var scenePostRequest ScenePostRequest
-	json.NewDecoder(request.Body).Decode(scenePostRequest)
+	err := json.NewDecoder(request.Body).Decode(&scenePostRequest)
+	if err != nil {
+		fmt.Printf("Error decoding request: %s\n", err.Error())
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(ErrorResponse{
+			Error: Error{
+				Message: fmt.Sprintf("Error decoding request: %s\n", err.Error()),
+			},
+		})
+		return
+	}
 	defer request.Body.Close()
 
 	// assemble and save scene
@@ -81,7 +91,18 @@ func SceneIDGetHandler(response http.ResponseWriter, request *http.Request) {
 func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request) {
 	// decode request
 	var sceneIDImageGetRequest SceneIDImageGetRequest
-	json.NewDecoder(request.Body).Decode(sceneIDImageGetRequest)
+	err := json.NewDecoder(request.Body).Decode(&sceneIDImageGetRequest)
+	if err != nil {
+		fmt.Printf("Error decoding request: %s\n", err.Error())
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(ErrorResponse{
+			Error: Error{
+				Message: fmt.Sprintf("Error decoding request: %s\n", err.Error()),
+			},
+		})
+		return
+	}
+
 	defer request.Body.Close()
 
 	params := mux.Vars(request)
