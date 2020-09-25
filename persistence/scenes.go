@@ -8,10 +8,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/config/renderstatus"
 )
 
 type SceneData struct {
 	SceneID      uuid.UUID
+	RenderStatus renderstatus.RenderStatus
 	createdTime  time.Time
 	modifiedTime time.Time
 	accessedTime time.Time
@@ -29,6 +31,7 @@ func Create(sceneData SceneData) (uuid.UUID, error) {
 		}
 		sceneData.SceneID = newSceneID
 	}
+	sceneData.RenderStatus = renderstatus.Created
 	timeNow := time.Now()
 	sceneData.createdTime = timeNow
 	sceneData.modifiedTime = timeNow

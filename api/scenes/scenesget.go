@@ -19,7 +19,7 @@ func ScenesGetHandler(response http.ResponseWriter, request *http.Request) {
 
 	sceneDataList := persistence.RetrieveAll()
 
-	var sceneIDList []string
+	sceneIDList := []string{}
 	for _, sceneData := range sceneDataList {
 		sceneIDList = append(sceneIDList, sceneData.SceneID.String())
 	}
