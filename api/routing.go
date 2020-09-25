@@ -27,7 +27,8 @@ func getRouter() *mux.Router {
 	helloWorldRouter.HandleFunc("", helloworld.GetHandler).Methods("GET")
 
 	scenesRouter := router.PathPrefix("/scenes").Subrouter()
-	scenesRouter.HandleFunc("", scenes.ScenePostHandler).Methods("POST")
+	scenesRouter.HandleFunc("", scenes.ScenesPostHandler).Methods("POST")
+	scenesRouter.HandleFunc("", scenes.ScenesGetHandler).Methods("Get")
 	scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDGetHandler).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}/image", scenes.SceneIDImageGetHandler).Methods("GET")
 	//scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDDeleteHandler).Methods("DELETE")

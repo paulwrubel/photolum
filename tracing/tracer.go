@@ -10,10 +10,11 @@ import (
 )
 
 func SaveImage(sceneID uuid.UUID) error {
-	scene, err := persistence.GetConfig(sceneID)
+	sceneData, err := persistence.Retrieve(sceneID)
 	if err != nil {
 		return err
 	}
+	scene := sceneData.Scene
 	newImage := image.NewRGBA64(image.Rect(0, 0, scene.ImageWidth, scene.ImageHeight))
 	for y := 0; y < scene.ImageHeight; y++ {
 		for x := 0; x < scene.ImageWidth; x++ {
@@ -25,6 +26,7 @@ func SaveImage(sceneID uuid.UUID) error {
 			newImage.SetRGBA64(x, y, col)
 		}
 	}
-	persistence.UpdateImage(sceneID, newImage)
+	sceneData.Image = newImage
+	persistence.Update(sceneID, sceneData)
 	return nil
 }

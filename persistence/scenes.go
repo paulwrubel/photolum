@@ -4,53 +4,65 @@ import (
 	"fmt"
 	"image"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
 )
 
-var configs = sync.Map{}
-var images = sync.Map{}
-
-func SaveConfig(scene config.Scene) (uuid.UUID, error) {
-	sceneID, err := uuid.NewRandom()
-	if err != nil {
-		return uuid.Nil, err
-	}
-	configs.Store(sceneID, scene)
-	return sceneID, nil
+type SceneData struct {
+	SceneID      uuid.UUID
+	createdTime  time.Time
+	modifiedTime time.Time
+	accessedTime time.Time
+	Scene        config.Scene
+	Image        *image.RGBA64
 }
 
-func GetConfig(sceneID uuid.UUID) (config.Scene, error) {
-	sceneConfigRaw, ok := configs.Load(sceneID)
-	sceneConfig := sceneConfigRaw.(config.Scene)
+var data = sync.Map{}
+
+func Create(sceneData SceneData) (uuid.UUID, error) {
+	if sceneData.SceneID == uuid.Nil {
+		newSceneID, err := uuid.NewRandom()
+		if err != nil {
+			return uuid.Nil, err
+		}
+		sceneData.SceneID = newSceneID
+	}
+	timeNow := time.Now()
+	sceneData.createdTime = timeNow
+	sceneData.modifiedTime = timeNow
+	sceneData.accessedTime = timeNow
+	data.Store(sceneData.SceneID, sceneData)
+	return sceneData.SceneID, nil
+}
+
+func Retrieve(sceneID uuid.UUID) (SceneData, error) {
+	sceneDataRaw, ok := data.Load(sceneID)
 	if !ok {
-		return config.Scene{}, fmt.Errorf("no scene configs founds with sceneID = %s", sceneID.String())
+		return SceneData{}, fmt.Errorf("no scene data found with sceneID = %s", sceneID.String())
 	}
-	return sceneConfig, nil
+	sceneData := sceneDataRaw.(SceneData)
+	sceneData.accessedTime = time.Now()
+	data.Store(sceneData.SceneID, sceneData)
+	return sceneData, nil
 }
 
-func UpdateConfig(sceneID uuid.UUID, scene config.Scene) {
-	configs.Store(sceneID, scene)
+func Update(sceneID uuid.UUID, sceneData SceneData) {
+	sceneData.modifiedTime = time.Now()
+	data.Store(sceneData.SceneID, sceneData)
 }
 
-func DeleteConfig(sceneID uuid.UUID) {
-	configs.Delete(sceneID)
+func Delete(sceneID uuid.UUID) {
+	data.Delete(sceneID)
 }
 
-func GetImage(sceneID uuid.UUID) (*image.RGBA64, error) {
-	sceneImageRaw, ok := images.Load(sceneID)
-	sceneImage := sceneImageRaw.(*image.RGBA64)
-	if !ok {
-		return nil, fmt.Errorf("no scene images found with sceneID = %s", sceneID.String())
-	}
-	return sceneImage, nil
-}
-
-func UpdateImage(sceneID uuid.UUID, image *image.RGBA64) {
-	images.Store(sceneID, image)
-}
-
-func DeleteImage(sceneID uuid.UUID) {
-	images.Delete(sceneID)
+func RetrieveAll() []SceneData {
+	var sceneDataList []SceneData
+	data.Range(func(_ interface{}, value interface{}) bool {
+		sceneData, _ := value.(SceneData)
+		sceneDataList = append(sceneDataList, sceneData)
+		return true
+	})
+	return sceneDataList
 }
