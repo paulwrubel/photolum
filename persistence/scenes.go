@@ -69,3 +69,14 @@ func RetrieveAll() []SceneData {
 	})
 	return sceneDataList
 }
+
+func UpdateRenderStatus(sceneID uuid.UUID, status renderstatus.RenderStatus) error {
+	sceneData, err := Retrieve(sceneID)
+	if err != nil {
+		return err
+	}
+	fmt.Printf("SceneID '%s' -  Updating Render Status: %s --> %s\n", sceneID.String(), sceneData.RenderStatus, status)
+	sceneData.RenderStatus = status
+	Update(sceneID, sceneData)
+	return nil
+}

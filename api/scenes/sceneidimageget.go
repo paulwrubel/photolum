@@ -10,7 +10,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/paulwrubel/photolum/persistence"
-	"github.com/paulwrubel/photolum/tracing"
 )
 
 // SceneIDGetRequest contains the sceneID GET endpoint request
@@ -56,7 +55,6 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 		})
 		return
 	}
-	tracing.SaveImage(sceneID)
 	sceneData, err := persistence.Retrieve(sceneID)
 	if err != nil {
 		fmt.Printf("Error retrieving image: %s\n", err.Error())

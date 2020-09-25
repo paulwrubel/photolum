@@ -15,6 +15,9 @@ var Running RenderStatus = "Running"
 // Stopped - Render has been manually stopped
 var Stopped RenderStatus = "Stopped"
 
+// Stopping - Render has been requested to stop and is attemping to stop
+var Stopping RenderStatus = "Stopping"
+
 // Completed - Render has completed
 var Completed RenderStatus = "Completed"
 

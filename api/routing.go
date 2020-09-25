@@ -21,7 +21,7 @@ func ListenAndServe() {
 
 // GetRouter gets the main router used for the API
 func getRouter() *mux.Router {
-	router := mux.NewRouter()
+	router := mux.NewRouter().PathPrefix("/v1").Subrouter()
 
 	helloWorldRouter := router.PathPrefix("/helloworld").Subrouter()
 	helloWorldRouter.HandleFunc("", helloworld.GetHandler).Methods("GET")
@@ -32,6 +32,11 @@ func getRouter() *mux.Router {
 	scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDGetHandler).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}/image", scenes.SceneIDImageGetHandler).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}", scenes.SceneIDDeleteHandler).Methods("DELETE")
+
+	renderRouter := scenesRouter.PathPrefix("/{scene_id}/render").Subrouter()
+	renderRouter.HandleFunc("/status", scenes.ScenesIDRenderStatusGetHandler).Methods("GET")
+	renderRouter.HandleFunc("/start", scenes.ScenesIDRenderStartPostHandler).Methods("POST")
+	renderRouter.HandleFunc("/stop", scenes.ScenesIDRenderStopPostHandler).Methods("POST")
 
 	return router
 }

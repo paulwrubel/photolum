@@ -6,13 +6,24 @@ import (
 	"math"
 
 	"github.com/google/uuid"
+	"github.com/paulwrubel/photolum/config/renderstatus"
 	"github.com/paulwrubel/photolum/persistence"
 )
 
-func SaveImage(sceneID uuid.UUID) error {
+func StartRender(sceneID uuid.UUID) {
+	go TraceImage(sceneID)
+	persistence.UpdateRenderStatus(sceneID, renderstatus.Running)
+}
+
+func StopRender(sceneID uuid.UUID) {
+	persistence.UpdateRenderStatus(sceneID, renderstatus.Stopping)
+}
+
+func TraceImage(sceneID uuid.UUID) {
 	sceneData, err := persistence.Retrieve(sceneID)
 	if err != nil {
-		return err
+		persistence.UpdateRenderStatus(sceneID, renderstatus.Error)
+		return
 	}
 	scene := sceneData.Scene
 	newImage := image.NewRGBA64(image.Rect(0, 0, scene.ImageWidth, scene.ImageHeight))
@@ -28,5 +39,4 @@ func SaveImage(sceneID uuid.UUID) error {
 	}
 	sceneData.Image = newImage
 	persistence.Update(sceneID, sceneData)
-	return nil
 }
