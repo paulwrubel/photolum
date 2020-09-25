@@ -39,4 +39,5 @@ func TraceImage(sceneID uuid.UUID) {
 	}
 	sceneData.Image = newImage
 	persistence.Update(sceneID, sceneData)
+	persistence.UpdateRenderStatus(sceneID, renderstatus.Completed)
 }

@@ -67,6 +67,10 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 		return
 	}
 	img := sceneData.Image
+	if img == nil {
+		response.WriteHeader(http.StatusNotFound)
+		return
+	}
 
 	switch sceneIDImageGetRequest.Protocol {
 	case "image":
