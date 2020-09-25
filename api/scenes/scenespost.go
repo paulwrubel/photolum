@@ -21,6 +21,7 @@ type ScenesPostResponse struct {
 
 // ScenePostHandler handles the /scenes POST endpoint
 func ScenesPostHandler(response http.ResponseWriter, request *http.Request) {
+	fmt.Println("Recieved Request for /scenes.POST")
 	// decode request
 	var scenePostRequest ScenesPostRequest
 	err := json.NewDecoder(request.Body).Decode(&scenePostRequest)
@@ -60,4 +61,5 @@ func ScenesPostHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusCreated)
 	scenePostResponse := ScenesPostResponse{SceneID: newSceneID.String()}
 	json.NewEncoder(response).Encode(scenePostResponse)
+	fmt.Println("Sending Response for /scenes.POST")
 }

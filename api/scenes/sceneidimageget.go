@@ -25,6 +25,7 @@ type SceneIDImageGetBase64Response struct {
 
 // SceneIDGetHandler handles the /scenes/{scene_id} GET endpoint
 func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request) {
+	fmt.Println("Recieved Request for /scenes/{scene_id}/image.GET")
 	// decode request
 	var sceneIDImageGetRequest SceneIDImageGetRequest
 	err := json.NewDecoder(request.Body).Decode(&sceneIDImageGetRequest)
@@ -103,4 +104,5 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 		})
 		return
 	}
+	fmt.Println("Sending Response for /scenes/{scene_id}/image.GET")
 }

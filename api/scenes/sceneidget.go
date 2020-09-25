@@ -18,6 +18,7 @@ type SceneIDGetResponse struct {
 
 // SceneIDGetHandler handles the /scenes/{scene_id} GET endpoint
 func SceneIDGetHandler(response http.ResponseWriter, request *http.Request) {
+	fmt.Println("Recieved Request for /scenes/{scene_id}.GET")
 	// decode request
 	params := mux.Vars(request)
 	// assemble and save scene
@@ -48,4 +49,5 @@ func SceneIDGetHandler(response http.ResponseWriter, request *http.Request) {
 	response.WriteHeader(http.StatusOK)
 	sceneIDGetResponse := SceneIDGetResponse{Scene: scene}
 	json.NewEncoder(response).Encode(sceneIDGetResponse)
+	fmt.Println("Sending Response for /scenes/{scene_id}.GET")
 }
