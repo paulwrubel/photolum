@@ -1,6 +1,7 @@
 package tracing
 
 import (
+	"fmt"
 	_image "image"
 	"image/color"
 	"math"
@@ -23,6 +24,7 @@ func StopRender(plData *config.PhotolumData, sceneID string) {
 func TraceImage(plData *config.PhotolumData, sceneID string) {
 	currentScene, err := scene.Retrieve(plData, sceneID)
 	if err != nil {
+		fmt.Printf("Error in tracing.go: %s\n", err.Error())
 		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 		return
 	}
@@ -39,12 +41,14 @@ func TraceImage(plData *config.PhotolumData, sceneID string) {
 	}
 	imageExists, err := image.DoesExist(plData, sceneID)
 	if err != nil {
+		fmt.Printf("Error in tracing.go: %s\n", err.Error())
 		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 		return
 	}
 	if imageExists {
 		img, err := image.Retrieve(plData, sceneID)
 		if err != nil {
+			fmt.Printf("Error in tracing.go: %s\n", err.Error())
 			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 			return
 		}
@@ -57,12 +61,14 @@ func TraceImage(plData *config.PhotolumData, sceneID string) {
 		}
 		_, err := image.Create(plData, img)
 		if err != nil {
+			fmt.Printf("Error in tracing.go: %s\n", err.Error())
 			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 			return
 		}
 	}
 	err = scene.UpdateRenderStatus(plData, sceneID, renderstatus.Completed)
 	if err != nil {
+		fmt.Printf("Error in tracing.go: %s\n", err.Error())
 		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 		return
 	}

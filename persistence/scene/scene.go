@@ -30,6 +30,7 @@ func Create(plData *config.PhotolumData, scene *Scene) (string, error) {
 		}
 		scene.SceneID = newSceneID.String()
 	}
+	scene.RenderStatus = renderstatus.Created
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*5)
 	defer cancelFunc()
