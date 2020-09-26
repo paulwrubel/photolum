@@ -43,7 +43,7 @@ func Create(plData *config.PhotolumData, image *Image) (string, error) {
 	defer stmt.Close()
 	var imgBytes []byte
 	imgBytesBuffer := bytes.NewBuffer(imgBytes)
-	err := png.Encode(imgBytesBuffer, image.ImageData)
+	err = png.Encode(imgBytesBuffer, image.ImageData)
 	if err != nil {
 		return "", err
 	}
