@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	// indirect driver for sql package
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type PhotolumData struct {

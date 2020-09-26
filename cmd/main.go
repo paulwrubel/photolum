@@ -14,7 +14,7 @@ func main() {
 
 	plData, err := config.InitPhotolumData()
 	if err != nil {
-		fmt.Println("Error: cannot initialize photolum data: %s\n", err.Error())
+		fmt.Printf("Error: cannot initialize photolum data: %s\n", err.Error())
 		os.Exit(1)
 	}
 
