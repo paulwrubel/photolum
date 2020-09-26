@@ -279,16 +279,7 @@ func RetrieveAll(plData *config.PhotolumData) ([]*Scene, error) {
 
 	totalSceneRows := []*Scene{}
 
-	rows, err := stmt.Query(
-		&sceneID,
-		&renderStatus,
-		&createdTimestamp,
-		&modifiedTimestamp,
-		&accessedTimestamp,
-		&imageWidth,
-		&imageHeight,
-		&imageFileType,
-	)
+	rows, err := stmt.Query()
 	if err != nil {
 		return nil, err
 	}

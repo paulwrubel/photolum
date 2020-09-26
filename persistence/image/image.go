@@ -229,7 +229,7 @@ func RetrieveAll(plData *config.PhotolumData) ([]*Image, error) {
 
 	totalImageRows := []*Image{}
 
-	rows, err := stmt.Query(sceneID)
+	rows, err := stmt.Query()
 	defer rows.Close()
 	for rows.Next() {
 		err = rows.Scan(&sceneID, &createdTimestamp, &modifiedTimestamp, &accessedTimestamp, &imgBytes)
