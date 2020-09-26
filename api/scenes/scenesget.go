@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/persistence/scene"
 )
 
 // ScenePostResponse contains the scene POST endpoint response
@@ -14,14 +15,23 @@ type ScenesGetResponse struct {
 }
 
 // ScenePostHandler handles the /scenes POST endpoint
-func ScenesGetHandler(response http.ResponseWriter, request *http.Request) {
+func ScenesGetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes.GET")
 
-	sceneDataList := persistence.RetrieveAll()
+	sceneList, err := scene.RetrieveAll(plData)
+	if err != nil {
+		fmt.Printf("Error retrieving all scenes: %s\n", err.Error())
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(ErrorResponse{
+			Error: Error{
+				Message: fmt.Sprintf("Error retrieving all scenes: %s\n", err.Error()),
+			},
+		})
+	}
 
 	sceneIDList := []string{}
-	for _, sceneData := range sceneDataList {
-		sceneIDList = append(sceneIDList, sceneData.SceneID.String())
+	for _, scn := range sceneList {
+		sceneIDList = append(sceneIDList, scn.SceneID)
 	}
 
 	response.WriteHeader(http.StatusCreated)

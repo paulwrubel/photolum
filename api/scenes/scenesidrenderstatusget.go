@@ -7,7 +7,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/persistence/scene"
 )
 
 // ScenePostResponse contains the scene POST endpoint response
@@ -16,7 +17,7 @@ type SceneIDRenderStatusGetResponse struct {
 }
 
 // ScenePostHandler handles the /scenes POST endpoint
-func ScenesIDRenderStatusGetHandler(response http.ResponseWriter, request *http.Request) {
+func ScenesIDRenderStatusGetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes/{scene_id}/render/status.GET")
 
 	params := mux.Vars(request)
@@ -33,7 +34,7 @@ func ScenesIDRenderStatusGetHandler(response http.ResponseWriter, request *http.
 		return
 	}
 
-	sceneData, err := persistence.Retrieve(sceneID)
+	scn, err := scene.Retrieve(plData, sceneID.String())
 	if err != nil {
 		fmt.Printf("Error retrieving scene: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
@@ -46,7 +47,7 @@ func ScenesIDRenderStatusGetHandler(response http.ResponseWriter, request *http.
 	}
 
 	response.WriteHeader(http.StatusCreated)
-	sceneIDRenderStatusGetResponse := SceneIDRenderStatusGetResponse{RenderStatus: string(sceneData.RenderStatus)}
+	sceneIDRenderStatusGetResponse := SceneIDRenderStatusGetResponse{RenderStatus: string(scn.RenderStatus)}
 	json.NewEncoder(response).Encode(sceneIDRenderStatusGetResponse)
 	fmt.Println("Sending Response for /scenes/{scene_id}/render/status.GET")
 }

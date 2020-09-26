@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/persistence/scene"
 	"github.com/paulwrubel/photolum/tracing"
 )
 
 // ScenePostHandler handles the /scenes POST endpoint
-func ScenesIDRenderStopPostHandler(response http.ResponseWriter, request *http.Request) {
+func ScenesIDRenderStopPostHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes/{scene_id}/render/stop.POST")
 
 	params := mux.Vars(request)
@@ -29,19 +30,29 @@ func ScenesIDRenderStopPostHandler(response http.ResponseWriter, request *http.R
 		return
 	}
 
-	_, err = persistence.Retrieve(sceneID)
+	doesSceneExist, err := scene.DoesExist(plData, sceneID.String())
 	if err != nil {
-		fmt.Printf("Error retrieving scene: %s\n", err.Error())
+		fmt.Printf("Error retrieving scene existance status: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(response).Encode(ErrorResponse{
 			Error: Error{
-				Message: fmt.Sprintf("Error retrieving scene: %s\n", err.Error()),
+				Message: fmt.Sprintf("Error retrieving scene existance status: %s\n", err.Error()),
+			},
+		})
+		return
+	}
+	if !doesSceneExist {
+		fmt.Printf("Error: scene does not exist\n")
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(ErrorResponse{
+			Error: Error{
+				Message: fmt.Sprintf("Error: scene does not exist"),
 			},
 		})
 		return
 	}
 
-	tracing.StopRender(sceneID)
+	tracing.StopRender(plData, sceneID.String())
 
 	response.WriteHeader(http.StatusAccepted)
 	fmt.Println("Sending Response for /scenes/{scene_id}/render/stop.POST")

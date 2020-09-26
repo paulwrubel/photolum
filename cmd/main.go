@@ -6,13 +6,20 @@ import (
 	"os/signal"
 
 	"github.com/paulwrubel/photolum/api"
+	"github.com/paulwrubel/photolum/config"
 )
 
 func main() {
 	fmt.Println("Starting Photolum...")
 
+	plData, err := config.InitPhotolumData()
+	if err != nil {
+		fmt.Println("Error: cannot initialize photolum data: %s\n", err.Error())
+		os.Exit(1)
+	}
+
 	fmt.Println("Starting API Server...")
-	api.ListenAndServe()
+	api.ListenAndServe(plData)
 
 	fmt.Println("Blocking until signalled to shutdown...")
 	// make channel for interrupt signal

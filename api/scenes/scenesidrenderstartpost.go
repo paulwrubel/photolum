@@ -7,13 +7,14 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/config/renderstatus"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/persistence/scene"
 	"github.com/paulwrubel/photolum/tracing"
 )
 
 // ScenePostHandler handles the /scenes POST endpoint
-func ScenesIDRenderStartPostHandler(response http.ResponseWriter, request *http.Request) {
+func ScenesIDRenderStartPostHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes/{scene_id}/render/start.POST")
 
 	params := mux.Vars(request)
@@ -30,18 +31,29 @@ func ScenesIDRenderStartPostHandler(response http.ResponseWriter, request *http.
 		return
 	}
 
-	_, err = persistence.Retrieve(sceneID)
+	doesSceneExist, err := scene.DoesExist(plData, sceneID.String())
 	if err != nil {
-		fmt.Printf("Error retrieving scene: %s\n", err.Error())
+		fmt.Printf("Error retrieving scene existance status: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(response).Encode(ErrorResponse{
 			Error: Error{
-				Message: fmt.Sprintf("Error retrieving scene: %s\n", err.Error()),
+				Message: fmt.Sprintf("Error retrieving scene existance status: %s\n", err.Error()),
 			},
 		})
 		return
 	}
-	err = persistence.UpdateRenderStatus(sceneID, renderstatus.Pending)
+	if !doesSceneExist {
+		fmt.Printf("Error: scene does not exist\n")
+		response.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(response).Encode(ErrorResponse{
+			Error: Error{
+				Message: fmt.Sprintf("Error: scene does not exist"),
+			},
+		})
+		return
+	}
+
+	err = scene.UpdateRenderStatus(plData, sceneID.String(), renderstatus.Pending)
 	if err != nil {
 		fmt.Printf("Error updating render status: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
@@ -53,7 +65,7 @@ func ScenesIDRenderStartPostHandler(response http.ResponseWriter, request *http.
 		return
 	}
 
-	tracing.StartRender(sceneID)
+	tracing.StartRender(plData, sceneID.String())
 	if err != nil {
 		fmt.Printf("Error starting render: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)

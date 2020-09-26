@@ -1,6 +1,11 @@
 # lightweight base image
 FROM alpine:3.12
 
+# adds compatibilty layer for libc between musl libc and glibc
+# this is needed which go binaries compiled with 
+# CGO_ENABLED=1, which is required for dependencies in this project (sqlite)
+RUN apk add --no-cache libc6-compat
+
 # copy go binary into container
 COPY photolum /app/photolum
 

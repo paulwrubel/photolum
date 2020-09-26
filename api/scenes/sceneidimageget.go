@@ -9,7 +9,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/config"
+	_image "github.com/paulwrubel/photolum/persistence/image"
 )
 
 // SceneIDGetRequest contains the sceneID GET endpoint request
@@ -23,7 +24,7 @@ type SceneIDImageGetBase64Response struct {
 }
 
 // SceneIDGetHandler handles the /scenes/{scene_id} GET endpoint
-func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request) {
+func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes/{scene_id}/image.GET")
 	// decode request
 	var sceneIDImageGetRequest SceneIDImageGetRequest
@@ -55,7 +56,7 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 		})
 		return
 	}
-	sceneData, err := persistence.Retrieve(sceneID)
+	image, err := _image.Retrieve(plData, sceneID.String())
 	if err != nil {
 		fmt.Printf("Error retrieving image: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
@@ -66,7 +67,7 @@ func SceneIDImageGetHandler(response http.ResponseWriter, request *http.Request)
 		})
 		return
 	}
-	img := sceneData.Image
+	img := image.ImageData
 	if img == nil {
 		response.WriteHeader(http.StatusNotFound)
 		return

@@ -1,43 +1,69 @@
 package tracing
 
 import (
-	"image"
+	_image "image"
 	"image/color"
 	"math"
 
-	"github.com/google/uuid"
+	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/config/renderstatus"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/persistence/image"
+	"github.com/paulwrubel/photolum/persistence/scene"
 )
 
-func StartRender(sceneID uuid.UUID) {
-	go TraceImage(sceneID)
-	persistence.UpdateRenderStatus(sceneID, renderstatus.Running)
+func StartRender(plData *config.PhotolumData, sceneID string) {
+	go TraceImage(plData, sceneID)
+	scene.UpdateRenderStatus(plData, sceneID, renderstatus.Running)
 }
 
-func StopRender(sceneID uuid.UUID) {
-	persistence.UpdateRenderStatus(sceneID, renderstatus.Stopping)
+func StopRender(plData *config.PhotolumData, sceneID string) {
+	scene.UpdateRenderStatus(plData, sceneID, renderstatus.Stopping)
 }
 
-func TraceImage(sceneID uuid.UUID) {
-	sceneData, err := persistence.Retrieve(sceneID)
+func TraceImage(plData *config.PhotolumData, sceneID string) {
+	currentScene, err := scene.Retrieve(plData, sceneID)
 	if err != nil {
-		persistence.UpdateRenderStatus(sceneID, renderstatus.Error)
+		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
 		return
 	}
-	scene := sceneData.Scene
-	newImage := image.NewRGBA64(image.Rect(0, 0, scene.ImageWidth, scene.ImageHeight))
-	for y := 0; y < scene.ImageHeight; y++ {
-		for x := 0; x < scene.ImageWidth; x++ {
+	newImage := _image.NewRGBA64(_image.Rect(0, 0, currentScene.ImageWidth, currentScene.ImageHeight))
+	for y := 0; y < currentScene.ImageHeight; y++ {
+		for x := 0; x < currentScene.ImageWidth; x++ {
 			col := color.RGBA64{
 				R: uint16(0.0 * float64(math.MaxUint16)),
-				G: uint16((float64(x) / float64(scene.ImageWidth)) * float64(math.MaxUint16)),
-				B: uint16((float64(y) / float64(scene.ImageHeight)) * float64(math.MaxUint16)),
+				G: uint16((float64(x) / float64(currentScene.ImageWidth)) * float64(math.MaxUint16)),
+				B: uint16((float64(y) / float64(currentScene.ImageHeight)) * float64(math.MaxUint16)),
 				A: uint16(1.0 * float64(math.MaxUint16))}
 			newImage.SetRGBA64(x, y, col)
 		}
 	}
-	sceneData.Image = newImage
-	persistence.Update(sceneID, sceneData)
-	persistence.UpdateRenderStatus(sceneID, renderstatus.Completed)
+	imageExists, err := image.DoesExist(plData, sceneID)
+	if err != nil {
+		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+		return
+	}
+	if imageExists {
+		img, err := image.Retrieve(plData, sceneID)
+		if err != nil {
+			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+			return
+		}
+		img.ImageData = newImage
+		image.Update(plData, img)
+	} else {
+		img := &image.Image{
+			SceneID:   sceneID,
+			ImageData: newImage,
+		}
+		_, err := image.Create(plData, img)
+		if err != nil {
+			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+			return
+		}
+	}
+	err = scene.UpdateRenderStatus(plData, sceneID, renderstatus.Completed)
+	if err != nil {
+		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+		return
+	}
 }

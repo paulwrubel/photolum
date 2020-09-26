@@ -6,12 +6,12 @@ import (
 	"net/http"
 
 	"github.com/paulwrubel/photolum/config"
-	"github.com/paulwrubel/photolum/persistence"
+	"github.com/paulwrubel/photolum/persistence/scene"
 )
 
 // ScenePostRequest contains the scene POST endpoint request
 type ScenesPostRequest struct {
-	Scene config.Scene `json:"scene"`
+	Scene scene.Scene `json:"scene"`
 }
 
 // ScenePostResponse contains the scene POST endpoint response
@@ -20,7 +20,7 @@ type ScenesPostResponse struct {
 }
 
 // ScenePostHandler handles the /scenes POST endpoint
-func ScenesPostHandler(response http.ResponseWriter, request *http.Request) {
+func ScenesPostHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes.POST")
 	// decode request
 	var scenePostRequest ScenesPostRequest
@@ -38,15 +38,12 @@ func ScenesPostHandler(response http.ResponseWriter, request *http.Request) {
 	defer request.Body.Close()
 
 	// assemble and save scene
-	newScene := config.Scene{
-		ImageWidth:  scenePostRequest.Scene.ImageWidth,
-		ImageHeight: scenePostRequest.Scene.ImageHeight,
-		FileType:    scenePostRequest.Scene.FileType,
+	newScene := &scene.Scene{
+		ImageWidth:    scenePostRequest.Scene.ImageWidth,
+		ImageHeight:   scenePostRequest.Scene.ImageHeight,
+		ImageFileType: scenePostRequest.Scene.ImageFileType,
 	}
-	sceneData := persistence.SceneData{
-		Scene: newScene,
-	}
-	newSceneID, err := persistence.Create(sceneData)
+	newSceneID, err := scene.Create(plData, newScene)
 	if err != nil {
 		fmt.Printf("Error saving scene: %s\n", err.Error())
 		response.WriteHeader(http.StatusInternalServerError)
@@ -59,7 +56,7 @@ func ScenesPostHandler(response http.ResponseWriter, request *http.Request) {
 	}
 
 	response.WriteHeader(http.StatusCreated)
-	scenePostResponse := ScenesPostResponse{SceneID: newSceneID.String()}
+	scenePostResponse := ScenesPostResponse{SceneID: newSceneID}
 	json.NewEncoder(response).Encode(scenePostResponse)
 	fmt.Println("Sending Response for /scenes.POST")
 }
