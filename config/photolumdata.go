@@ -33,7 +33,7 @@ func initDB() (*sql.DB, error) {
 	// Remove db if exists
 	err := os.Remove("/app/photolum.db")
 	if err != nil {
-		return nil, err
+		fmt.Printf("Error removing db file (we probably don't care): %s\n", err.Error())
 	}
 
 	// Create db
