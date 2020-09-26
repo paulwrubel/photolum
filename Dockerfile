@@ -8,7 +8,7 @@
 
 # Screw it, I'm just gonna use Ubuntu for now
 # TODO: Stop using Ubuntu
-FROM ubuntu:bionic
+FROM ubuntu:focal
 
 # copy go binary into container
 COPY photolum /app/photolum
