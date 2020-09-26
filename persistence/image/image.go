@@ -30,7 +30,7 @@ func Create(plData *config.PhotolumData, image *Image) (string, error) {
 		image.SceneID = newSceneID.String()
 	}
 
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancelFunc()
 	tx, err := plData.DB.BeginTx(ctx, nil)
 	if err != nil {
@@ -85,7 +85,7 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Image, error) {
 	}
 
 	// now retrieve row
-	ctx, cancelFunc = context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancelFunc = context.WithTimeout(context.Background(), time.Second*60)
 	defer cancelFunc()
 	tx, err = plData.DB.BeginTx(ctx, nil)
 	if err != nil {
@@ -129,7 +129,7 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Image, error) {
 func Update(plData *config.PhotolumData, image *Image) error {
 	fmt.Println("Updating image row in DB...")
 	// update row (and timestamp)
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*5)
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancelFunc()
 	tx, err := plData.DB.BeginTx(ctx, nil)
 	if err != nil {
@@ -209,7 +209,7 @@ func DoesExist(plData *config.PhotolumData, sceneID string) (bool, error) {
 
 func RetrieveAll(plData *config.PhotolumData) ([]*Image, error) {
 	fmt.Println("Retrieving all images row in DB...")
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*60)
 	defer cancelFunc()
 	tx, err := plData.DB.BeginTx(ctx, nil)
 	if err != nil {
