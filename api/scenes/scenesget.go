@@ -27,7 +27,6 @@ func ScenesGetHandler(response http.ResponseWriter, request *http.Request, plDat
 				Message: fmt.Sprintf("Error retrieving all scenes: %s\n", err.Error()),
 			},
 		})
-		// ok
 		return
 	}
 
