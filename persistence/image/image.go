@@ -36,12 +36,19 @@ func Create(plData *config.PhotolumData, image *Image) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	stmt, err := tx.Prepare(`INSERT INTO image (scene_id, image) VALUES (?, ?)`)
+	stmt, err := tx.Prepare(`INSERT INTO image (scene_id, image_data) VALUES (?, ?)`)
 	if err != nil {
 		return "", err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(image.SceneID, image.ImageData)
+	var imgBytes []byte
+	imgBytesBuffer := bytes.NewBuffer(imgBytes)
+	err := png.Encode(imgBytesBuffer, image.ImageData)
+	if err != nil {
+		return "", err
+	}
+
+	_, err = stmt.Exec(image.SceneID, imgBytesBuffer.Bytes())
 	if err != nil {
 		return "", err
 	}

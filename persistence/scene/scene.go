@@ -261,7 +261,7 @@ func RetrieveAll(plData *config.PhotolumData) ([]*Scene, error) {
 			image_width,
 			image_height,
 			image_file_type
-		FROM image
+		FROM scene
 	`)
 	if err != nil {
 		return nil, err
