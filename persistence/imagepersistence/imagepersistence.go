@@ -328,7 +328,7 @@ func DoesExist(plData *config.PhotolumData, sceneID string, fileType string) (bo
 	}
 	defer stmt.Close()
 	var count int
-	err = stmt.QueryRow(sceneID).Scan(&count)
+	err = stmt.QueryRow(sceneID, fileType).Scan(&count)
 	if err != nil {
 		return false, err
 	}
