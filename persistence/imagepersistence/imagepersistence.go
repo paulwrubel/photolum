@@ -38,7 +38,7 @@ func Save(plData *config.PhotolumData, img *Image) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	stmt, err := tx.Prepare(`INSERT INTO image (scene_id, image_data) VALUES (?, ?)`)
+	stmt, err := tx.Prepare(`INSERT INTO image (scene_id, file_type, image_data) VALUES (?, ?, ?)`)
 	if err != nil {
 		return "", err
 	}
@@ -51,13 +51,13 @@ func Save(plData *config.PhotolumData, img *Image) (string, error) {
 	case "jpeg":
 		err = jpeg.Encode(imgBytesBuffer, img.ImageData, nil)
 	default:
-		err = fmt.Errorf("invalid image file type found in db: %s", img.FileType)
+		err = fmt.Errorf("invalid image file to save in db: %s", img.FileType)
 	}
 	if err != nil {
 		return "", err
 	}
 
-	_, err = stmt.Exec(img.SceneID, imgBytesBuffer.Bytes())
+	_, err = stmt.Exec(img.SceneID, img.FileType, imgBytesBuffer.Bytes())
 	if err != nil {
 		return "", err
 	}
@@ -267,7 +267,7 @@ func Update(plData *config.PhotolumData, image *Image) error {
 	if err != nil {
 		return err
 	}
-	stmt, err := tx.Prepare(`UPDATE image SET modified_timestamp = datetime(), image_data = ? WHERE scene_id = ?`)
+	stmt, err := tx.Prepare(`UPDATE image SET modified_timestamp = datetime(), image_data = ? WHERE scene_id = ? AND file_type = ?`)
 	if err != nil {
 		return err
 	}
@@ -275,7 +275,7 @@ func Update(plData *config.PhotolumData, image *Image) error {
 	var imgBytes []byte
 	imgBytesBuffer := bytes.NewBuffer(imgBytes)
 	err = png.Encode(imgBytesBuffer, image.ImageData)
-	_, err = stmt.Exec(imgBytesBuffer.Bytes(), image.SceneID)
+	_, err = stmt.Exec(imgBytesBuffer.Bytes(), image.SceneID, image.FileType)
 	if err != nil {
 		return err
 	}

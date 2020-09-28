@@ -34,14 +34,14 @@ func TraceImage(plData *config.PhotolumData, scene *scenepersistence.Scene) {
 			ImageData: newImage,
 		})
 		if err != nil {
-			fmt.Printf("Error in tracing.go: %s\n", err.Error())
+			fmt.Printf("Error in tracer.go: %s\n", err.Error())
 			sceneservice.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Error)
 			return
 		}
 	}
 	err := sceneservice.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Completed)
 	if err != nil {
-		fmt.Printf("Error in tracing.go: %s\n", err.Error())
+		fmt.Printf("Error in tracer.go: %s\n", err.Error())
 		scenepersistence.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Error)
 		return
 	}
