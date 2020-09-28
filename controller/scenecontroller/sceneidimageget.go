@@ -17,7 +17,7 @@ import (
 // SceneIDGetRequest contains the sceneID GET endpoint request
 type SceneIDImageGetRequest struct {
 	Protocol string `json:"protocol"`
-	FileType string `json"file_type"`
+	FileType string `json:"file_type"`
 }
 
 // SceneIDGetBase64Response contains the sceneID GET endpoint request in base64 format
