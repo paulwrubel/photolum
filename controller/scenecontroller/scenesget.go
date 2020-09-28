@@ -1,4 +1,4 @@
-package scenes
+package scenecontroller
 
 import (
 	"encoding/json"
@@ -6,7 +6,8 @@ import (
 	"net/http"
 
 	"github.com/paulwrubel/photolum/config"
-	"github.com/paulwrubel/photolum/persistence/scene"
+	"github.com/paulwrubel/photolum/controller"
+	"github.com/paulwrubel/photolum/service/sceneservice"
 )
 
 // ScenePostResponse contains the scene POST endpoint response
@@ -18,15 +19,11 @@ type ScenesGetResponse struct {
 func ScenesGetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData) {
 	fmt.Println("Recieved Request for /scenes.GET")
 
-	sceneList, err := scene.RetrieveAll(plData)
+	sceneList, err := sceneservice.GetAll(plData)
 	if err != nil {
-		fmt.Printf("Error retrieving all scenes: %s\n", err.Error())
-		response.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(response).Encode(ErrorResponse{
-			Error: Error{
-				Message: fmt.Sprintf("Error retrieving all scenes: %s\n", err.Error()),
-			},
-		})
+		errorMessage := fmt.Sprintf("Error retrieving all scenes: %s", err.Error())
+		errorStatusCode := http.StatusBadRequest
+		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage)
 		return
 	}
 
@@ -36,6 +33,7 @@ func ScenesGetHandler(response http.ResponseWriter, request *http.Request, plDat
 	}
 
 	response.WriteHeader(http.StatusCreated)
+	response.Header().Add("Content-Type", "application/json")
 	scenePostResponse := ScenesGetResponse{SceneIDs: sceneIDList}
 	json.NewEncoder(response).Encode(scenePostResponse)
 	fmt.Println("Sending Response for /scenes.GET")

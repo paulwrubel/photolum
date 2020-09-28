@@ -2,74 +2,47 @@ package tracing
 
 import (
 	"fmt"
-	_image "image"
+	"image"
 	"image/color"
 	"math"
+	"strings"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/config/renderstatus"
-	"github.com/paulwrubel/photolum/persistence/image"
-	"github.com/paulwrubel/photolum/persistence/scene"
+	"github.com/paulwrubel/photolum/persistence/imagepersistence"
+	"github.com/paulwrubel/photolum/persistence/scenepersistence"
+	"github.com/paulwrubel/photolum/service/imageservice"
+	"github.com/paulwrubel/photolum/service/sceneservice"
 )
 
-func StartRender(plData *config.PhotolumData, sceneID string) {
-	go TraceImage(plData, sceneID)
-	scene.UpdateRenderStatus(plData, sceneID, renderstatus.Running)
-}
-
-func StopRender(plData *config.PhotolumData, sceneID string) {
-	scene.UpdateRenderStatus(plData, sceneID, renderstatus.Stopping)
-}
-
-func TraceImage(plData *config.PhotolumData, sceneID string) {
-	currentScene, err := scene.Retrieve(plData, sceneID)
-	if err != nil {
-		fmt.Printf("Error in tracing.go: %s\n", err.Error())
-		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
-		return
-	}
-	newImage := _image.NewRGBA64(_image.Rect(0, 0, currentScene.ImageWidth, currentScene.ImageHeight))
-	for y := 0; y < currentScene.ImageHeight; y++ {
-		for x := 0; x < currentScene.ImageWidth; x++ {
+func TraceImage(plData *config.PhotolumData, scene *scenepersistence.Scene) {
+	newImage := image.NewRGBA64(image.Rect(0, 0, scene.ImageWidth, scene.ImageHeight))
+	for y := 0; y < scene.ImageHeight; y++ {
+		for x := 0; x < scene.ImageWidth; x++ {
 			col := color.RGBA64{
 				R: uint16(0.0 * float64(math.MaxUint16)),
-				G: uint16((float64(x) / float64(currentScene.ImageWidth)) * float64(math.MaxUint16)),
-				B: uint16((float64(y) / float64(currentScene.ImageHeight)) * float64(math.MaxUint16)),
+				G: uint16((float64(x) / float64(scene.ImageWidth)) * float64(math.MaxUint16)),
+				B: uint16((float64(y) / float64(scene.ImageHeight)) * float64(math.MaxUint16)),
 				A: uint16(1.0 * float64(math.MaxUint16))}
 			newImage.SetRGBA64(x, y, col)
 		}
 	}
-	imageExists, err := image.DoesExist(plData, sceneID)
-	if err != nil {
-		fmt.Printf("Error in tracing.go: %s\n", err.Error())
-		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
-		return
-	}
-	if imageExists {
-		img, err := image.Retrieve(plData, sceneID)
-		if err != nil {
-			fmt.Printf("Error in tracing.go: %s\n", err.Error())
-			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
-			return
-		}
-		img.ImageData = newImage
-		image.Update(plData, img)
-	} else {
-		img := &image.Image{
-			SceneID:   sceneID,
+	for _, fileType := range strings.Split(scene.ImageFileTypes, ",") {
+		err := imageservice.SaveOrUpdate(plData, &imagepersistence.Image{
+			SceneID:   scene.SceneID,
+			FileType:  fileType,
 			ImageData: newImage,
-		}
-		_, err := image.Create(plData, img)
+		})
 		if err != nil {
 			fmt.Printf("Error in tracing.go: %s\n", err.Error())
-			scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+			sceneservice.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Error)
 			return
 		}
 	}
-	err = scene.UpdateRenderStatus(plData, sceneID, renderstatus.Completed)
+	err := sceneservice.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Completed)
 	if err != nil {
 		fmt.Printf("Error in tracing.go: %s\n", err.Error())
-		scene.UpdateRenderStatus(plData, sceneID, renderstatus.Error)
+		scenepersistence.UpdateRenderStatus(plData, scene.SceneID, renderstatus.Error)
 		return
 	}
 }

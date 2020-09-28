@@ -1,13 +1,13 @@
-package api
+package routing
 
 import (
 	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/paulwrubel/photolum/api/helloworld"
-	"github.com/paulwrubel/photolum/api/scenes"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/controller/helloworldcontroller"
+	"github.com/paulwrubel/photolum/controller/scenecontroller"
 )
 
 // ListenAndServe starts the API server on port 8080
@@ -25,34 +25,34 @@ func getRouter(plData *config.PhotolumData) *mux.Router {
 	router := mux.NewRouter().PathPrefix("/v1").Subrouter()
 
 	helloWorldRouter := router.PathPrefix("/helloworld").Subrouter()
-	helloWorldRouter.HandleFunc("", helloworld.GetHandler).Methods("GET")
+	helloWorldRouter.HandleFunc("", helloworldcontroller.GetHandler).Methods("GET")
 
 	scenesRouter := router.PathPrefix("/scenes").Subrouter()
 	scenesRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-		scenes.ScenesPostHandler(w, r, plData)
+		scenecontroller.ScenesPostHandler(w, r, plData)
 	}).Methods("POST")
 	scenesRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-		scenes.ScenesGetHandler(w, r, plData)
+		scenecontroller.ScenesGetHandler(w, r, plData)
 	}).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}", func(w http.ResponseWriter, r *http.Request) {
-		scenes.SceneIDGetHandler(w, r, plData)
+		scenecontroller.SceneIDGetHandler(w, r, plData)
 	}).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}/image", func(w http.ResponseWriter, r *http.Request) {
-		scenes.SceneIDImageGetHandler(w, r, plData)
+		scenecontroller.SceneIDImageGetHandler(w, r, plData)
 	}).Methods("GET")
 	scenesRouter.HandleFunc("/{scene_id}", func(w http.ResponseWriter, r *http.Request) {
-		scenes.SceneIDDeleteHandler(w, r, plData)
+		scenecontroller.SceneIDDeleteHandler(w, r, plData)
 	}).Methods("DELETE")
 
 	renderRouter := scenesRouter.PathPrefix("/{scene_id}/render").Subrouter()
 	renderRouter.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-		scenes.ScenesIDRenderStatusGetHandler(w, r, plData)
+		scenecontroller.ScenesIDRenderStatusGetHandler(w, r, plData)
 	}).Methods("GET")
 	renderRouter.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
-		scenes.ScenesIDRenderStartPostHandler(w, r, plData)
+		scenecontroller.ScenesIDRenderStartPostHandler(w, r, plData)
 	}).Methods("POST")
 	renderRouter.HandleFunc("/stop", func(w http.ResponseWriter, r *http.Request) {
-		scenes.ScenesIDRenderStopPostHandler(w, r, plData)
+		scenecontroller.ScenesIDRenderStopPostHandler(w, r, plData)
 	}).Methods("POST")
 
 	return router

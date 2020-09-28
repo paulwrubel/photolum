@@ -1,4 +1,4 @@
-package helloworld
+package helloworldcontroller
 
 import (
 	"encoding/json"

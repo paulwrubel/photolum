@@ -1,4 +1,4 @@
-package scene
+package scenepersistence
 
 import (
 	"context"
@@ -11,17 +11,17 @@ import (
 )
 
 type Scene struct {
-	SceneID           string                    `json:"-"`
-	RenderStatus      renderstatus.RenderStatus `json:"-"`
-	createdTimestamp  time.Time                 `json:"-"`
-	modifiedTimestamp time.Time                 `json:"-"`
-	accessedTimestamp time.Time                 `json:"-"`
-	ImageWidth        int                       `json:"image_width"`     // width of the image in pixels
-	ImageHeight       int                       `json:"image_height"`    // height of the image in pixels
-	ImageFileType     string                    `json:"image_file_type"` // image file type (png, jpg, etc.)
+	SceneID           string
+	RenderStatus      renderstatus.RenderStatus
+	createdTimestamp  time.Time
+	modifiedTimestamp time.Time
+	accessedTimestamp time.Time
+	ImageWidth        int
+	ImageHeight       int
+	ImageFileTypes    string
 }
 
-func Create(plData *config.PhotolumData, scene *Scene) (string, error) {
+func Save(plData *config.PhotolumData, scene *Scene) (string, error) {
 	fmt.Println("Creating scene row in DB...")
 	if scene.SceneID == "" {
 		newSceneID, err := uuid.NewRandom()
@@ -44,14 +44,14 @@ func Create(plData *config.PhotolumData, scene *Scene) (string, error) {
 			render_status, 
 			image_width,
 			image_height,
-			image_file_type
+			image_file_types
 		) VALUES (?, ?, ?, ?, ?)
 		`)
 	if err != nil {
 		return "", err
 	}
 	defer stmt.Close()
-	_, err = stmt.Exec(scene.SceneID, scene.RenderStatus, scene.ImageWidth, scene.ImageHeight, scene.ImageFileType)
+	_, err = stmt.Exec(scene.SceneID, scene.RenderStatus, scene.ImageWidth, scene.ImageHeight, scene.ImageFileTypes)
 	if err != nil {
 		return "", err
 	}
@@ -64,7 +64,7 @@ func Create(plData *config.PhotolumData, scene *Scene) (string, error) {
 	return scene.SceneID, nil
 }
 
-func Retrieve(plData *config.PhotolumData, sceneID string) (*Scene, error) {
+func Get(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 	fmt.Println("Retrieving scene row in DB...")
 	// first, update accessed timestamp
 	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*5)
@@ -102,7 +102,7 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 			accessed_timestamp, 
 			image_width, 
 			image_height, 
-			image_file_type 
+			image_file_types
 		FROM scene 
 		WHERE scene_id = ?
 	`)
@@ -116,7 +116,7 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 	var accessedTimestamp time.Time
 	var imageWidth int
 	var imageHeight int
-	var imageFileType string
+	var imageFileTypes string
 	err = stmt.QueryRow(sceneID).Scan(
 		&renderStatus,
 		&createdTimestamp,
@@ -124,7 +124,7 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 		&accessedTimestamp,
 		&imageWidth,
 		&imageHeight,
-		&imageFileType)
+		&imageFileTypes)
 	if err != nil {
 		return nil, err
 	}
@@ -144,10 +144,83 @@ func Retrieve(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 		accessedTimestamp: accessedTimestamp,
 		ImageWidth:        imageWidth,
 		ImageHeight:       imageHeight,
-		ImageFileType:     imageFileType,
+		ImageFileTypes:    imageFileTypes,
 	}
 	fmt.Println("Successfully retrieved scene row in DB")
 	return retrievedSceneRow, nil
+}
+
+func GetAll(plData *config.PhotolumData) ([]*Scene, error) {
+	fmt.Println("Retrieving all scene rows in DB...")
+	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancelFunc()
+	tx, err := plData.DB.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	stmt, err := tx.Prepare(`
+		SELECT 
+			scene_id,
+			render_status,
+			created_timestamp, 
+			modified_timestamp, 
+			accessed_timestamp, 
+			image_width,
+			image_height,
+			image_file_types
+		FROM scene
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+
+	var sceneID string
+	var renderStatus string
+	var createdTimestamp time.Time
+	var modifiedTimestamp time.Time
+	var accessedTimestamp time.Time
+	var imageWidth int
+	var imageHeight int
+	var imageFileTypes string
+
+	totalSceneRows := []*Scene{}
+
+	rows, err := stmt.Query()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		err = rows.Scan(
+			&sceneID,
+			&renderStatus,
+			&createdTimestamp,
+			&modifiedTimestamp,
+			&accessedTimestamp,
+			&imageWidth,
+			&imageHeight,
+			&imageFileTypes)
+		if err != nil {
+			return nil, err
+		}
+		totalSceneRows = append(totalSceneRows, &Scene{
+			SceneID:           sceneID,
+			RenderStatus:      renderstatus.RenderStatus(renderStatus),
+			createdTimestamp:  createdTimestamp,
+			modifiedTimestamp: modifiedTimestamp,
+			accessedTimestamp: accessedTimestamp,
+			ImageWidth:        imageWidth,
+			ImageHeight:       imageHeight,
+			ImageFileTypes:    imageFileTypes,
+		})
+	}
+	err = tx.Commit()
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println("Successfully retrieved all image rows in DB...")
+	return totalSceneRows, nil
 }
 
 func Update(plData *config.PhotolumData, scene *Scene) error {
@@ -166,7 +239,7 @@ func Update(plData *config.PhotolumData, scene *Scene) error {
 			modified_timestamp = datetime(), 
 			image_width = ?,
 			image_height = ?,
-			image_file_type = ? 
+			image_file_types = ? 
 		WHERE scene_id = ?
 	`)
 	if err != nil {
@@ -177,7 +250,7 @@ func Update(plData *config.PhotolumData, scene *Scene) error {
 		scene.RenderStatus,
 		scene.ImageWidth,
 		scene.ImageHeight,
-		scene.ImageFileType,
+		scene.ImageFileTypes,
 		scene.SceneID,
 	)
 	if err != nil {
@@ -243,81 +316,8 @@ func DoesExist(plData *config.PhotolumData, sceneID string) (bool, error) {
 	return count != 0, nil
 }
 
-func RetrieveAll(plData *config.PhotolumData) ([]*Scene, error) {
-	fmt.Println("Retrieving all scene rows in DB...")
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancelFunc()
-	tx, err := plData.DB.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	stmt, err := tx.Prepare(`
-		SELECT 
-			scene_id,
-			render_status,
-			created_timestamp, 
-			modified_timestamp, 
-			accessed_timestamp, 
-			image_width,
-			image_height,
-			image_file_type
-		FROM scene
-	`)
-	if err != nil {
-		return nil, err
-	}
-	defer stmt.Close()
-
-	var sceneID string
-	var renderStatus string
-	var createdTimestamp time.Time
-	var modifiedTimestamp time.Time
-	var accessedTimestamp time.Time
-	var imageWidth int
-	var imageHeight int
-	var imageFileType string
-
-	totalSceneRows := []*Scene{}
-
-	rows, err := stmt.Query()
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		err = rows.Scan(
-			&sceneID,
-			&renderStatus,
-			&createdTimestamp,
-			&modifiedTimestamp,
-			&accessedTimestamp,
-			&imageWidth,
-			&imageHeight,
-			&imageFileType)
-		if err != nil {
-			return nil, err
-		}
-		totalSceneRows = append(totalSceneRows, &Scene{
-			SceneID:           sceneID,
-			RenderStatus:      renderstatus.RenderStatus(renderStatus),
-			createdTimestamp:  createdTimestamp,
-			modifiedTimestamp: modifiedTimestamp,
-			accessedTimestamp: accessedTimestamp,
-			ImageWidth:        imageWidth,
-			ImageHeight:       imageHeight,
-			ImageFileType:     imageFileType,
-		})
-	}
-	err = tx.Commit()
-	if err != nil {
-		return nil, err
-	}
-	fmt.Println("Successfully retrieved all image rows in DB...")
-	return totalSceneRows, nil
-}
-
 func UpdateRenderStatus(plData *config.PhotolumData, sceneID string, status renderstatus.RenderStatus) error {
-	scene, err := Retrieve(plData, sceneID)
+	scene, err := Get(plData, sceneID)
 	if err != nil {
 		return err
 	}

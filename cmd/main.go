@@ -5,8 +5,8 @@ import (
 	"os"
 	"os/signal"
 
-	"github.com/paulwrubel/photolum/api"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/routing"
 )
 
 func main() {
@@ -19,7 +19,7 @@ func main() {
 	}
 
 	fmt.Println("Starting API Server...")
-	api.ListenAndServe(plData)
+	routing.ListenAndServe(plData)
 
 	fmt.Println("Blocking until signalled to shutdown...")
 	// make channel for interrupt signal
