@@ -132,9 +132,6 @@ func Get(plData *config.PhotolumData, sceneID string) (*Scene, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 
 	retrievedSceneRow := &Scene{
 		SceneID:           sceneID,

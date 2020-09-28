@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/paulwrubel/photolum/config"
@@ -61,14 +62,14 @@ func SceneIDGetHandler(response http.ResponseWriter, request *http.Request, plDa
 		return
 	}
 
+	spew.Dump(scn)
+
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
-
-	sceneIDGetResponse := SceneIDGetResponse{
+	json.NewEncoder(response).Encode(SceneIDGetResponse{
 		ImageWidth:     scn.ImageWidth,
 		ImageHeight:    scn.ImageHeight,
 		ImageFileTypes: strings.Split(scn.ImageFileTypes, ","),
-	}
-	json.NewEncoder(response).Encode(sceneIDGetResponse)
+	})
 	fmt.Println("Sending Response for /scenes/{scene_id}.GET")
 }
