@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	// Phantom import for SQLite driver
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var createImageTableQueryString string = `
