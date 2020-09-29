@@ -15,3 +15,14 @@ photolum
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+### USER ADDED ###
+
+.DS_Store
+
+# Image outputs
+output/
+
+# Image textures
+# resources/
+

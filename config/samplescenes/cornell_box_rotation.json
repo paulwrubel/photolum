@@ -1,0 +1,42 @@
+{
+    "scene_name": "Cornell Box Rotation",
+    "camera_name": "main",
+    "objects": [
+        {
+            "object_name": "light_center_rectangle",
+            "material_name": "white_diffuse"
+        },
+        {
+            "object_name": "large_box_outer",
+            "material_name": "glass"
+        },
+        {
+            "object_name": "large_box_inner",
+            "material_name": "glass"
+        },
+        {
+            "object_name": "large_box_light",
+            "material_name": "white_light_double_r"
+        },
+        {
+            "object_name": "top_rectangle",
+            "material_name": "white_diffuse"
+        },
+        {
+            "object_name": "bottom_rectangle",
+            "material_name": "white_diffuse"
+        },
+        {
+            "object_name": "left_rectangle",
+            "material_name": "red_diffuse"
+        },
+        {
+            "object_name": "right_rectangle",
+            "material_name": "green_diffuse"
+        },
+        {
+            "object_name": "far_rectangle",
+            "material_name": "white_diffuse"
+        }
+    ]
+}

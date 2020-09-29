@@ -1,0 +1,163 @@
+[
+    {
+        "name": "main",
+        "data": {
+            "eye_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 14.0
+            },
+            "target_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 0.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 40.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "perfect_main",
+        "data": {
+            "eye_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 13.72
+            },
+            "target_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 0.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 40.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "left",
+        "data": {
+            "eye_location": {
+                "x": -14.0,
+                "y": 5.0,
+                "z": -5.0
+            },
+            "target_location": {
+                "x": 0.0,
+                "y": 5.0,
+                "z": -5.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 40.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "right",
+        "data": {
+            "eye_location": {
+                "x": 24.0,
+                "y": 5.0,
+                "z": -5.0
+            },
+            "target_location": {
+                "x": 10.0,
+                "y": 5.0,
+                "z": -5.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 40.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "wide_angle",
+        "data": {
+            "eye_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 8.0
+            },
+            "target_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 0.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 90.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "main_up",
+        "data": {
+            "eye_location": {
+                "x": 5.0,
+                "y": 3.0,
+                "z": 14.0
+            },
+            "target_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 0.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 37.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    },
+    {
+        "name": "main_down",
+        "data": {
+            "eye_location": {
+                "x": 5.0,
+                "y": 7.0,
+                "z": 14.0
+            },
+            "target_location": {
+                "x": 5.0,
+                "y": 5.0,
+                "z": 0.0
+            },
+            "up_vector": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0
+            },
+            "vertical_fov": 37.0,
+            "aperture": 0.0,
+            "focus_distance": 1.0
+        }
+    }
+]

@@ -1,0 +1,665 @@
+[
+    {
+        "name": "white_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_white_real",
+        "emittance_texture_name": "color_white_spec",
+        "data": {}
+    },
+    {
+        "name": "grey_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_grey",
+        "data": {}
+    },
+    {
+        "name": "black_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_black_real",
+        "data": {}
+    },
+    {
+        "name": "vantablack_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_vantablack",
+        "data": {}
+    },
+    {
+        "name": "pure_black_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_pure_black",
+        "data": {}
+    },
+    {
+        "name": "red_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_red_real",
+        "data": {}
+    },
+    {
+        "name": "red_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_red_real",
+        "emittance_texture_name": "color_red_spec",
+        "data": {}
+    },
+    {
+        "name": "green_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_green_real",
+        "data": {}
+    },
+    {
+        "name": "green_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_green_real",
+        "emittance_texture_name": "color_green_spec",
+        "data": {}
+    },
+    {
+        "name": "blue_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_blue_real",
+        "data": {}
+    },
+    {
+        "name": "blue_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_blue_real",
+        "emittance_texture_name": "color_blue_spec",
+        "data": {}
+    },
+    {
+        "name": "yellow_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_yellow_real",
+        "data": {}
+    },
+    {
+        "name": "yellow_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_yellow_real",
+        "emittance_texture_name": "color_yellow_spec",
+        "data": {}
+    },
+    {
+        "name": "magenta_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_magenta_real",
+        "data": {}
+    },
+    {
+        "name": "magenta_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_magenta_real",
+        "emittance_texture_name": "color_magenta_spec",
+        "data": {}
+    },
+    {
+        "name": "cyan_diffuse",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_cyan_real",
+        "data": {}
+    },
+    {
+        "name": "cyan_glow",
+        "type": "Lambertian",
+        "reflectance_texture_name": "color_cyan_real",
+        "emittance_texture_name": "color_cyan_spec",
+        "data": {}
+    },
+    {
+        "name": "sun_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_sun",
+        "data": {}
+    },
+    {
+        "name": "sky_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_half",
+        "data": {}
+    },
+    {
+        "name": "sky_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky",
+        "data": {}
+    },
+    {
+        "name": "sky_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_double",
+        "data": {}
+    },
+    {
+        "name": "sky_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_five",
+        "data": {}
+    },
+    {
+        "name": "sky_light_ten",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_ten",
+        "data": {}
+    },
+    {
+        "name": "sky_light_twenty_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_twenty_five",
+        "data": {}
+    },
+    {
+        "name": "sky_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_sky_fifty",
+        "data": {}
+    },
+    {
+        "name": "white_light_tenth",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_tenth",
+        "data": {}
+    },
+    {
+        "name": "white_light_quarter",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_quarter",
+        "data": {}
+    },
+    {
+        "name": "white_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_half",
+        "data": {}
+    },
+    {
+        "name": "white_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white",
+        "data": {}
+    },
+    {
+        "name": "white_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_double",
+        "data": {}
+    },
+    {
+        "name": "white_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_five",
+        "data": {}
+    },
+    {
+        "name": "white_light_fifteen",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_fifteen",
+        "data": {}
+    },
+    {
+        "name": "white_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_fifty",
+        "data": {}
+    },
+    {
+        "name": "white_light_tenth_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_tenth",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_quarter_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_quarter",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_half_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_half",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_double_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_double",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_five_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_five",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_fifteen_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_fifteen",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "white_light_fifty_r",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_white_fifty",
+        "reflectance_texture_name": "color_white_real",
+        "data": {}
+    },
+    {
+        "name": "red_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_red_half",
+        "data": {}
+    },
+    {
+        "name": "red_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_red",
+        "data": {}
+    },
+    {
+        "name": "red_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_red_double",
+        "data": {}
+    },
+    {
+        "name": "red_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_red_five",
+        "data": {}
+    },
+    {
+        "name": "red_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_red_fifty",
+        "data": {}
+    },
+    {
+        "name": "green_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_green_half",
+        "data": {}
+    },
+    {
+        "name": "green_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_green",
+        "data": {}
+    },
+    {
+        "name": "green_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_green_double",
+        "data": {}
+    },
+    {
+        "name": "green_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_green_five",
+        "data": {}
+    },
+    {
+        "name": "green_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_green_fifty",
+        "data": {}
+    },
+    {
+        "name": "blue_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_blue_half",
+        "data": {}
+    },
+    {
+        "name": "blue_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_blue",
+        "data": {}
+    },
+    {
+        "name": "blue_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_blue_double",
+        "data": {}
+    },
+    {
+        "name": "blue_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_blue_five",
+        "data": {}
+    },
+    {
+        "name": "blue_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_blue_fifty",
+        "data": {}
+    },
+    {
+        "name": "yellow_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_yellow_half",
+        "data": {}
+    },
+    {
+        "name": "yellow_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_yellow",
+        "data": {}
+    },
+    {
+        "name": "yellow_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_yellow_double",
+        "data": {}
+    },
+    {
+        "name": "yellow_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_yellow_five",
+        "data": {}
+    },
+    {
+        "name": "yellow_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_yellow_fifty",
+        "data": {}
+    },
+    {
+        "name": "magenta_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_magenta_half",
+        "data": {}
+    },
+    {
+        "name": "magenta_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_magenta",
+        "data": {}
+    },
+    {
+        "name": "magenta_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_magenta_double",
+        "data": {}
+    },
+    {
+        "name": "magenta_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_magenta_five",
+        "data": {}
+    },
+    {
+        "name": "magenta_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_magenta_fifty",
+        "data": {}
+    },
+    {
+        "name": "cyan_light_half",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_cyan_half",
+        "data": {}
+    },
+    {
+        "name": "cyan_light",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_cyan",
+        "data": {}
+    },
+    {
+        "name": "cyan_light_double",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_cyan_double",
+        "data": {}
+    },
+    {
+        "name": "cyan_light_five",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_cyan_five",
+        "data": {}
+    },
+    {
+        "name": "cyan_light_fifty",
+        "type": "Lambertian",
+        "emittance_texture_name": "color_cyan_fifty",
+        "data": {}
+    },
+    {
+        "name": "perfect_mirror",
+        "type": "Metal",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "fuzziness": 0.0
+        }
+    },
+    {
+        "name": "real_mirror",
+        "type": "Metal",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "fuzziness": 0.01
+        }
+    },
+    {
+        "name": "fuzzy_mirror",
+        "type": "Metal",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "fuzziness": 0.1
+        }
+    },
+    {
+        "name": "water",
+        "type": "Dielectric",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "refractive_index": 1.33
+        }
+    },
+    {
+        "name": "glass",
+        "type": "Dielectric",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "refractive_index": 1.5
+        }
+    },
+    {
+        "name": "diamond",
+        "type": "Dielectric",
+        "reflectance_texture_name": "color_white",
+        "data": {
+            "refractive_index": 2.42
+        }
+    },
+    {
+        "name": "image_trees",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_test_trees",
+        "data": {}
+    },
+    {
+        "name": "image_white",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_white_square",
+        "data": {}
+    },
+    {
+        "name": "image_trees_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_test_trees",
+        "data": {}
+    },
+    {
+        "name": "image_gradient1",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_gradient1",
+        "data": {}
+    },
+    {
+        "name": "image_gradient1_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_gradient1",
+        "data": {}
+    },
+    {
+        "name": "image_gradient2",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_gradient2",
+        "data": {}
+    },
+    {
+        "name": "image_gradient2_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_gradient2",
+        "data": {}
+    },
+    {
+        "name": "image_rainbow_gradient1",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_rainbow_gradient1",
+        "data": {}
+    },
+    {
+        "name": "image_rainbow_gradient1_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_rainbow_gradient1",
+        "data": {}
+    },
+    {
+        "name": "image_rainbow_gradient2",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_rainbow_gradient2",
+        "data": {}
+    },
+    {
+        "name": "image_rainbow_gradient2_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_rainbow_gradient2",
+        "data": {}
+    },
+    {
+        "name": "image_earth_day",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_earth_day",
+        "data": {}
+    },
+    {
+        "name": "image_earth_day_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_earth_day",
+        "data": {}
+    },
+    {
+        "name": "image_earth_night",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_earth_night",
+        "data": {}
+    },
+    {
+        "name": "image_earth_night_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_earth_night",
+        "data": {}
+    },
+    {
+        "name": "image_stars_milky_way",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_stars_milky_way",
+        "data": {}
+    },
+    {
+        "name": "image_stars_milky_way_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_stars_milky_way",
+        "data": {}
+    },
+    {
+        "name": "image_8k_stars_milky_way",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_8k_stars_milky_way",
+        "data": {}
+    },
+    {
+        "name": "image_8k_stars_milky_way_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_8k_stars_milky_way",
+        "data": {}
+    },
+    {
+        "name": "image_sun",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_sun",
+        "data": {}
+    },
+    {
+        "name": "image_sun_emissive",
+        "type": "Lambertian",
+        "emittance_texture_name": "image_sun",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_wood_floor_044",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_wood_floor_044",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_tiles_onyx_opalo_black_001",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_tiles_onyx_opalo_black_001",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_marble_13",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_marble_13",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_marble_062",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_marble_062",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_ground_forest_003",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_ground_forest_003",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_bricks_flemish_red_001",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_bricks_flemish_red_001",
+        "data": {}
+    },
+    {
+        "name": "image_poliigon_bricks_01",
+        "type": "Lambertian",
+        "reflectance_texture_name": "image_poliigon_bricks_01",
+        "data": {}
+    }
+]
