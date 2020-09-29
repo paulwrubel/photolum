@@ -3,6 +3,8 @@ GORUN=$(GOCMD) run
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
 GOGET=$(GOCMD) get
+GOVET=$(GOCMD) vet
+GOLINT=golint
 BINARY_NAME=photolum
 
 all: build
@@ -13,3 +15,10 @@ build:
 	export GOARCH=amd64 && \
 	export CGO_ENABLED=1 && \
 	$(GOBUILD) -o $(BINARY_NAME) cmd/main.go
+vet:
+	# go vet
+	$(GOVET) cmd
+lint:
+	# golint
+	$(GOLINT) ./...
+perfect: lint vet
