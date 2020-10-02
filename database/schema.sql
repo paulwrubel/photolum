@@ -114,16 +114,11 @@ CREATE TABLE materials (
     refractive_index DOUBLE PRECISION
 );
 
-CREATE TABLE object_materials (
-    object_name TEXT REFERENCES objects(object_name),
-    material_name TEXT REFERENCES materials(material_name),
-    PRIMARY KEY (object_name, material_name)
-);
-
 CREATE TABLE scene_object_materials (
     scene_name TEXT REFERENCES scenes(scene_name),
-    object_material_name TEXT REFERENCES object_materials(object_material_name),
-    PRIMARY KEY (scene_name, object_material_name)
+    object_name TEXT REFERENCES objects(object_name),
+    material_name TEXT REFERENCES materials(material_name),
+    PRIMARY KEY (scene_name, object_name, material_name)
 );
 
 CREATE TYPE RENDER_STATUS AS ENUM (
