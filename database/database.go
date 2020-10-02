@@ -30,7 +30,7 @@ func InitDB(log *logrus.Logger, pgHost, pgUser, pgPassword string) (*pgxpool.Poo
 			break
 		}
 		connectionAttempts++
-		if connectionAttempts >= 5 {
+		if connectionAttempts >= 10 {
 			return nil, err
 		}
 		// retry db

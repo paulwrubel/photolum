@@ -85,7 +85,7 @@ CREATE TABLE objects (
     angle DOUBLE PRECISION,
     is_culled BOOLEAN,
     has_negative_normal BOOLEAN,
-    has_inverted_normals BOOLEAN,
+    has_inverted_normals BOOLEAN
 );
 
 CREATE TYPE TEXTURE_TYPE AS ENUM (
