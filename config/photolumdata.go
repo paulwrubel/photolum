@@ -21,12 +21,16 @@ func InitPhotolumData(log *logrus.Logger) (*PhotolumData, error) {
 	if !isSet {
 		return nil, fmt.Errorf("environment variable %s not set", constants.PostgresHostnameEnvironmentKey)
 	}
+	pgUser, isSet := os.LookupEnv(constants.PostgresUsernameEnvironmentKey)
+	if !isSet {
+		return nil, fmt.Errorf("environment variable %s not set", constants.PostgresUsernameEnvironmentKey)
+	}
 	pgPass, isSet := os.LookupEnv(constants.PostgresPasswordEnvironmentKey)
 	if !isSet {
 		return nil, fmt.Errorf("environment variable %s not set", constants.PostgresPasswordEnvironmentKey)
 	}
 
-	db, err := database.InitDB(log, pgHost, pgPass)
+	db, err := database.InitDB(log, pgHost, pgUser, pgPass)
 	if err != nil {
 		return nil, fmt.Errorf("error initializing db: %s", err.Error())
 	}

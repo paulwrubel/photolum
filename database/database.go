@@ -11,11 +11,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func InitDB(log *logrus.Logger, pgHost string, pgPassword string) (*pgxpool.Pool, error) {
+func InitDB(log *logrus.Logger, pgHost, pgUser, pgPassword string) (*pgxpool.Pool, error) {
 	log.Debug("initializing database")
 
 	// initialize configuration
-	connectionString := fmt.Sprintf("host=%s password=%s", pgHost, pgPassword)
+	connectionString := fmt.Sprintf("host=%s user=%s password=%s", pgHost, pgUser, pgPassword)
 	poolConfig, err := pgxpool.ParseConfig(connectionString)
 	if err != nil {
 		return nil, err
