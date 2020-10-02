@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/controller/helloworldcontroller"
+	"github.com/paulwrubel/photolum/controller/parameterscontroller"
 	"github.com/sirupsen/logrus"
 )
 
@@ -27,6 +28,14 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	helloWorldRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		helloworldcontroller.GetHandler(w, r, log)
 	}).Methods("GET")
+
+	parametersRouter := router.PathPrefix("/parameters").Subrouter()
+	parametersRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		parameterscontroller.GetHandler(w, r, plData, log)
+	}).Methods("GET")
+	parametersRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		parameterscontroller.PostHandler(w, r, plData, log)
+	}).Methods("POST")
 
 	// scenesRouter := router.PathPrefix("/scenes").Subrouter()
 	// scenesRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {

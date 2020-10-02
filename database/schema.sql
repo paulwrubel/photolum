@@ -1,9 +1,13 @@
+CREATE TYPE FILE_TYPE AS ENUM (
+    'PNG',
+    'JPEG'
+);
+
 CREATE TABLE parameters (
-    parameters_id UUID PRIMARY KEY,
-    parameters_name TEXT UNIQUE NOT NULL,
+    parameters_name TEXT PRIMARY KEY,
     image_width INTEGER NOT NULL,
     image_height INTEGER NOT NULL,
-    file_type TEXT NOT NULL,
+    file_type FILE_TYPE NOT NULL,
     gamma_correction DOUBLE PRECISION NOT NULL,
     texture_gamma DOUBLE PRECISION NOT NULL,
     use_scaling_truncation BOOLEAN NOT NULL,
@@ -20,8 +24,7 @@ CREATE TABLE parameters (
 );
 
 CREATE TABLE cameras (
-    camera_id UUID PRIMARY KEY,
-    camera_name TEXT UNIQUE NOT NULL,
+    camera_name TEXT PRIMARY KEY,
     eye_location DOUBLE PRECISION[3] NOT NULL,
     target_location DOUBLE PRECISION[3] NOT NULL,
     up_vector DOUBLE PRECISION[3] NOT NULL,
@@ -32,9 +35,8 @@ CREATE TABLE cameras (
 );
 
 CREATE TABLE scenes (
-    scene_id UUID PRIMARY KEY,
-    scene_name TEXT UNIQUE NOT NULL,
-    camera_id UUID NOT NULL REFERENCES cameras(camera_id)
+    scene_name TEXT PRIMARY KEY,
+    camera_name TEXT NOT NULL REFERENCES cameras(camera_name)
 );
 
 CREATE TYPE OBJECT_TYPE AS ENUM (
@@ -69,10 +71,9 @@ CREATE TYPE QUATERNION_ROTATION_ORDER AS ENUM (
 );
 
 CREATE TABLE objects (
-    object_id UUID PRIMARY KEY,
-    object_name TEXT UNIQUE NOT NULL,
+    object_name TEXT PRIMARY KEY,
     object_type OBJECT_TYPE NOT NULL,
-    encapsulated_object_id UUID REFERENCES objects(object_id),
+    encapsulated_object_name TEXT REFERENCES objects(object_name),
     a DOUBLE PRECISION[3],
     b DOUBLE PRECISION[3],
     c DOUBLE PRECISION[3],
@@ -94,8 +95,7 @@ CREATE TYPE TEXTURE_TYPE AS ENUM (
 );
 
 CREATE TABLE textures (
-    texture_id UUID PRIMARY KEY,
-    texture_name TEXT UNIQUE NOT NULL,
+    texture_name TEXT PRIMARY KEY,
     color DOUBLE PRECISION[3],
     image_texture BYTEA
 );
@@ -107,26 +107,23 @@ CREATE TYPE MATERIAL_TYPE AS ENUM (
 );
 
 CREATE TABLE materials (
-    material_id UUID PRIMARY KEY,
-    material_name TEXT UNIQUE NOT NULL,
-    reflectance_texture_id UUID REFERENCES textures(texture_id),
-    emittance_texture_id UUID REFERENCES textures(texture_id),
+    material_name TEXT PRIMARY KEY,
+    reflectance_texture_name TEXT REFERENCES textures(texture_name),
+    emittance_texture_name TEXT REFERENCES textures(texture_name),
     fuzziness DOUBLE PRECISION,
     refractive_index DOUBLE PRECISION
 );
 
 CREATE TABLE object_materials (
-    object_material_id UUID PRIMARY KEY,
-    object_id UUID NOT NULL REFERENCES objects(object_id),
-    material_id UUID NOT NULL REFERENCES materials(material_id),
-    UNIQUE (object_id, material_id)
+    object_name TEXT REFERENCES objects(object_name),
+    material_name TEXT REFERENCES materials(material_name),
+    PRIMARY KEY (object_name, material_name)
 );
 
-CREATE TABLE scene_object_materials (
-    scene_object_material_id UUID PRIMARY KEY,
-    scene_id UUID NOT NULL REFERENCES scenes(scene_id),
-    object_material_id UUID NOT NULL REFERENCES object_materials(object_material_id),
-    UNIQUE (scene_id, object_material_id)
+CREATE TABLE scene_object_materials (\
+    scene_name TEXT REFERENCES scenes(scene_name),
+    object_material_name TEXT REFERENCES object_materials(object_material_name),
+    PRIMARY KEY (scene_name, object_material_name)
 );
 
 CREATE TYPE RENDER_STATUS AS ENUM (
@@ -140,21 +137,9 @@ CREATE TYPE RENDER_STATUS AS ENUM (
 );
 
 CREATE TABLE renders (
-    render_id UUID PRIMARY KEY,
-    parameters_id UUID NOT NULL REFERENCES parameters(parameters_id),
-    scene_id UUID NOT NULL REFERENCES scenes(scene_id),
-    render_status RENDER_STATUS NOT NULL
-);
-
-CREATE TYPE FILE_TYPE AS ENUM (
-    'PNG',
-    'JPEG'
-);
-
-CREATE TABLE images (
-    image_id UUID PRIMARY KEY,
-    render_id UUID NOT NULL REFERENCES renders(render_id),
-    file_type FILE_TYPE NOT NULL,
-    image_data BYTEA NOT NULL,
-    UNIQUE(render_id, file_type)
+    render_name TEXT PRIMARY KEY,
+    parameters_name TEXT NOT NULL REFERENCES parameters(parameters_name),
+    scene_name TEXT NOT NULL REFERENCES scenes(scene_name),
+    render_status RENDER_STATUS NOT NULL,
+    image_data BYTEA NOT NULL
 );

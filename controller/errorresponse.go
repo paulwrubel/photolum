@@ -2,25 +2,29 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
 type ErrorInfo struct {
 	Message string `json:"message"`
+	Error   string `json:"error,omitempty"`
 }
 
 type ErrorResponse struct {
 	ErrorInfo ErrorInfo `json:"error"`
 }
 
-func WriteErrorResponse(response *http.ResponseWriter, statusCode int, errorMessage string) {
-	fmt.Println(errorMessage)
+func WriteErrorResponse(response *http.ResponseWriter, statusCode int, errorMessage string, err error) {
 	(*response).Header().Add("Content-Type", "application/json")
 	(*response).WriteHeader(statusCode)
+	errorString := ""
+	if err != nil {
+		errorString = err.Error()
+	}
 	json.NewEncoder(*response).Encode(ErrorResponse{
 		ErrorInfo: ErrorInfo{
-			Message: fmt.Sprint(errorMessage),
+			Message: errorMessage,
+			Error:   errorString,
 		},
 	})
 }
