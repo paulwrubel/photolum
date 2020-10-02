@@ -34,7 +34,7 @@ CREATE TABLE cameras (
 CREATE TABLE scenes (
     scene_id UUID PRIMARY KEY,
     scene_name TEXT UNIQUE NOT NULL,
-    camera_id TEXT NOT NULL REFERENCES cameras(camera_id)
+    camera_id UUID NOT NULL REFERENCES cameras(camera_id)
 );
 
 CREATE TYPE OBJECT_TYPE AS ENUM (
@@ -109,8 +109,8 @@ CREATE TYPE MATERIAL_TYPE AS ENUM (
 CREATE TABLE materials (
     material_id UUID PRIMARY KEY,
     material_name TEXT UNIQUE NOT NULL,
-    reflectance_texture_id REFERENCES textures(texture_id),
-    emittance_texture_id REFERENCES textures(texture_id),
+    reflectance_texture_id UUID REFERENCES textures(texture_id),
+    emittance_texture_id UUID REFERENCES textures(texture_id),
     fuzziness DOUBLE PRECISION,
     refractive_index DOUBLE PRECISION,
 );
@@ -125,7 +125,7 @@ CREATE TABLE object_materials (
 CREATE TABLE scene_object_materials (
     scene_object_material_id UUID PRIMARY KEY,
     scene_id UUID NOT NULL REFERENCES scenes(scene_id),
-    object_material_id NOT NULL REFERENCES object_materials(object_material_id),
+    object_material_id UUID NOT NULL REFERENCES object_materials(object_material_id),
     UNIQUE (scene_id, object_material_id)
 );
 
