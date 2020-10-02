@@ -112,7 +112,7 @@ CREATE TABLE materials (
     reflectance_texture_id UUID REFERENCES textures(texture_id),
     emittance_texture_id UUID REFERENCES textures(texture_id),
     fuzziness DOUBLE PRECISION,
-    refractive_index DOUBLE PRECISION,
+    refractive_index DOUBLE PRECISION
 );
 
 CREATE TABLE object_materials (
