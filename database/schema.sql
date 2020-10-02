@@ -120,7 +120,7 @@ CREATE TABLE object_materials (
     PRIMARY KEY (object_name, material_name)
 );
 
-CREATE TABLE scene_object_materials (\
+CREATE TABLE scene_object_materials (
     scene_name TEXT REFERENCES scenes(scene_name),
     object_material_name TEXT REFERENCES object_materials(object_material_name),
     PRIMARY KEY (scene_name, object_material_name)
