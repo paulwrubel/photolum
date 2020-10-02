@@ -42,8 +42,8 @@ type GetResponse struct {
 	UseBVH                   bool                    `json:"use_bvh"`
 	BackgroundColorMagnitude float64                 `json:"background_color_magnitude"`
 	BackgroundColor          BackgroundColorResponse `json:"background_color"`
-	TMin                     float64                 `json:"parameters_name"`
-	TMax                     float64                 `json:"parameters_name"`
+	TMin                     float64                 `json:"t_min"`
+	TMax                     float64                 `json:"t_max"`
 }
 
 type BackgroundColorRequest struct {
@@ -68,8 +68,8 @@ type PostRequest struct {
 	UseBVH                   *bool                   `json:"use_bvh"`
 	BackgroundColorMagnitude *float64                `json:"background_color_magnitude"`
 	BackgroundColor          *BackgroundColorRequest `json:"background_color"`
-	TMin                     *float64                `json:"parameters_name"`
-	TMax                     *float64                `json:"parameters_name"`
+	TMin                     *float64                `json:"t_min"`
+	TMax                     *float64                `json:"t_max"`
 }
 
 func GetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData, baseLog *logrus.Logger) {
