@@ -117,7 +117,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		errorMessage := "parameters row does not exist"
 		errorStatusCode := http.StatusNotFound
 
-		log.WithError(err).Error(errorMessage)
+		log.Error(errorMessage)
 		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
 		return
 	}
@@ -228,7 +228,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		errorMessage := "parameters row already exists"
 		errorStatusCode := http.StatusConflict
 
-		log.WithError(err).Error(errorMessage)
+		log.Error(errorMessage)
 		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
 		return
 	}
