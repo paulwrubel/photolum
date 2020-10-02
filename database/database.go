@@ -23,9 +23,12 @@ func InitDB(log *logrus.Logger, pgHost, pgUser, pgPassword string) (*pgxpool.Poo
 	}
 
 	// initialize connection pool
-	var db *pgxpool.Pool
 	connectionAttempts := 0
-	for db, err = pgxpool.ConnectConfig(context.Background(), poolConfig); ; {
+	var db *pgxpool.Pool
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
+		defer cancel()
+		db, err = pgxpool.ConnectConfig(ctx, poolConfig)
 		if err == nil {
 			break
 		}
@@ -33,12 +36,10 @@ func InitDB(log *logrus.Logger, pgHost, pgUser, pgPassword string) (*pgxpool.Poo
 		if connectionAttempts >= 10 {
 			return nil, err
 		}
+		cancel()
 		// retry db
 		log.WithError(err).Error("database connection attempt failed, waiting 5s then retrying")
 		time.Sleep(time.Second * 5)
-	}
-	if err != nil {
-		return nil, err
 	}
 
 	log.Debug("database initialized")
