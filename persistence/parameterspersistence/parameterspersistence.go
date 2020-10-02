@@ -59,7 +59,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 			background_color,
 			t_min,
 			t_max
-		) VALUES ('%s',%d,%d,'%s',%f,%f,%t,%d,%d,%d,%d,%d,%t,%f,{%f,%f,%f},%f,%f)`,
+		) VALUES ('%s',%d,%d,'%s',%f,%f,%t,%d,%d,%d,%d,%d,%t,%f,'{%f,%f,%f}',%f,%f)`,
 		parameters.ParametersName,
 		parameters.ImageWidth,
 		parameters.ImageHeight,
