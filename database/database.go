@@ -2,88 +2,50 @@ package database
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
-	"os"
-	"time"
+	"io/ioutil"
 
-	// Phantom import for SQLite driver
-	_ "github.com/mattn/go-sqlite3"
+	// Phantom import for PostgreSQL driver
+
+	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/sirupsen/logrus"
 )
 
-var createImageTableQueryString string = `
-	CREATE TABLE image (
-		scene_id TEXT NOT NULL,
-		file_type TEXT NOT NULL,
-		created_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		modified_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		accessed_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		image_data BLOB NOT NULL,
-		PRIMARY KEY (scene_id, file_type)
-	)
-`
+func InitDB(log *logrus.Logger, pgHost string, pgPassword string) (*pgxpool.Pool, error) {
+	log.Debug("initializing database")
 
-var createSceneTableQueryString string = `
-	CREATE TABLE scene (
-		scene_id TEXT PRIMARY KEY,
-		render_status TEXT NOT NULL,
-		created_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		modified_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		accessed_timestamp DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		image_width INTEGER NOT NULL,
-		image_height INTEGER NOT NULL,
-		image_file_types TEXT NOT NULL
-	)
-`
-
-func InitDB() (*sql.DB, error) {
-	fmt.Println("Initializing DB...")
-
-	// Remove db if exists
-	err := os.Remove("/app/photolum.db")
-	if err != nil {
-		fmt.Printf("Error removing db file (we probably don't care): %s\n", err.Error())
-	}
-
-	// Create db
-	db, err := sql.Open("sqlite3", "/app/photolum.db")
+	// initialize configuration
+	connectionString := fmt.Sprintf("host=%s password=%s", pgHost, pgPassword)
+	poolConfig, err := pgxpool.ParseConfig(connectionString)
 	if err != nil {
 		return nil, err
 	}
 
-	// Create the DB schema
-	ctx, cancelFunc := context.WithTimeout(context.Background(), time.Second*10)
-	defer cancelFunc()
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	// create scene table
-	sceneStmt, err := tx.Prepare(createSceneTableQueryString)
-	if err != nil {
-		return nil, err
-	}
-	defer sceneStmt.Close()
-	_, err = sceneStmt.Exec()
+	// initialize connection pool
+	db, err := pgxpool.ConnectConfig(context.Background(), poolConfig)
 	if err != nil {
 		return nil, err
 	}
 
-	// create image table
-	imageStmt, err := tx.Prepare(createImageTableQueryString)
-	if err != nil {
-		return nil, err
-	}
-	defer imageStmt.Close()
-	_, err = imageStmt.Exec()
-	if err != nil {
-		return nil, err
-	}
-	err = tx.Commit()
-	if err != nil {
-		return nil, err
-	}
-
-	fmt.Println("DB initialized, returning...")
+	log.Debug("database initialized")
 	return db, nil
+}
+
+func InitSchema(log *logrus.Logger, db *pgxpool.Pool) error {
+	log.Debug("initializing database schema")
+
+	// get queries from sql file
+	schemaFileBytes, err := ioutil.ReadFile("/app/schema.sql")
+	if err != nil {
+		return err
+	}
+
+	// execute queries in file
+	_, err = db.Exec(context.Background(), string(schemaFileBytes))
+	if err != nil {
+		return err
+	}
+
+	log.Debug("database schema initialized")
+	return nil
 }

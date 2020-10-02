@@ -1,5 +1,5 @@
 # lightweight base image
-# FROM alpine:3.12
+FROM alpine:3.12
 
 # adds compatibilty layer for libc between musl libc and glibc
 # this is needed which go binaries compiled with 
@@ -8,10 +8,13 @@
 
 # Screw it, I'm just gonna use Ubuntu for now
 # TODO: Stop using Ubuntu
-FROM ubuntu:focal
+# FROM ubuntu:focal
 
 # copy go binary into container
 COPY photolum /app/photolum
+
+# copy db schema into container
+COPY database/schema.sql /app/schema.sql
 
 # expose port for API access
 EXPOSE 8080

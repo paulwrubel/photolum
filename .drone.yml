@@ -9,7 +9,7 @@ steps:
   - export GO111MODULE=on &&
     export GOOS=linux &&
     export GOARCH=amd64 &&
-    export CGO_ENABLED=1 &&
+    export CGO_ENABLED=0 &&
     go build -o photolum cmd/main.go
   when:
     branch:

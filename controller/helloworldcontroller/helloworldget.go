@@ -2,9 +2,13 @@ package helloworldcontroller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+
+	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 )
+
+var endpoint = "/helloworld.GET"
 
 // GetResponse contains the helloworld endpoint response
 type GetResponse struct {
@@ -12,10 +16,19 @@ type GetResponse struct {
 }
 
 // GetHandler handles the helloworld GET endpoint
-func GetHandler(response http.ResponseWriter, request *http.Request) {
-	fmt.Println("Recieved Request for /helloworld.GET")
+func GetHandler(response http.ResponseWriter, request *http.Request, baseLog *logrus.Logger) {
+	requestID, _ := uuid.NewRandom()
+	log := baseLog.WithFields(logrus.Fields{
+		"endpoint":   endpoint,
+		"request_id": requestID.String(),
+	})
+	log.Debug("request received")
+
 	response.WriteHeader(http.StatusOK)
-	helloWorldResponse := GetResponse{Message: "Hello, World!"}
+	helloWorldResponse := GetResponse{
+		Message: "Hello, World!",
+	}
 	json.NewEncoder(response).Encode(helloWorldResponse)
-	fmt.Println("Sending Response for /helloworld.GET")
+
+	log.Debug("request completed")
 }

@@ -1,27 +1,29 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
+	"strings"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/routing"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	fmt.Println("Starting Photolum...")
+	log := initLogger()
+	log.Info("starting photolum")
 
-	plData, err := config.InitPhotolumData()
+	plData, err := config.InitPhotolumData(log)
 	if err != nil {
-		fmt.Printf("Error: cannot initialize photolum data: %s\n", err.Error())
+		log.WithError(err).Fatal("cannot initialize photolum data")
 		os.Exit(1)
 	}
 
-	fmt.Println("Starting API Server...")
-	routing.ListenAndServe(plData)
+	log.Info("starting API server")
+	routing.ListenAndServe(plData, log)
 
-	fmt.Println("Blocking until signalled to shutdown...")
+	log.Info("blocking until signalled to shutdown")
 	// make channel for interrupt signal
 	c := make(chan os.Signal, 1)
 	// tell os to send to chan when signal received
@@ -29,6 +31,30 @@ func main() {
 	// wait for signal
 	<-c
 
-	fmt.Println("Shutting down...")
+	log.Info("shutting down")
 	os.Exit(0)
+}
+
+func initLogger() *logrus.Logger {
+	log := logrus.New()
+	log.SetOutput(os.Stdout)
+	switch strings.ToUpper(os.Getenv("PHOTOLUM_LOG_LEVEL")) {
+	case "TRACE":
+		log.SetLevel(logrus.TraceLevel)
+	case "DEBUG":
+		log.SetLevel(logrus.DebugLevel)
+	case "INFO":
+		log.SetLevel(logrus.InfoLevel)
+	case "WARN":
+		log.SetLevel(logrus.WarnLevel)
+	case "ERROR":
+		log.SetLevel(logrus.ErrorLevel)
+	case "FATAL":
+		log.SetLevel(logrus.FatalLevel)
+	case "PANIC":
+		log.SetLevel(logrus.PanicLevel)
+	default:
+		log.SetLevel(logrus.WarnLevel)
+	}
+	return log
 }
