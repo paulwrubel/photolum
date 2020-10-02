@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	// Phantom import for PostgreSQL driver
 
@@ -22,7 +23,20 @@ func InitDB(log *logrus.Logger, pgHost, pgUser, pgPassword string) (*pgxpool.Poo
 	}
 
 	// initialize connection pool
-	db, err := pgxpool.ConnectConfig(context.Background(), poolConfig)
+	var db *pgxpool.Pool
+	connectionAttempts := 0
+	for db, err = pgxpool.ConnectConfig(context.Background(), poolConfig); ; {
+		if err == nil {
+			break
+		}
+		connectionAttempts++
+		if connectionAttempts >= 5 {
+			return nil, err
+		}
+		// retry db
+		log.WithError(err).Error("database connection attempt failed, waiting 5s then retrying")
+		time.Sleep(time.Second * 5)
+	}
 	if err != nil {
 		return nil, err
 	}

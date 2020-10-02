@@ -78,7 +78,7 @@ CREATE TABLE objects (
     c DOUBLE PRECISION[3],
     displacement DOUBLE PRECISION[3],
     axis_angles DOUBLE PRECISION[3],
-    order QUATERNION_ROTATION_ORDER,
+    quaternion_rotation_order QUATERNION_ROTATION_ORDER,
     inner_radius DOUBLE PRECISION,
     outer_radius DOUBLE PRECISION,
     height DOUBLE PRECISION,
