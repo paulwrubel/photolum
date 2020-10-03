@@ -12,3 +12,10 @@ var ParametersMinimumTotalPixels uint32 = 100
 var ParametersMaximumTotalPixels uint32 = 25000000
 var ParametersMaximumMaxBounces uint32 = 100
 var ParametersMaximumTMax float64 = math.MaxFloat64
+
+var CameraMinimumVerticalFOV float64 = 10.0
+var CameraMaximumVerticalFOV float64 = 120.0
+var CameraMinimumAperture float64 = 0.0
+var CameraMaximumAperture float64 = math.MaxFloat64
+var CameraMinimumFocusDistance float64 = 0.0
+var CameraMaximumFocusDistance float64 = math.MaxFloat64

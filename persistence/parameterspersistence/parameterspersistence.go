@@ -2,7 +2,6 @@ package parameterspersistence
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/enumeration/filetype"
@@ -25,7 +24,7 @@ type Parameters struct {
 	MaxBounces               uint32
 	UseBVH                   bool
 	BackgroundColorMagnitude float64
-	BackgroundColor          *shading.Color
+	BackgroundColor          shading.Color
 	TMin                     float64
 	TMax                     float64
 }
@@ -40,7 +39,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 	})
 	log.Trace("database event initiated")
 
-	tag, err := plData.DB.Exec(context.Background(), fmt.Sprintf(`
+	tag, err := plData.DB.Exec(context.Background(), `
 		INSERT INTO parameters (
 			parameters_name,
 			image_width,
@@ -59,7 +58,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 			background_color,
 			t_min,
 			t_max
-		) VALUES ('%s',%d,%d,'%s',%f,%f,%t,%d,%d,%d,%d,%d,%t,%f,'{%f,%f,%f}',%f,%f)`,
+		) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
 		parameters.ParametersName,
 		parameters.ImageWidth,
 		parameters.ImageHeight,
@@ -74,12 +73,10 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 		parameters.MaxBounces,
 		parameters.UseBVH,
 		parameters.BackgroundColorMagnitude,
-		parameters.BackgroundColor.Red,
-		parameters.BackgroundColor.Green,
-		parameters.BackgroundColor.Blue,
+		[]float64{parameters.BackgroundColor.Red, parameters.BackgroundColor.Green, parameters.BackgroundColor.Blue},
 		parameters.TMin,
 		parameters.TMax,
-	))
+	)
 	if err != nil || tag.RowsAffected() != 1 {
 		return err
 	}
@@ -97,9 +94,9 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 	log.Trace("database event initiated")
 
 	parameters := &Parameters{
-		BackgroundColor: &shading.Color{},
+		BackgroundColor: shading.Color{},
 	}
-	err := plData.DB.QueryRow(context.Background(), fmt.Sprintf(`
+	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			parameters_name,
 			image_width,
@@ -121,7 +118,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 			t_min,
 			t_max
 		FROM parameters
-		WHERE parameters_name = '%s'`, parametersName)).Scan(
+		WHERE parameters_name = ?`, parametersName).Scan(
 		&parameters.ParametersName,
 		&parameters.ImageWidth,
 		&parameters.ImageHeight,
@@ -167,10 +164,10 @@ func DoesExist(plData *config.PhotolumData, baseLog *logrus.Entry, parametersNam
 	log.Trace("database event initiated")
 
 	var count int
-	err := plData.DB.QueryRow(context.Background(), fmt.Sprintf(`
+	err := plData.DB.QueryRow(context.Background(), `
 		SELECT count(*)
 		FROM parameters
-		WHERE parameters_name = '%s'`, parametersName)).Scan(&count)
+		WHERE parameters_name = ?`, parametersName).Scan(&count)
 	if err != nil {
 		return false, err
 	}

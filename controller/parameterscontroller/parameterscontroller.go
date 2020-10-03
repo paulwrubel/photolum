@@ -23,56 +23,50 @@ type GetRequest struct {
 	ParametersName *string `json:"parameters_name"`
 }
 
-type BackgroundColorResponse struct {
-	Red   float64 `json:"red"`
-	Green float64 `json:"green"`
-	Blue  float64 `json:"blue"`
-}
-
 type GetResponse struct {
-	ParametersName           string                  `json:"parameters_name"`
-	ImageWidth               uint32                  `json:"image_width"`
-	ImageHeight              uint32                  `json:"image_height"`
-	FileType                 string                  `json:"file_type"`
-	GammaCorrection          float64                 `json:"gamma_correction"`
-	TextureGamma             float64                 `json:"texture_gamma"`
-	UseScalingTruncation     bool                    `json:"use_scaling_truncation"`
-	SamplesPerRound          uint32                  `json:"samples_per_round"`
-	RoundCount               uint32                  `json:"round_count"`
-	TileWidth                uint32                  `json:"tile_width"`
-	TileHeight               uint32                  `json:"tile_height"`
-	MaxBounces               uint32                  `json:"max_bounces"`
-	UseBVH                   bool                    `json:"use_bvh"`
-	BackgroundColorMagnitude float64                 `json:"background_color_magnitude"`
-	BackgroundColor          BackgroundColorResponse `json:"background_color"`
-	TMin                     float64                 `json:"t_min"`
-	TMax                     float64                 `json:"t_max"`
+	ParametersName           string        `json:"parameters_name"`
+	ImageWidth               uint32        `json:"image_width"`
+	ImageHeight              uint32        `json:"image_height"`
+	FileType                 string        `json:"file_type"`
+	GammaCorrection          float64       `json:"gamma_correction"`
+	TextureGamma             float64       `json:"texture_gamma"`
+	UseScalingTruncation     bool          `json:"use_scaling_truncation"`
+	SamplesPerRound          uint32        `json:"samples_per_round"`
+	RoundCount               uint32        `json:"round_count"`
+	TileWidth                uint32        `json:"tile_width"`
+	TileHeight               uint32        `json:"tile_height"`
+	MaxBounces               uint32        `json:"max_bounces"`
+	UseBVH                   bool          `json:"use_bvh"`
+	BackgroundColorMagnitude float64       `json:"background_color_magnitude"`
+	BackgroundColor          shading.Color `json:"background_color"`
+	TMin                     float64       `json:"t_min"`
+	TMax                     float64       `json:"t_max"`
 }
 
-type BackgroundColorRequest struct {
+type ColorRequest struct {
 	Red   *float64 `json:"red"`
 	Green *float64 `json:"green"`
 	Blue  *float64 `json:"blue"`
 }
 
 type PostRequest struct {
-	ParametersName           *string                 `json:"parameters_name"`
-	ImageWidth               *uint32                 `json:"image_width"`
-	ImageHeight              *uint32                 `json:"image_height"`
-	FileType                 *string                 `json:"file_type"`
-	GammaCorrection          *float64                `json:"gamma_correction"`
-	TextureGamma             *float64                `json:"texture_gamma"`
-	UseScalingTruncation     *bool                   `json:"use_scaling_truncation"`
-	SamplesPerRound          *uint32                 `json:"samples_per_round"`
-	RoundCount               *uint32                 `json:"round_count"`
-	TileWidth                *uint32                 `json:"tile_width"`
-	TileHeight               *uint32                 `json:"tile_height"`
-	MaxBounces               *uint32                 `json:"max_bounces"`
-	UseBVH                   *bool                   `json:"use_bvh"`
-	BackgroundColorMagnitude *float64                `json:"background_color_magnitude"`
-	BackgroundColor          *BackgroundColorRequest `json:"background_color"`
-	TMin                     *float64                `json:"t_min"`
-	TMax                     *float64                `json:"t_max"`
+	ParametersName           *string       `json:"parameters_name"`
+	ImageWidth               *uint32       `json:"image_width"`
+	ImageHeight              *uint32       `json:"image_height"`
+	FileType                 *string       `json:"file_type"`
+	GammaCorrection          *float64      `json:"gamma_correction"`
+	TextureGamma             *float64      `json:"texture_gamma"`
+	UseScalingTruncation     *bool         `json:"use_scaling_truncation"`
+	SamplesPerRound          *uint32       `json:"samples_per_round"`
+	RoundCount               *uint32       `json:"round_count"`
+	TileWidth                *uint32       `json:"tile_width"`
+	TileHeight               *uint32       `json:"tile_height"`
+	MaxBounces               *uint32       `json:"max_bounces"`
+	UseBVH                   *bool         `json:"use_bvh"`
+	BackgroundColorMagnitude *float64      `json:"background_color_magnitude"`
+	BackgroundColor          *ColorRequest `json:"background_color"`
+	TMin                     *float64      `json:"t_min"`
+	TMax                     *float64      `json:"t_max"`
 }
 
 func GetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData, baseLog *logrus.Logger) {
@@ -137,11 +131,6 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 	}
 
 	response.WriteHeader(http.StatusOK)
-	backgroundColorResponse := BackgroundColorResponse{
-		Red:   parameters.BackgroundColor.Red,
-		Green: parameters.BackgroundColor.Green,
-		Blue:  parameters.BackgroundColor.Blue,
-	}
 	getResponse := GetResponse{
 		ParametersName:           parameters.ParametersName,
 		ImageWidth:               parameters.ImageWidth,
@@ -157,7 +146,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		MaxBounces:               parameters.MaxBounces,
 		UseBVH:                   parameters.UseBVH,
 		BackgroundColorMagnitude: parameters.BackgroundColorMagnitude,
-		BackgroundColor:          backgroundColorResponse,
+		BackgroundColor:          parameters.BackgroundColor,
 		TMin:                     parameters.TMin,
 		TMax:                     parameters.TMax,
 	}
@@ -204,11 +193,11 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		postRequest.UseBVH == nil ||
 		postRequest.BackgroundColorMagnitude == nil ||
 		postRequest.BackgroundColor == nil ||
-		postRequest.TMin == nil ||
-		postRequest.TMax == nil ||
 		postRequest.BackgroundColor.Red == nil ||
 		postRequest.BackgroundColor.Green == nil ||
-		postRequest.BackgroundColor.Blue == nil {
+		postRequest.BackgroundColor.Blue == nil ||
+		postRequest.TMin == nil ||
+		postRequest.TMax == nil {
 
 		errorMessage := "missing field from request"
 		errorStatusCode := http.StatusBadRequest
@@ -274,7 +263,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	if *postRequest.TMax < 0.0 {
 		errorMessage = "t_max field must be greater than zero"
 	}
-	if *postRequest.TMax < *postRequest.TMin {
+	if *postRequest.TMax <= *postRequest.TMin {
 		errorMessage = "t_max field must be greater than t_min"
 	}
 	if *postRequest.TMax > constants.ParametersMaximumTMax {
@@ -310,11 +299,6 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	}
 
 	// assemble db row
-	backgroundColor := &shading.Color{
-		Red:   *(postRequest.BackgroundColor.Red),
-		Green: *(postRequest.BackgroundColor.Green),
-		Blue:  *(postRequest.BackgroundColor.Blue),
-	}
 	parameters := &parameterspersistence.Parameters{
 		ParametersName:           *(postRequest.ParametersName),
 		ImageWidth:               *(postRequest.ImageWidth),
@@ -330,9 +314,13 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		MaxBounces:               *(postRequest.MaxBounces),
 		UseBVH:                   *(postRequest.UseBVH),
 		BackgroundColorMagnitude: *(postRequest.BackgroundColorMagnitude),
-		BackgroundColor:          backgroundColor,
-		TMin:                     *(postRequest.TMin),
-		TMax:                     *(postRequest.TMax),
+		BackgroundColor: shading.Color{
+			Red:   *(postRequest.BackgroundColor.Red),
+			Green: *(postRequest.BackgroundColor.Green),
+			Blue:  *(postRequest.BackgroundColor.Blue),
+		},
+		TMin: *(postRequest.TMin),
+		TMax: *(postRequest.TMax),
 	}
 
 	// save to db
