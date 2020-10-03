@@ -2,10 +2,13 @@ package parameterscontroller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/constants"
 	"github.com/paulwrubel/photolum/controller"
 	"github.com/paulwrubel/photolum/enumeration/filetype"
 	"github.com/paulwrubel/photolum/persistence/parameterspersistence"
@@ -28,17 +31,17 @@ type BackgroundColorResponse struct {
 
 type GetResponse struct {
 	ParametersName           string                  `json:"parameters_name"`
-	ImageWidth               int32                   `json:"image_width"`
-	ImageHeight              int32                   `json:"image_height"`
-	FileType                 filetype.FileType       `json:"file_type"`
+	ImageWidth               uint32                  `json:"image_width"`
+	ImageHeight              uint32                  `json:"image_height"`
+	FileType                 string                  `json:"file_type"`
 	GammaCorrection          float64                 `json:"gamma_correction"`
 	TextureGamma             float64                 `json:"texture_gamma"`
 	UseScalingTruncation     bool                    `json:"use_scaling_truncation"`
-	SamplesPerRound          int32                   `json:"samples_per_round"`
-	RoundCount               int32                   `json:"round_count"`
-	TileWidth                int32                   `json:"tile_width"`
-	TileHeight               int32                   `json:"tile_height"`
-	MaxBounces               int32                   `json:"max_bounces"`
+	SamplesPerRound          uint32                  `json:"samples_per_round"`
+	RoundCount               uint32                  `json:"round_count"`
+	TileWidth                uint32                  `json:"tile_width"`
+	TileHeight               uint32                  `json:"tile_height"`
+	MaxBounces               uint32                  `json:"max_bounces"`
 	UseBVH                   bool                    `json:"use_bvh"`
 	BackgroundColorMagnitude float64                 `json:"background_color_magnitude"`
 	BackgroundColor          BackgroundColorResponse `json:"background_color"`
@@ -54,17 +57,17 @@ type BackgroundColorRequest struct {
 
 type PostRequest struct {
 	ParametersName           *string                 `json:"parameters_name"`
-	ImageWidth               *int32                  `json:"image_width"`
-	ImageHeight              *int32                  `json:"image_height"`
-	FileType                 *filetype.FileType      `json:"file_type"`
+	ImageWidth               *uint32                 `json:"image_width"`
+	ImageHeight              *uint32                 `json:"image_height"`
+	FileType                 *string                 `json:"file_type"`
 	GammaCorrection          *float64                `json:"gamma_correction"`
 	TextureGamma             *float64                `json:"texture_gamma"`
 	UseScalingTruncation     *bool                   `json:"use_scaling_truncation"`
-	SamplesPerRound          *int32                  `json:"samples_per_round"`
-	RoundCount               *int32                  `json:"round_count"`
-	TileWidth                *int32                  `json:"tile_width"`
-	TileHeight               *int32                  `json:"tile_height"`
-	MaxBounces               *int32                  `json:"max_bounces"`
+	SamplesPerRound          *uint32                 `json:"samples_per_round"`
+	RoundCount               *uint32                 `json:"round_count"`
+	TileWidth                *uint32                 `json:"tile_width"`
+	TileHeight               *uint32                 `json:"tile_height"`
+	MaxBounces               *uint32                 `json:"max_bounces"`
 	UseBVH                   *bool                   `json:"use_bvh"`
 	BackgroundColorMagnitude *float64                `json:"background_color_magnitude"`
 	BackgroundColor          *BackgroundColorRequest `json:"background_color"`
@@ -143,7 +146,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		ParametersName:           parameters.ParametersName,
 		ImageWidth:               parameters.ImageWidth,
 		ImageHeight:              parameters.ImageHeight,
-		FileType:                 parameters.FileType,
+		FileType:                 string(parameters.FileType),
 		GammaCorrection:          parameters.GammaCorrection,
 		TextureGamma:             parameters.TextureGamma,
 		UseScalingTruncation:     parameters.UseScalingTruncation,
@@ -214,6 +217,79 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
 		return
 	}
+
+	// validate input
+	var errorMessage = ""
+	if *postRequest.ImageWidth < constants.ParametersMinimumDimension || *postRequest.ImageHeight < constants.ParametersMinimumDimension {
+		errorMessage = fmt.Sprintf("image dimensions cannot be below %d in any dimension", constants.ParametersMinimumDimension)
+	}
+	if *postRequest.ImageWidth > constants.ParametersMaximumDimension || *postRequest.ImageHeight > constants.ParametersMaximumDimension {
+		errorMessage = fmt.Sprintf("image dimensions cannot exceed %d in any dimension", constants.ParametersMinimumDimension)
+	}
+	if (*postRequest.ImageWidth)*(*postRequest.ImageHeight) < constants.ParametersMinimumTotalPixels {
+		errorMessage = fmt.Sprintf("image size cannot be below %d pixels", constants.ParametersMinimumDimension)
+	}
+	if (*postRequest.ImageWidth)*(*postRequest.ImageHeight) > constants.ParametersMaximumTotalPixels {
+		errorMessage = fmt.Sprintf("image size cannot exceed %d pixels", constants.ParametersMinimumDimension)
+	}
+	switch filetype.FileType(strings.ToUpper(*postRequest.FileType)) {
+	case filetype.PNG, filetype.JPEG:
+	default:
+		errorMessage = "invalid file_type"
+	}
+	*postRequest.FileType = strings.ToUpper(*postRequest.FileType)
+	if *postRequest.GammaCorrection <= 0.0 {
+		errorMessage = "gamma_correction must be greater than zero"
+	}
+	if *postRequest.TextureGamma <= 0.0 {
+		errorMessage = "texture_gamma must be greater than zero"
+	}
+	if *postRequest.SamplesPerRound <= 0 {
+		errorMessage = "samples_per_round must be greater than zero"
+	}
+	if *postRequest.RoundCount <= 0 {
+		errorMessage = "round_count must be greater than zero"
+	}
+	if *postRequest.TileWidth > *postRequest.ImageWidth || *postRequest.TileHeight > *postRequest.ImageHeight {
+		errorMessage = "tile dimension must not exceed image dimension"
+	}
+	if *postRequest.TileWidth <= 0 || *postRequest.TileHeight <= 0 {
+		errorMessage = "tile dimensions must be greater than zero"
+	}
+	if *postRequest.MaxBounces <= 0 {
+		errorMessage = "max_bounces must be greater than zero"
+	}
+	if *postRequest.MaxBounces > constants.ParametersMaximumMaxBounces {
+		errorMessage = fmt.Sprintf("max_bounces must not exceed %d", constants.ParametersMaximumMaxBounces)
+	}
+	if *postRequest.BackgroundColorMagnitude < 0.0 {
+		errorMessage = "background_color_magnitude must be greater than or equal to zero"
+	}
+	if *postRequest.BackgroundColor.Red < 0.0 || *postRequest.BackgroundColor.Green < 0.0 || *postRequest.BackgroundColor.Blue < 0.0 {
+		errorMessage = "background_color fields must be greater than or equal to zero"
+	}
+	if *postRequest.TMin <= 0.0 {
+		errorMessage = "t_min field must be greater than zero"
+	}
+	if *postRequest.TMax < 0.0 {
+		errorMessage = "t_max field must be greater than zero"
+	}
+	if *postRequest.TMax < *postRequest.TMin {
+		errorMessage = "t_max field must be greater than t_min"
+	}
+	if *postRequest.TMax > constants.ParametersMaximumTMax {
+		errorMessage = fmt.Sprintf("t_max field must not exceed %f", constants.ParametersMaximumTMax)
+	}
+
+	// send error
+	if errorMessage != "" {
+		errorStatusCode := http.StatusBadRequest
+
+		log.Error(errorMessage)
+		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
+		return
+	}
+
 	// check if row exists
 	exists, err := parameterspersistence.DoesExist(plData, log, *postRequest.ParametersName)
 	if err != nil {
@@ -243,7 +319,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		ParametersName:           *(postRequest.ParametersName),
 		ImageWidth:               *(postRequest.ImageWidth),
 		ImageHeight:              *(postRequest.ImageHeight),
-		FileType:                 *(postRequest.FileType),
+		FileType:                 filetype.FileType(*(postRequest.FileType)),
 		GammaCorrection:          *(postRequest.GammaCorrection),
 		TextureGamma:             *(postRequest.TextureGamma),
 		UseScalingTruncation:     *(postRequest.UseScalingTruncation),

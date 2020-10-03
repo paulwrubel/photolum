@@ -12,17 +12,17 @@ import (
 
 type Parameters struct {
 	ParametersName           string
-	ImageWidth               int32
-	ImageHeight              int32
+	ImageWidth               uint32
+	ImageHeight              uint32
 	FileType                 filetype.FileType
 	GammaCorrection          float64
 	TextureGamma             float64
 	UseScalingTruncation     bool
-	SamplesPerRound          int32
-	RoundCount               int32
-	TileWidth                int32
-	TileHeight               int32
-	MaxBounces               int32
+	SamplesPerRound          uint32
+	RoundCount               uint32
+	TileWidth                uint32
+	TileHeight               uint32
+	MaxBounces               uint32
 	UseBVH                   bool
 	BackgroundColorMagnitude float64
 	BackgroundColor          *shading.Color
