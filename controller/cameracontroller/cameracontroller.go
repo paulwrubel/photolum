@@ -108,7 +108,6 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		return
 	}
 
-	response.WriteHeader(http.StatusOK)
 	getResponse := GetResponse{
 		CameraName:     camera.CameraName,
 		EyeLocation:    camera.EyeLocation,
@@ -119,6 +118,8 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		FocusDistance:  camera.FocusDistance,
 	}
 	json.NewEncoder(response).Encode(getResponse)
+	response.Header().Add("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
 
 	log.Debug("request completed")
 }

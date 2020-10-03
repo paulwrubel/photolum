@@ -25,6 +25,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, baseLog *lo
 	log.Debug("request received")
 
 	response.WriteHeader(http.StatusOK)
+	response.Header().Add("Content-Type", "application/json")
 	helloWorldResponse := GetResponse{
 		Message: "Hello, World!",
 	}

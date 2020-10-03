@@ -130,7 +130,6 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		return
 	}
 
-	response.WriteHeader(http.StatusOK)
 	getResponse := GetResponse{
 		ParametersName:           parameters.ParametersName,
 		ImageWidth:               parameters.ImageWidth,
@@ -151,6 +150,8 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		TMax:                     parameters.TMax,
 	}
 	json.NewEncoder(response).Encode(getResponse)
+	response.Header().Add("Content-Type", "application/json")
+	response.WriteHeader(http.StatusOK)
 
 	log.Debug("request completed")
 }
