@@ -58,7 +58,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 			background_color,
 			t_min,
 			t_max
-		) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
 		parameters.ParametersName,
 		parameters.ImageWidth,
 		parameters.ImageHeight,
@@ -118,7 +118,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 			t_min,
 			t_max
 		FROM parameters
-		WHERE parameters_name = ?`, parametersName).Scan(
+		WHERE parameters_name = $1`, parametersName).Scan(
 		&parameters.ParametersName,
 		&parameters.ImageWidth,
 		&parameters.ImageHeight,
@@ -167,7 +167,7 @@ func DoesExist(plData *config.PhotolumData, baseLog *logrus.Entry, parametersNam
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT count(*)
 		FROM parameters
-		WHERE parameters_name = ?`, parametersName).Scan(&count)
+		WHERE parameters_name = $1`, parametersName).Scan(&count)
 	if err != nil {
 		return false, err
 	}

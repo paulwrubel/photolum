@@ -2,7 +2,6 @@ package camerapersistence
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/tracing/geometry"
@@ -15,7 +14,6 @@ type Camera struct {
 	TargetLocation geometry.Point
 	UpVector       geometry.Vector
 	VerticalFOV    float64
-	AspectRatio    float64
 	Aperture       float64
 	FocusDistance  float64
 }
@@ -37,16 +35,14 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, camera *Camera) er
 			target_location,
 			up_vector,
 			vertical_fov,
-			aspect_ratio,
 			aperture,
 			focus_distance
-		) VALUES (?,?,?,?,?,?,?,?)`,
+		) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
 		camera.CameraName,
 		[]float64{camera.EyeLocation.X, camera.EyeLocation.Y, camera.EyeLocation.Z},
 		[]float64{camera.TargetLocation.X, camera.TargetLocation.Y, camera.TargetLocation.Z},
 		[]float64{camera.UpVector.X, camera.UpVector.Y, camera.UpVector.Z},
 		camera.VerticalFOV,
-		camera.AspectRatio,
 		camera.Aperture,
 		camera.FocusDistance,
 	)
@@ -84,11 +80,10 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, cameraName string) 
 			up_vector[2],
 			up_vector[3],
 			vertical_fov,
-			aspect_ratio,
 			aperture,
 			focus_distance
 		FROM cameras
-		WHERE camera_name = ?`, cameraName).Scan(
+		WHERE camera_name = $1`, cameraName).Scan(
 		&camera.CameraName,
 		&camera.EyeLocation.X,
 		&camera.EyeLocation.Y,
@@ -100,7 +95,6 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, cameraName string) 
 		&camera.UpVector.Y,
 		&camera.UpVector.Z,
 		&camera.VerticalFOV,
-		&camera.AspectRatio,
 		&camera.Aperture,
 		&camera.FocusDistance,
 	)
@@ -129,10 +123,10 @@ func DoesExist(plData *config.PhotolumData, baseLog *logrus.Entry, cameraName st
 	log.Trace("database event initiated")
 
 	var count int
-	err := plData.DB.QueryRow(context.Background(), fmt.Sprintf(`
+	err := plData.DB.QueryRow(context.Background(), `
 		SELECT count(*)
 		FROM cameras
-		WHERE camera_name = '%s'`, cameraName)).Scan(&count)
+		WHERE camera_name = $1`, cameraName).Scan(&count)
 	if err != nil {
 		return false, err
 	}
