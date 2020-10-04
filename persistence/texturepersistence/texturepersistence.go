@@ -58,7 +58,9 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, textureName string)
 	})
 	log.Trace("database event initiated")
 
-	texture := &Texture{}
+	texture := &Texture{
+		Color: &[3]float64{},
+	}
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			texture_name,
@@ -71,10 +73,10 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, textureName string)
 		WHERE texture_name = $1`, textureName).Scan(
 		&texture.TextureName,
 		&texture.TextureType,
-		texture.Color,
-		texture.Gamma,
-		texture.Magnitude,
-		texture.ImageData,
+		&texture.Color,
+		&texture.Gamma,
+		&texture.Magnitude,
+		&texture.ImageData,
 	)
 	if err != nil {
 		return nil, err
