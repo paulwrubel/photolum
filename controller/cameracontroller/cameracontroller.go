@@ -117,9 +117,9 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		Aperture:       camera.Aperture,
 		FocusDistance:  camera.FocusDistance,
 	}
-	json.NewEncoder(response).Encode(getResponse)
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
+	json.NewEncoder(response).Encode(getResponse)
 
 	log.Debug("request completed")
 }
