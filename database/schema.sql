@@ -29,7 +29,6 @@ CREATE TABLE cameras (
     target_location DOUBLE PRECISION[3] NOT NULL,
     up_vector DOUBLE PRECISION[3] NOT NULL,
     vertical_fov DOUBLE PRECISION NOT NULL,
-    aspect_ratio DOUBLE PRECISION NOT NULL,
     aperture DOUBLE PRECISION NOT NULL,
     focus_distance DOUBLE PRECISION NOT NULL
 );
