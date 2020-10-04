@@ -275,7 +275,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	}
 	texture := &texturepersistence.Texture{
 		TextureName: *postRequest.TextureName,
-		TextureType: *postRequest.TextureType,
+		TextureType: strings.ToUpper(*postRequest.TextureType),
 		Color:       textureColor,
 		Gamma:       postRequest.Gamma,
 		Magnitude:   postRequest.Magnitude,
