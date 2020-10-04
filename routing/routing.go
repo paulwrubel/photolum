@@ -8,6 +8,7 @@ import (
 	"github.com/paulwrubel/photolum/controller/cameracontroller"
 	"github.com/paulwrubel/photolum/controller/helloworldcontroller"
 	"github.com/paulwrubel/photolum/controller/parameterscontroller"
+	"github.com/paulwrubel/photolum/controller/texturecontroller"
 	"github.com/sirupsen/logrus"
 )
 
@@ -38,12 +39,20 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 		parameterscontroller.PostHandler(w, r, plData, log)
 	}).Methods("POST")
 
-	camerasRouter := router.PathPrefix("/cameras").Subrouter()
-	camerasRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+	cameraRouter := router.PathPrefix("/cameras").Subrouter()
+	cameraRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		cameracontroller.GetHandler(w, r, plData, log)
 	}).Methods("GET")
-	camerasRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+	cameraRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		cameracontroller.PostHandler(w, r, plData, log)
+	}).Methods("POST")
+
+	textureRouter := router.PathPrefix("/textures").Subrouter()
+	textureRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		texturecontroller.GetHandler(w, r, plData, log)
+	}).Methods("GET")
+	textureRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		texturecontroller.PostHandler(w, r, plData, log)
 	}).Methods("POST")
 
 	// scenesRouter := router.PathPrefix("/scenes").Subrouter()
