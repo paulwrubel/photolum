@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"image"
+	_ "image/jpeg"
+	_ "image/png"
 	"net/http"
 	"strings"
 
