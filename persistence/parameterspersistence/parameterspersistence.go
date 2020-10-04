@@ -21,7 +21,7 @@ type Parameters struct {
 	MaxBounces               uint32
 	UseBVH                   bool
 	BackgroundColorMagnitude float64
-	BackgroundColor          [3]float64
+	BackgroundColor          []float64
 	TMin                     float64
 	TMax                     float64
 }

@@ -14,7 +14,7 @@ import (
 
 // Quaternion is a quaternion rotation
 type Quaternion struct {
-	AxisAngles [3]float64  `json:"axis_angles"`
+	AxisAngles []float64  `json:"axis_angles"`
 	Order      string      `json:"order"`
 	TypeName   string      `json:"type"`
 	Data       interface{} `json:"data"`

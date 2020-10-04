@@ -10,10 +10,10 @@ import (
 type Texture struct {
 	TextureName string
 	TextureType string
-	Color       *[3]float64
+	Color       []float64
 	Gamma       *float64
 	Magnitude   *float64
-	ImageData   *[]byte
+	ImageData   []byte
 }
 
 var entity = "texture"
@@ -58,9 +58,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, textureName string)
 	})
 	log.Trace("database event initiated")
 
-	texture := &Texture{
-		Color: &[3]float64{},
-	}
+	texture := &Texture{}
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			texture_name,
@@ -73,7 +71,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, textureName string)
 		WHERE texture_name = $1`, textureName).Scan(
 		&texture.TextureName,
 		&texture.TextureType,
-		texture.Color,
+		&texture.Color,
 		&texture.Gamma,
 		&texture.Magnitude,
 		&texture.ImageData,

@@ -311,7 +311,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		MaxBounces:               *(postRequest.MaxBounces),
 		UseBVH:                   *(postRequest.UseBVH),
 		BackgroundColorMagnitude: *(postRequest.BackgroundColorMagnitude),
-		BackgroundColor: [3]float64{
+		BackgroundColor: []float64{
 			*(postRequest.BackgroundColor.Red),
 			*(postRequest.BackgroundColor.Green),
 			*(postRequest.BackgroundColor.Blue),

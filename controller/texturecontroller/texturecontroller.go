@@ -134,7 +134,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 			TextureType: texture.TextureType,
 			Gamma:       *texture.Gamma,
 			Magnitude:   *texture.Magnitude,
-			ImageData:   base64.StdEncoding.EncodeToString(*texture.ImageData),
+			ImageData:   base64.StdEncoding.EncodeToString(texture.ImageData),
 		}
 	}
 
@@ -253,18 +253,17 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	}
 
 	// assemble texture
-	var textureColor *[3]float64
+	var textureColor []float64
 	if postRequest.Color == nil {
 		textureColor = nil
 	} else {
-		textureColor = &[3]float64{*postRequest.Color.Red, *postRequest.Color.Green, *postRequest.Color.Blue}
+		textureColor = []float64{*postRequest.Color.Red, *postRequest.Color.Green, *postRequest.Color.Blue}
 	}
-	var imageData *[]byte
+	var imageData []byte
 	if postRequest.ImageData == nil {
 		imageData = nil
 	} else {
-		imageBytes, _ := base64.StdEncoding.DecodeString(*postRequest.ImageData)
-		imageData = &imageBytes
+		imageData, _ = base64.StdEncoding.DecodeString(*postRequest.ImageData)
 	}
 	texture := &texturepersistence.Texture{
 		TextureName: *postRequest.TextureName,
