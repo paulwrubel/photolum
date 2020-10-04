@@ -9,7 +9,6 @@ CREATE TABLE parameters (
     image_height INTEGER NOT NULL,
     file_type FILE_TYPE NOT NULL,
     gamma_correction DOUBLE PRECISION NOT NULL,
-    texture_gamma DOUBLE PRECISION NOT NULL,
     use_scaling_truncation BOOLEAN NOT NULL,
     samples_per_round INTEGER NOT NULL,
     round_count INTEGER NOT NULL,
