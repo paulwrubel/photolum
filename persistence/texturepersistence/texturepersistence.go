@@ -71,10 +71,10 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, textureName string)
 		WHERE texture_name = $1`, textureName).Scan(
 		&texture.TextureName,
 		&texture.TextureType,
-		&texture.Color,
-		&texture.Gamma,
-		&texture.Magnitude,
-		&texture.ImageData,
+		texture.Color,
+		texture.Gamma,
+		texture.Magnitude,
+		texture.ImageData,
 	)
 	if err != nil {
 		return nil, err

@@ -94,7 +94,7 @@ CREATE TYPE TEXTURE_TYPE AS ENUM (
 
 CREATE TABLE textures (
     texture_name TEXT PRIMARY KEY,
-    texture_type TEXT NOT NULL,
+    texture_type TEXTURE_TYPE NOT NULL,
     color DOUBLE PRECISION[3],
     gamma DOUBLE PRECISION,
     magnitude DOUBLE PRECISION,
@@ -109,6 +109,7 @@ CREATE TYPE MATERIAL_TYPE AS ENUM (
 
 CREATE TABLE materials (
     material_name TEXT PRIMARY KEY,
+    material_type MATERIAL_TYPE NOT NULL,
     reflectance_texture_name TEXT REFERENCES textures(texture_name),
     emittance_texture_name TEXT REFERENCES textures(texture_name),
     fuzziness DOUBLE PRECISION,
@@ -138,5 +139,5 @@ CREATE TABLE renders (
     parameters_name TEXT NOT NULL REFERENCES parameters(parameters_name),
     scene_name TEXT NOT NULL REFERENCES scenes(scene_name),
     render_status RENDER_STATUS NOT NULL,
-    image_data BYTEA NOT NULL
+    image_data BYTEA
 );
