@@ -1,7 +1,6 @@
 package texturecontroller
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"image"
@@ -208,18 +207,10 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		} else if *postRequest.Magnitude < 0 {
 			errorMessage = "magnitude must be greater than or equal to zero"
 		} else {
-			imageBytes, err := base64.StdEncoding.DecodeString(*postRequest.ImageData)
+			imageDataReader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*postRequest.ImageData))
+			_, _, err = image.Decode(imageDataReader)
 			if err != nil {
-				errMessage := "could not decode image_data (invalid base64)"
-				errorStatusCode := http.StatusInternalServerError
-
-				log.WithError(err).Error(errorMessage)
-				controller.WriteErrorResponse(&response, errorStatusCode, errMessage, err)
-				return
-			}
-			_, _, err = image.Decode(bytes.NewReader(imageBytes))
-			if err != nil {
-				errMessage := "could not decode image_data (invalid image)"
+				errMessage := "could not decode image_data"
 				errorStatusCode := http.StatusInternalServerError
 
 				log.WithError(err).Error(errorMessage)
