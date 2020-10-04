@@ -29,7 +29,6 @@ type GetResponse struct {
 	ImageHeight              uint32        `json:"image_height"`
 	FileType                 string        `json:"file_type"`
 	GammaCorrection          float64       `json:"gamma_correction"`
-	TextureGamma             float64       `json:"texture_gamma"`
 	UseScalingTruncation     bool          `json:"use_scaling_truncation"`
 	SamplesPerRound          uint32        `json:"samples_per_round"`
 	RoundCount               uint32        `json:"round_count"`
@@ -55,7 +54,6 @@ type PostRequest struct {
 	ImageHeight              *uint32       `json:"image_height"`
 	FileType                 *string       `json:"file_type"`
 	GammaCorrection          *float64      `json:"gamma_correction"`
-	TextureGamma             *float64      `json:"texture_gamma"`
 	UseScalingTruncation     *bool         `json:"use_scaling_truncation"`
 	SamplesPerRound          *uint32       `json:"samples_per_round"`
 	RoundCount               *uint32       `json:"round_count"`
@@ -136,7 +134,6 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		ImageHeight:              parameters.ImageHeight,
 		FileType:                 string(parameters.FileType),
 		GammaCorrection:          parameters.GammaCorrection,
-		TextureGamma:             parameters.TextureGamma,
 		UseScalingTruncation:     parameters.UseScalingTruncation,
 		SamplesPerRound:          parameters.SamplesPerRound,
 		RoundCount:               parameters.RoundCount,
@@ -145,9 +142,13 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		MaxBounces:               parameters.MaxBounces,
 		UseBVH:                   parameters.UseBVH,
 		BackgroundColorMagnitude: parameters.BackgroundColorMagnitude,
-		BackgroundColor:          parameters.BackgroundColor,
-		TMin:                     parameters.TMin,
-		TMax:                     parameters.TMax,
+		BackgroundColor: shading.Color{
+			Red:   parameters.BackgroundColor[0],
+			Green: parameters.BackgroundColor[1],
+			Blue:  parameters.BackgroundColor[2],
+		},
+		TMin: parameters.TMin,
+		TMax: parameters.TMax,
 	}
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
@@ -184,7 +185,6 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		postRequest.ImageHeight == nil ||
 		postRequest.FileType == nil ||
 		postRequest.GammaCorrection == nil ||
-		postRequest.TextureGamma == nil ||
 		postRequest.UseScalingTruncation == nil ||
 		postRequest.SamplesPerRound == nil ||
 		postRequest.RoundCount == nil ||
@@ -230,9 +230,6 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	*postRequest.FileType = strings.ToUpper(*postRequest.FileType)
 	if *postRequest.GammaCorrection <= 0.0 {
 		errorMessage = "gamma_correction must be greater than zero"
-	}
-	if *postRequest.TextureGamma <= 0.0 {
-		errorMessage = "texture_gamma must be greater than zero"
 	}
 	if *postRequest.SamplesPerRound <= 0 {
 		errorMessage = "samples_per_round must be greater than zero"
@@ -304,9 +301,8 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		ParametersName:           *(postRequest.ParametersName),
 		ImageWidth:               *(postRequest.ImageWidth),
 		ImageHeight:              *(postRequest.ImageHeight),
-		FileType:                 filetype.FileType(*(postRequest.FileType)),
+		FileType:                 *(postRequest.FileType),
 		GammaCorrection:          *(postRequest.GammaCorrection),
-		TextureGamma:             *(postRequest.TextureGamma),
 		UseScalingTruncation:     *(postRequest.UseScalingTruncation),
 		SamplesPerRound:          *(postRequest.SamplesPerRound),
 		RoundCount:               *(postRequest.RoundCount),
@@ -315,10 +311,10 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		MaxBounces:               *(postRequest.MaxBounces),
 		UseBVH:                   *(postRequest.UseBVH),
 		BackgroundColorMagnitude: *(postRequest.BackgroundColorMagnitude),
-		BackgroundColor: shading.Color{
-			Red:   *(postRequest.BackgroundColor.Red),
-			Green: *(postRequest.BackgroundColor.Green),
-			Blue:  *(postRequest.BackgroundColor.Blue),
+		BackgroundColor: [3]float64{
+			*(postRequest.BackgroundColor.Red),
+			*(postRequest.BackgroundColor.Green),
+			*(postRequest.BackgroundColor.Blue),
 		},
 		TMin: *(postRequest.TMin),
 		TMax: *(postRequest.TMax),

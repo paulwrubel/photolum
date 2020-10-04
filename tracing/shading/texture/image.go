@@ -1,19 +1,15 @@
 package texture
 
 import (
-	"fmt"
+	"bytes"
 	"image"
-	"image/jpeg"
-	"image/png"
-	"os"
-	"strings"
 
 	"github.com/paulwrubel/photolum/tracing/shading"
 )
 
 // Image holds information about a texture based on an image
 type Image struct {
-	FileName  string      `json:"image_file_name"`
+	ImageData []byte      `json:"-"`
 	Gamma     float64     `json:"gamma"`
 	Magnitude float64     `json:"magnitude"`
 	Image     image.Image `json:"-"`
@@ -21,22 +17,10 @@ type Image struct {
 
 // Load decodes the image from the given filename and performs other setup actions
 func (it *Image) Load() error {
-	imageFile, err := os.Open(it.FileName)
+	var err error
+	it.Image, _, err = image.Decode(bytes.NewReader(it.ImageData))
 	if err != nil {
 		return err
-	}
-	if strings.HasSuffix(it.FileName, ".png") {
-		it.Image, err = png.Decode(imageFile)
-		if err != nil {
-			return err
-		}
-	} else if strings.HasSuffix(it.FileName, ".jpg") || strings.HasSuffix(it.FileName, ".jpeg") {
-		it.Image, err = jpeg.Decode(imageFile)
-		if err != nil {
-			return err
-		}
-	} else {
-		return fmt.Errorf("unknown image filetype (%s)", it.FileName)
 	}
 	return nil
 }

@@ -4,8 +4,6 @@ import (
 	"context"
 
 	"github.com/paulwrubel/photolum/config"
-	"github.com/paulwrubel/photolum/enumeration/filetype"
-	"github.com/paulwrubel/photolum/tracing/shading"
 	"github.com/sirupsen/logrus"
 )
 
@@ -13,9 +11,8 @@ type Parameters struct {
 	ParametersName           string
 	ImageWidth               uint32
 	ImageHeight              uint32
-	FileType                 filetype.FileType
+	FileType                 string
 	GammaCorrection          float64
-	TextureGamma             float64
 	UseScalingTruncation     bool
 	SamplesPerRound          uint32
 	RoundCount               uint32
@@ -24,7 +21,7 @@ type Parameters struct {
 	MaxBounces               uint32
 	UseBVH                   bool
 	BackgroundColorMagnitude float64
-	BackgroundColor          shading.Color
+	BackgroundColor          [3]float64
 	TMin                     float64
 	TMax                     float64
 }
@@ -46,7 +43,6 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 			image_height,
 			file_type,
 			gamma_correction,
-			texture_gamma,
 			use_scaling_truncation,
 			samples_per_round,
 			round_count,
@@ -58,13 +54,12 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 			background_color,
 			t_min,
 			t_max
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`,
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
 		parameters.ParametersName,
 		parameters.ImageWidth,
 		parameters.ImageHeight,
 		parameters.FileType,
 		parameters.GammaCorrection,
-		parameters.TextureGamma,
 		parameters.UseScalingTruncation,
 		parameters.SamplesPerRound,
 		parameters.RoundCount,
@@ -73,7 +68,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, parameters *Parame
 		parameters.MaxBounces,
 		parameters.UseBVH,
 		parameters.BackgroundColorMagnitude,
-		[]float64{parameters.BackgroundColor.Red, parameters.BackgroundColor.Green, parameters.BackgroundColor.Blue},
+		parameters.BackgroundColor,
 		parameters.TMin,
 		parameters.TMax,
 	)
@@ -93,9 +88,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 	})
 	log.Trace("database event initiated")
 
-	parameters := &Parameters{
-		BackgroundColor: shading.Color{},
-	}
+	parameters := &Parameters{}
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			parameters_name,
@@ -103,7 +96,6 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 			image_height,
 			file_type,
 			gamma_correction,
-			texture_gamma,
 			use_scaling_truncation,
 			samples_per_round,
 			round_count,
@@ -112,9 +104,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 			max_bounces,
 			use_bvh,
 			background_color_magnitude,
-			background_color[1],
-			background_color[2],
-			background_color[3],
+			background_color,
 			t_min,
 			t_max
 		FROM parameters
@@ -124,7 +114,6 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 		&parameters.ImageHeight,
 		&parameters.FileType,
 		&parameters.GammaCorrection,
-		&parameters.TextureGamma,
 		&parameters.UseScalingTruncation,
 		&parameters.SamplesPerRound,
 		&parameters.RoundCount,
@@ -133,9 +122,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, parametersName stri
 		&parameters.MaxBounces,
 		&parameters.UseBVH,
 		&parameters.BackgroundColorMagnitude,
-		&parameters.BackgroundColor.Red,
-		&parameters.BackgroundColor.Green,
-		&parameters.BackgroundColor.Blue,
+		&parameters.BackgroundColor,
 		&parameters.TMin,
 		&parameters.TMax,
 	)
