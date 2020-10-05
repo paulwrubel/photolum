@@ -24,31 +24,31 @@ type GetRequest struct {
 type LambertianGetResponse struct {
 	MaterialName           string `json:"material_name"`
 	MaterialType           string `json:"material_type"`
-	ReflectanceTextureName string `json:"reflectance_texture_name,omitempty`
-	EmittanceTextureName   string `json:"emittance_texture_name,omitempty`
+	ReflectanceTextureName string `json:"reflectance_texture_name,omitempty"`
+	EmittanceTextureName   string `json:"emittance_texture_name,omitempty"`
 }
 
 type MetalGetResponse struct {
 	MaterialName           string  `json:"material_name"`
 	MaterialType           string  `json:"material_type"`
-	ReflectanceTextureName string  `json:"reflectance_texture_name,omitempty`
-	EmittanceTextureName   string  `json:"emittance_texture_name,omitempty`
+	ReflectanceTextureName string  `json:"reflectance_texture_name,omitempty"`
+	EmittanceTextureName   string  `json:"emittance_texture_name,omitempty"`
 	Fuzziness              float64 `json:"fuzziness"`
 }
 
 type DielectricGetResponse struct {
 	MaterialName           string  `json:"material_name"`
 	MaterialType           string  `json:"material_type"`
-	ReflectanceTextureName string  `json:"reflectance_texture_name,omitempty`
-	EmittanceTextureName   string  `json:"emittance_texture_name,omitempty`
+	ReflectanceTextureName string  `json:"reflectance_texture_name,omitempty"`
+	EmittanceTextureName   string  `json:"emittance_texture_name,omitempty"`
 	RefractiveIndex        float64 `json:"refractive_index"`
 }
 
 type PostRequest struct {
 	MaterialName           *string  `json:"material_name"`
 	MaterialType           *string  `json:"material_type"`
-	ReflectanceTextureName *string  `json:"reflectance_texture_name`
-	EmittanceTextureName   *string  `json:"emittance_texture_name`
+	ReflectanceTextureName *string  `json:"reflectance_texture_name"`
+	EmittanceTextureName   *string  `json:"emittance_texture_name"`
 	Fuzziness              *float64 `json:"fuzziness"`
 	RefractiveIndex        *float64 `json:"refractive_index"`
 }
