@@ -14,12 +14,11 @@ import (
 
 // Pyramid represents a pyramid geometric shape
 type Pyramid struct {
-	A                  geometry.Point `json:"a"`
-	B                  geometry.Point `json:"b"`
-	Height             float64        `json:"height"`
-	HasInvertedNormals bool           `json:"has_inverted_normals"`
-	list               *primitivelist.PrimitiveList
-	box                *aabb.AABB
+	A      geometry.Point `json:"a"`
+	B      geometry.Point `json:"b"`
+	Height float64        `json:"height"`
+	list   *primitivelist.PrimitiveList
+	box    *aabb.AABB
 }
 
 // Setup sets up internal fields of a pyramid

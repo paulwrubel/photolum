@@ -37,7 +37,7 @@ CREATE TABLE scenes (
     camera_name TEXT NOT NULL REFERENCES cameras(camera_name)
 );
 
-CREATE TYPE OBJECT_TYPE AS ENUM (
+CREATE TYPE PRIMITIVE_TYPE AS ENUM (
     'SPHERE', 
     'CYLINDER', 
     'HOLLOW_CYLINDER', 
@@ -47,13 +47,17 @@ CREATE TYPE OBJECT_TYPE AS ENUM (
     'PYRAMID',
     'BOX',
     'TRANSLATION',
-    'ROTATION_X',
-    'ROTATION_Y',
-    'ROTATION_Z',
+    'ROTATION',
     'QUATERNION'
 );
 
-CREATE TYPE QUATERNION_ROTATION_ORDER AS ENUM (
+CREATE TYPE AXIS AS ENUM (
+    'X',
+    'Y',
+    'Z'
+)
+
+CREATE TYPE ROTATION_ORDER AS ENUM (
     'XYX',
     'XYZ',
     'XZX',
@@ -68,16 +72,21 @@ CREATE TYPE QUATERNION_ROTATION_ORDER AS ENUM (
     'ZYZ'
 );
 
-CREATE TABLE objects (
-    object_name TEXT PRIMARY KEY,
-    object_type OBJECT_TYPE NOT NULL,
-    encapsulated_object_name TEXT REFERENCES objects(object_name),
+CREATE TABLE primitives (
+    primitive_name TEXT PRIMARY KEY,
+    primitive_type PRIMITIVE_TYPE NOT NULL,
+    encapsulated_primitive_name TEXT REFERENCES primitives(primitive_name),
     a DOUBLE PRECISION[3],
     b DOUBLE PRECISION[3],
     c DOUBLE PRECISION[3],
+    point DOUBLE PRECISION[3],
+    normal DOUBLE PRECISION[3],
+    center DOUBLE PRECISION[3],
     displacement DOUBLE PRECISION[3],
+    axis AXIS,
     axis_angles DOUBLE PRECISION[3],
-    quaternion_rotation_order QUATERNION_ROTATION_ORDER,
+    rotation_order ROTATION_ORDER,
+    radius DOUBLE PRECISION,
     inner_radius DOUBLE PRECISION,
     outer_radius DOUBLE PRECISION,
     height DOUBLE PRECISION,
@@ -117,11 +126,11 @@ CREATE TABLE materials (
     CHECK (num_nonnulls(reflectance_texture_name, emittance_texture_name) > 0)
 );
 
-CREATE TABLE scene_object_materials (
+CREATE TABLE scene_primitive_materials (
     scene_name TEXT REFERENCES scenes(scene_name),
-    object_name TEXT REFERENCES objects(object_name),
+    primitive_name TEXT REFERENCES primitives(primitive_name),
     material_name TEXT REFERENCES materials(material_name),
-    PRIMARY KEY (scene_name, object_name, material_name)
+    PRIMARY KEY (scene_name, primitive_name, material_name)
 );
 
 CREATE TYPE RENDER_STATUS AS ENUM (

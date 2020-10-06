@@ -109,13 +109,25 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 	}
 
 	getResponse := GetResponse{
-		CameraName:     camera.CameraName,
-		EyeLocation:    camera.EyeLocation,
-		TargetLocation: camera.TargetLocation,
-		UpVector:       camera.UpVector,
-		VerticalFOV:    camera.VerticalFOV,
-		Aperture:       camera.Aperture,
-		FocusDistance:  camera.FocusDistance,
+		CameraName: camera.CameraName,
+		EyeLocation: geometry.Point{
+			X: camera.EyeLocation[0],
+			Y: camera.EyeLocation[1],
+			Z: camera.EyeLocation[2],
+		},
+		TargetLocation: geometry.Point{
+			X: camera.TargetLocation[0],
+			Y: camera.TargetLocation[1],
+			Z: camera.TargetLocation[2],
+		},
+		UpVector: geometry.Vector{
+			X: camera.UpVector[0],
+			Y: camera.UpVector[1],
+			Z: camera.UpVector[2],
+		},
+		VerticalFOV:   camera.VerticalFOV,
+		Aperture:      camera.Aperture,
+		FocusDistance: camera.FocusDistance,
 	}
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
@@ -174,22 +186,22 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	// validate input
 	var errorMessage = ""
 	if *postRequest.VerticalFOV < constants.CameraMinimumVerticalFOV {
-		errorMessage = fmt.Sprintf("vertical_fov cannot be below %d", constants.CameraMinimumVerticalFOV)
+		errorMessage = fmt.Sprintf("vertical_fov cannot be below %f", constants.CameraMinimumVerticalFOV)
 	}
 	if *postRequest.VerticalFOV > constants.CameraMaximumVerticalFOV {
-		errorMessage = fmt.Sprintf("vertical_fov cannot exceed %d", constants.CameraMaximumVerticalFOV)
+		errorMessage = fmt.Sprintf("vertical_fov cannot exceed %f", constants.CameraMaximumVerticalFOV)
 	}
 	if *postRequest.Aperture < constants.CameraMinimumAperture {
-		errorMessage = fmt.Sprintf("aperture cannot be below %d", constants.CameraMinimumAperture)
+		errorMessage = fmt.Sprintf("aperture cannot be below %f", constants.CameraMinimumAperture)
 	}
 	if *postRequest.Aperture > constants.CameraMaximumAperture {
-		errorMessage = fmt.Sprintf("aperture cannot exceed %d", constants.CameraMaximumAperture)
+		errorMessage = fmt.Sprintf("aperture cannot exceed %f", constants.CameraMaximumAperture)
 	}
 	if *postRequest.FocusDistance < constants.CameraMinimumFocusDistance {
-		errorMessage = fmt.Sprintf("focus_distance cannot be below %d", constants.CameraMinimumFocusDistance)
+		errorMessage = fmt.Sprintf("focus_distance cannot be below %f", constants.CameraMinimumFocusDistance)
 	}
 	if *postRequest.FocusDistance > constants.CameraMaximumFocusDistance {
-		errorMessage = fmt.Sprintf("focus_distance cannot exceed %d", constants.CameraMaximumFocusDistance)
+		errorMessage = fmt.Sprintf("focus_distance cannot exceed %f", constants.CameraMaximumFocusDistance)
 	}
 
 	// send error
@@ -223,20 +235,20 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	// assemble camera
 	camera := &camerapersistence.Camera{
 		CameraName: *postRequest.CameraName,
-		EyeLocation: geometry.Point{
-			X: *postRequest.EyeLocation.X,
-			Y: *postRequest.EyeLocation.Y,
-			Z: *postRequest.EyeLocation.Z,
+		EyeLocation: []float64{
+			*postRequest.EyeLocation.X,
+			*postRequest.EyeLocation.Y,
+			*postRequest.EyeLocation.Z,
 		},
-		TargetLocation: geometry.Point{
-			X: *postRequest.TargetLocation.X,
-			Y: *postRequest.TargetLocation.Y,
-			Z: *postRequest.TargetLocation.Z,
+		TargetLocation: []float64{
+			*postRequest.TargetLocation.X,
+			*postRequest.TargetLocation.Y,
+			*postRequest.TargetLocation.Z,
 		},
-		UpVector: geometry.Vector{
-			X: *postRequest.UpVector.X,
-			Y: *postRequest.UpVector.Y,
-			Z: *postRequest.UpVector.Z,
+		UpVector: []float64{
+			*postRequest.UpVector.X,
+			*postRequest.UpVector.Y,
+			*postRequest.UpVector.Z,
 		},
 		VerticalFOV:   *postRequest.VerticalFOV,
 		Aperture:      *postRequest.Aperture,

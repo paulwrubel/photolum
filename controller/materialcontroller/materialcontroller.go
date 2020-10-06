@@ -236,6 +236,8 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		}
 		if *postRequest.Fuzziness < 0.0 {
 			errorMessage = "fuzziness must be greater than or equal to zero"
+		} else if *postRequest.Fuzziness >= 1.0 {
+			errorMessage = "fuzziness must be less than 1.0"
 		}
 	case materialtype.Dielectric:
 		if postRequest.RefractiveIndex == nil {

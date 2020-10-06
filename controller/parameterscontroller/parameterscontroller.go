@@ -223,7 +223,8 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		errorMessage = fmt.Sprintf("image size cannot exceed %d pixels", constants.ParametersMinimumDimension)
 	}
 	switch filetype.FileType(strings.ToUpper(*postRequest.FileType)) {
-	case filetype.PNG, filetype.JPEG:
+	case filetype.PNG:
+	case filetype.JPEG:
 	default:
 		errorMessage = "invalid file_type"
 	}

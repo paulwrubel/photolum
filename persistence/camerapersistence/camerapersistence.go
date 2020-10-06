@@ -4,15 +4,14 @@ import (
 	"context"
 
 	"github.com/paulwrubel/photolum/config"
-	"github.com/paulwrubel/photolum/tracing/geometry"
 	"github.com/sirupsen/logrus"
 )
 
 type Camera struct {
 	CameraName     string
-	EyeLocation    geometry.Point
-	TargetLocation geometry.Point
-	UpVector       geometry.Vector
+	EyeLocation    []float64
+	TargetLocation []float64
+	UpVector       []float64
 	VerticalFOV    float64
 	Aperture       float64
 	FocusDistance  float64
@@ -39,9 +38,9 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, camera *Camera) er
 			focus_distance
 		) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
 		camera.CameraName,
-		[]float64{camera.EyeLocation.X, camera.EyeLocation.Y, camera.EyeLocation.Z},
-		[]float64{camera.TargetLocation.X, camera.TargetLocation.Y, camera.TargetLocation.Z},
-		[]float64{camera.UpVector.X, camera.UpVector.Y, camera.UpVector.Z},
+		camera.EyeLocation,
+		camera.TargetLocation,
+		camera.UpVector,
 		camera.VerticalFOV,
 		camera.Aperture,
 		camera.FocusDistance,
@@ -62,38 +61,22 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, cameraName string) 
 	})
 	log.Trace("database event initiated")
 
-	camera := &Camera{
-		EyeLocation:    geometry.Point{},
-		TargetLocation: geometry.Point{},
-		UpVector:       geometry.Vector{},
-	}
+	camera := &Camera{}
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			camera_name,
-			eye_location[1],
-			eye_location[2],
-			eye_location[3],
-			target_location[1],
-			target_location[2],
-			target_location[3],
-			up_vector[1],
-			up_vector[2],
-			up_vector[3],
+			eye_location,
+			target_location,
+			up_vector,
 			vertical_fov,
 			aperture,
 			focus_distance
 		FROM cameras
 		WHERE camera_name = $1`, cameraName).Scan(
 		&camera.CameraName,
-		&camera.EyeLocation.X,
-		&camera.EyeLocation.Y,
-		&camera.EyeLocation.Z,
-		&camera.TargetLocation.X,
-		&camera.TargetLocation.Y,
-		&camera.TargetLocation.Z,
-		&camera.UpVector.X,
-		&camera.UpVector.Y,
-		&camera.UpVector.Z,
+		&camera.EyeLocation,
+		&camera.TargetLocation,
+		&camera.UpVector,
 		&camera.VerticalFOV,
 		&camera.Aperture,
 		&camera.FocusDistance,

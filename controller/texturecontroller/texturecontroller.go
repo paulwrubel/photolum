@@ -123,9 +123,9 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 			TextureName: texture.TextureName,
 			TextureType: texture.TextureType,
 			Color: shading.Color{
-				texture.Color[0],
-				texture.Color[1],
-				texture.Color[2],
+				Red:   texture.Color[0],
+				Green: texture.Color[1],
+				Blue:  texture.Color[2],
 			},
 		}
 	case texturetype.Image:
