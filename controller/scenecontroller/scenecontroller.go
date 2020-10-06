@@ -234,7 +234,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	}
 
 	// check if scene row exists
-	exists, err := scenepersistence.DoesExist(plData, log, *postRequest.SceneName)
+	exists, err = scenepersistence.DoesExist(plData, log, *postRequest.SceneName)
 	if err != nil {
 		errorMessage := "error checking scene existence in database"
 		errorStatusCode := http.StatusInternalServerError
