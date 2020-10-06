@@ -10,6 +10,7 @@ import (
 	"github.com/paulwrubel/photolum/controller/materialcontroller"
 	"github.com/paulwrubel/photolum/controller/parameterscontroller"
 	"github.com/paulwrubel/photolum/controller/primitivecontroller"
+	"github.com/paulwrubel/photolum/controller/rendercontroller"
 	"github.com/paulwrubel/photolum/controller/scenecontroller"
 	"github.com/paulwrubel/photolum/controller/texturecontroller"
 	"github.com/sirupsen/logrus"
@@ -80,6 +81,14 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	}).Methods("GET")
 	sceneRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		scenecontroller.PostHandler(w, r, plData, log)
+	}).Methods("POST")
+
+	renderRouter := router.PathPrefix("/renders").Subrouter()
+	renderRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		rendercontroller.GetHandler(w, r, plData, log)
+	}).Methods("GET")
+	renderRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		rendercontroller.PostHandler(w, r, plData, log)
 	}).Methods("POST")
 
 	return router
