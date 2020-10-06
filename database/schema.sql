@@ -55,7 +55,7 @@ CREATE TYPE AXIS AS ENUM (
     'X',
     'Y',
     'Z'
-)
+);
 
 CREATE TYPE ROTATION_ORDER AS ENUM (
     'XYX',
