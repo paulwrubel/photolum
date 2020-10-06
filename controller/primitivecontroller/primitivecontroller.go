@@ -119,7 +119,7 @@ type VectorRequest struct {
 }
 
 type PostRequest struct {
-	PrimitiveName             *string        `json:"primitve_name"`
+	PrimitiveName             *string        `json:"primitive_name"`
 	PrimitiveType             *string        `json:"primitive_type"`
 	EncapsulatedPrimitiveName *string        `json:"encapsulated_primitive_name"`
 	A                         *VectorRequest `json:"a"`
