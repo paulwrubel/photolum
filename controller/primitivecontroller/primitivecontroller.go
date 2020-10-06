@@ -425,7 +425,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		}
 	}
 
-	switch primitivetype.PrimitiveType(strings.ToUpper(*postRequest.PrimitiveName)) {
+	switch primitivetype.PrimitiveType(strings.ToUpper(*postRequest.PrimitiveType)) {
 	case primitivetype.Sphere:
 		if postRequest.Center == nil ||
 			postRequest.Radius == nil ||
