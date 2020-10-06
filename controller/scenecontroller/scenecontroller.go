@@ -109,7 +109,7 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 	// get attached sceneprimitivematerials from db
 	scenePrimitiveMaterials, err := sceneprimitivematerialpersistence.GetAllInScene(plData, log, *getRequest.SceneName)
 	if err != nil {
-		errorMessage := "error getting scene from database"
+		errorMessage := "error getting sceneprimitivematerials from database"
 		errorStatusCode := http.StatusInternalServerError
 
 		log.WithError(err).Error(errorMessage)

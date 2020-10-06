@@ -136,9 +136,10 @@ CREATE TABLE scene_primitive_materials (
 CREATE TYPE RENDER_STATUS AS ENUM (
     'CREATED',
     'PENDING',
+    'STARTING',
     'RUNNING',
-    'STOPPED',
     'STOPPING',
+    'STOPPED',
     'COMPLETED',
     'ERROR'
 );
