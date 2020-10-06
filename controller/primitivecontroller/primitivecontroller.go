@@ -665,6 +665,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		default:
 			errorMessage = "invalid axis"
 		}
+		*postRequest.Axis = strings.ToUpper(*postRequest.Axis)
 	case primitivetype.Quaternion:
 		if postRequest.EncapsulatedPrimitiveName == nil ||
 			postRequest.AxisAngles == nil ||
@@ -695,6 +696,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		default:
 			errorMessage = "invalid rotation_order"
 		}
+		*postRequest.RotationOrder = strings.ToUpper(*postRequest.RotationOrder)
 	default:
 		errorMessage = "invalid primitive_type"
 	}
