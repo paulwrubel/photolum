@@ -575,9 +575,9 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 			errorMessage = "triangle must not resolve to a point"
 		}
 	case primitivetype.Plane:
-		if postRequest.A == nil ||
-			postRequest.B == nil ||
-			postRequest.Height == nil {
+		if postRequest.Point == nil ||
+			postRequest.Normal == nil ||
+			postRequest.IsCulled == nil {
 			errorMessage := "missing field from request"
 			errorStatusCode := http.StatusBadRequest
 
@@ -594,8 +594,9 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 			errorMessage = "normal must not be zero vector"
 		}
 	case primitivetype.Pyramid:
-		if postRequest.Point == nil ||
-			postRequest.Normal == nil {
+		if postRequest.A == nil ||
+			postRequest.B == nil ||
+			postRequest.Height == nil {
 			errorMessage := "missing field from request"
 			errorStatusCode := http.StatusBadRequest
 
