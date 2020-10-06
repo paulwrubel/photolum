@@ -4,25 +4,25 @@ package renderstatus
 type RenderStatus string
 
 // Created - Scene is created and registered, but no render has even been started
-var Created RenderStatus = "Created"
+var Created RenderStatus = "CREATED"
 
 // Pending - Render has been requested, waiting to begin
-var Pending RenderStatus = "Pending"
+var Pending RenderStatus = "PENDING"
 
 // Starting - Render has been started, initialization is in progress (loading from database, assembling primitives, etc)
-var Starting RenderStatus = "Starting"
+var Starting RenderStatus = "STARTING"
 
 // Running - Render is actively running
-var Running RenderStatus = "Running"
+var Running RenderStatus = "RUNNING"
 
 // Stopping - Render has been requested to stop and is attemping to stop
-var Stopping RenderStatus = "Stopping"
+var Stopping RenderStatus = "STOPPING"
 
 // Stopped - Render has been manually stopped
-var Stopped RenderStatus = "Stopped"
+var Stopped RenderStatus = "STOPPED"
 
 // Completed - Render has completed
-var Completed RenderStatus = "Completed"
+var Completed RenderStatus = "COMPLETED"
 
 // Error - Render has been cancelled due to an unexpected error
-var Error RenderStatus = "Error"
+var Error RenderStatus = "ERROR"
