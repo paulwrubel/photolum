@@ -50,7 +50,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, sceneName string) (
 	err := plData.DB.QueryRow(context.Background(), `
 		SELECT 
 			scene_name,
-			camera_name,
+			camera_name
 		FROM scenes
 		WHERE scene_name = $1`, sceneName).Scan(
 		&scene.SceneName,

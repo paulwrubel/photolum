@@ -2,11 +2,15 @@ package scenecontroller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/controller"
+	"github.com/paulwrubel/photolum/persistence/camerapersistence"
+	"github.com/paulwrubel/photolum/persistence/materialpersistence"
+	"github.com/paulwrubel/photolum/persistence/primitivepersistence"
 	"github.com/paulwrubel/photolum/persistence/scenepersistence"
 	"github.com/paulwrubel/photolum/persistence/sceneprimitivematerialpersistence"
 	"github.com/sirupsen/logrus"
@@ -172,6 +176,52 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	var errorMessage = ""
 	if len(postRequest.PrimitiveMaterials) == 0 {
 		errorMessage = "scene must contain at least one primitive_material"
+	}
+
+	// check if camera exists
+	exists, err := camerapersistence.DoesExist(plData, log, *postRequest.CameraName)
+	if err != nil {
+		errorMessage := "error checking camera existence in database"
+		errorStatusCode := http.StatusInternalServerError
+
+		log.WithError(err).Error(errorMessage)
+		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+		return
+	}
+	if !exists {
+		errorMessage = "named camera does not exist"
+	}
+
+	// check if primitives and materials exists
+	for index, spm := range postRequest.PrimitiveMaterials {
+		// check primitive
+		exists, err := primitivepersistence.DoesExist(plData, log, spm.PrimitiveName)
+		if err != nil {
+			errorMessage := "error checking primitive existence in database"
+			errorStatusCode := http.StatusInternalServerError
+
+			log.WithError(err).Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+			return
+		}
+		if !exists {
+			errorMessage = fmt.Sprintf("named primitive at index: %d does not exist", index)
+			break
+		}
+		// check material
+		exists, err = materialpersistence.DoesExist(plData, log, spm.MaterialName)
+		if err != nil {
+			errorMessage := "error checking material existence in database"
+			errorStatusCode := http.StatusInternalServerError
+
+			log.WithError(err).Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+			return
+		}
+		if !exists {
+			errorMessage = fmt.Sprintf("named material at index: %d does not exist", index)
+			break
+		}
 	}
 
 	// send error
