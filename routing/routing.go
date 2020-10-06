@@ -10,6 +10,7 @@ import (
 	"github.com/paulwrubel/photolum/controller/materialcontroller"
 	"github.com/paulwrubel/photolum/controller/parameterscontroller"
 	"github.com/paulwrubel/photolum/controller/primitivecontroller"
+	"github.com/paulwrubel/photolum/controller/scenecontroller"
 	"github.com/paulwrubel/photolum/controller/texturecontroller"
 	"github.com/sirupsen/logrus"
 )
@@ -73,33 +74,13 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 		primitivecontroller.PostHandler(w, r, plData, log)
 	}).Methods("POST")
 
-	// scenesRouter := router.PathPrefix("/scenes").Subrouter()
-	// scenesRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.ScenesPostHandler(w, r, plData)
-	// }).Methods("POST")
-	// scenesRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.ScenesGetHandler(w, r, plData)
-	// }).Methods("GET")
-	// scenesRouter.HandleFunc("/{scene_id}", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.SceneIDGetHandler(w, r, plData)
-	// }).Methods("GET")
-	// scenesRouter.HandleFunc("/{scene_id}/image", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.SceneIDImageGetHandler(w, r, plData)
-	// }).Methods("GET")
-	// scenesRouter.HandleFunc("/{scene_id}", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.SceneIDDeleteHandler(w, r, plData)
-	// }).Methods("DELETE")
-
-	// renderRouter := scenesRouter.PathPrefix("/{scene_id}/render").Subrouter()
-	// renderRouter.HandleFunc("/status", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.ScenesIDRenderStatusGetHandler(w, r, plData)
-	// }).Methods("GET")
-	// renderRouter.HandleFunc("/start", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.ScenesIDRenderStartPostHandler(w, r, plData)
-	// }).Methods("POST")
-	// renderRouter.HandleFunc("/stop", func(w http.ResponseWriter, r *http.Request) {
-	// 	scenecontroller.ScenesIDRenderStopPostHandler(w, r, plData)
-	// }).Methods("POST")
+	sceneRouter := router.PathPrefix("/scenes").Subrouter()
+	sceneRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		scenecontroller.GetHandler(w, r, plData, log)
+	}).Methods("GET")
+	sceneRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		scenecontroller.PostHandler(w, r, plData, log)
+	}).Methods("POST")
 
 	return router
 }
