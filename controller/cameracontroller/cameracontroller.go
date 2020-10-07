@@ -7,10 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/constants"
 	"github.com/paulwrubel/photolum/controller"
 	"github.com/paulwrubel/photolum/persistence/camerapersistence"
-	"github.com/paulwrubel/photolum/tracing/geometry"
 	"github.com/sirupsen/logrus"
 )
 

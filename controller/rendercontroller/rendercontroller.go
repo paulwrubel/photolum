@@ -219,7 +219,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		return
 	}
 
-	// set render to pending and begin assembly
+	// set render to pending
 	renderpersistence.UpdateRenderStatus(plData, log, render.RenderName, renderstatus.Pending)
 	if err != nil {
 		errorMessage := "error updating render status to PENDING"
@@ -230,7 +230,16 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		return
 	}
 
-	go tracingservice.StartRender(plData, baseLog, render.RenderName)
+	// begin assembly and rendering
+	err = tracingservice.StartRender(plData, baseLog, render.RenderName)
+	if err != nil {
+		errorMessage := "error starting render"
+		errorStatusCode := http.StatusInternalServerError
+
+		log.WithError(err).Error(errorMessage)
+		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+		return
+	}
 
 	response.WriteHeader(http.StatusCreated)
 	log.Debug("request completed")

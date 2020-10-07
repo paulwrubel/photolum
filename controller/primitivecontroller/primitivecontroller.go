@@ -7,12 +7,12 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/controller"
 	"github.com/paulwrubel/photolum/enumeration/axis"
 	"github.com/paulwrubel/photolum/enumeration/primitivetype"
 	"github.com/paulwrubel/photolum/enumeration/rotationorder"
 	"github.com/paulwrubel/photolum/persistence/primitivepersistence"
-	"github.com/paulwrubel/photolum/tracing/geometry"
 	"github.com/sirupsen/logrus"
 )
 

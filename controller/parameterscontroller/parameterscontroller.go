@@ -8,11 +8,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/config/shading"
 	"github.com/paulwrubel/photolum/constants"
 	"github.com/paulwrubel/photolum/controller"
 	"github.com/paulwrubel/photolum/enumeration/filetype"
 	"github.com/paulwrubel/photolum/persistence/parameterspersistence"
-	"github.com/paulwrubel/photolum/tracing/shading"
 	"github.com/sirupsen/logrus"
 )
 

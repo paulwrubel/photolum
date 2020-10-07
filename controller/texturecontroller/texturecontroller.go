@@ -11,10 +11,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
+	"github.com/paulwrubel/photolum/config/shading"
 	"github.com/paulwrubel/photolum/controller"
 	"github.com/paulwrubel/photolum/enumeration/texturetype"
 	"github.com/paulwrubel/photolum/persistence/texturepersistence"
-	"github.com/paulwrubel/photolum/tracing/shading"
 	"github.com/sirupsen/logrus"
 )
 

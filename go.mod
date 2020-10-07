@@ -13,4 +13,6 @@ require (
 	github.com/shopspring/decimal v1.2.0 // indirect
 	github.com/sirupsen/logrus v1.4.2
 	golang.org/x/crypto v0.0.0-20201001193750-eb9a90e9f9cb // indirect
+	golang.org/x/image v0.0.0-20200927104501-e162460cd6b5
+	golang.org/x/sync v0.0.0-20200930132711-30421366ff76
 )
