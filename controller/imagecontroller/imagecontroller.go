@@ -22,7 +22,7 @@ type GetRequest struct {
 }
 
 type GetBase64Response struct {
-	Data string `data`
+	Data string `json:"data"`
 }
 
 func GetHandler(response http.ResponseWriter, request *http.Request, plData *config.PhotolumData, baseLog *logrus.Logger) {

@@ -7,6 +7,7 @@ import (
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/controller/cameracontroller"
 	"github.com/paulwrubel/photolum/controller/helloworldcontroller"
+	"github.com/paulwrubel/photolum/controller/imagecontroller"
 	"github.com/paulwrubel/photolum/controller/materialcontroller"
 	"github.com/paulwrubel/photolum/controller/parameterscontroller"
 	"github.com/paulwrubel/photolum/controller/primitivecontroller"
@@ -90,6 +91,11 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	renderRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		rendercontroller.PostHandler(w, r, plData, log)
 	}).Methods("POST")
+
+	imageRouter := router.PathPrefix("/images").Subrouter()
+	imageRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
+		imagecontroller.GetHandler(w, r, plData, log)
+	}).Methods("GET")
 
 	return router
 }

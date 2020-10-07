@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -32,7 +33,7 @@ func RunWorker(parameters *config.Parameters, log *logrus.Entry, encodingChan ch
 
 	for round := 1; round <= parameters.RoundCount; round++ {
 		log.Debugf("beginning round %d", round)
-		traceRound(parameters, img, tiles, round)
+		traceRound(parameters, log, img, tiles, round)
 		log.Debugf("round %d finished, copying image", round)
 		bounds := img.Bounds()
 		imgCopy := image.NewRGBA64(bounds)
@@ -48,23 +49,24 @@ func RunWorker(parameters *config.Parameters, log *logrus.Entry, encodingChan ch
 	log.Debug("closing tracing worker")
 }
 
-func traceRound(params *config.Parameters, img *image.RGBA64, tiles []config.Tile, roundNum int) {
+func traceRound(params *config.Parameters, log *logrus.Entry, img *image.RGBA64, tiles []config.Tile, roundNum int) {
 	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
 
-	var wg sync.WaitGroup
+	wg := sync.WaitGroup{}
 	for _, tile := range tiles {
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		sem.Acquire(context.Background(), 1)
 		wg.Add(1)
-		go traceTile(params, r, img, sem, wg, tile, roundNum)
+		go traceTile(params, log, r, img, sem, &wg, tile, roundNum)
 	}
 	wg.Wait()
 }
 
 // traceTile iterates over the pixels in a tile and writes the received colors to the image
-func traceTile(p *config.Parameters, rng *rand.Rand, img *image.RGBA64, sem *semaphore.Weighted, wg sync.WaitGroup, t config.Tile, roundNum int) {
+func traceTile(p *config.Parameters, log *logrus.Entry, rng *rand.Rand, img *image.RGBA64, sem *semaphore.Weighted, wg *sync.WaitGroup, t config.Tile, roundNum int) {
 	defer sem.Release(1)
 	defer wg.Done()
+	log.Tracef("tracing tile id: %s", t.ID)
 	for y := t.Origin.Y; y < t.Origin.Y+t.Span.Y; y++ {
 		for x := t.Origin.X; x < t.Origin.X+t.Span.X; x++ {
 			pixelColor := tracePixel(p, int(x), int(y), rng)
@@ -139,11 +141,14 @@ func traceRay(parameters *config.Parameters, r geometry.Ray, rng *rand.Rand, dep
 // getTiles creates and return a grid of tiles on the image
 func getTiles(p *config.Parameters, i *image.RGBA64) []config.Tile {
 	tiles := []config.Tile{}
+	idNum := 0
 	for y := 0; y < p.ImageHeight; y += p.TileHeight {
 		for x := 0; x < p.ImageWidth; x += p.TileWidth {
+			idNum++
 			width := math.Min(float64(p.TileWidth), float64(p.ImageWidth-x))
 			height := math.Min(float64(p.TileHeight), float64(p.ImageHeight-y))
 			tiles = append(tiles, config.Tile{
+				ID: strconv.Itoa(idNum),
 				Origin: geometry.Point{
 					X: float64(x),
 					Y: float64(y),
