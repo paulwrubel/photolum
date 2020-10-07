@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -60,6 +61,8 @@ func StartRender(plData *config.PhotolumData, baseLog *logrus.Logger, renderName
 		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 		return err
 	}
+
+	spew.Dump(parameters)
 
 	encodingChan := make(chan *config.TracingPayload)
 	// start encoding worker

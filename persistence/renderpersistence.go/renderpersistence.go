@@ -139,8 +139,9 @@ func DoesExist(plData *config.PhotolumData, baseLog *logrus.Entry, renderName st
 func UpdateRenderStatus(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, renderStatus renderstatus.RenderStatus) error {
 	event := "updaterenderstatus"
 	log := baseLog.WithFields(logrus.Fields{
-		"entity": entity,
-		"event":  event,
+		"entity":     entity,
+		"event":      event,
+		"new_status": string(renderStatus),
 	})
 	log.Trace("database event initiated")
 
