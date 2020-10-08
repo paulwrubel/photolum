@@ -247,7 +247,9 @@ func decodeCamera(cameraDB *camerapersistence.Camera, parameters *config.Paramet
 			Y: cameraDB.UpVector[1],
 			Z: cameraDB.UpVector[2],
 		},
-		VerticalFOV: cameraDB.VerticalFOV,
+		VerticalFOV:   cameraDB.VerticalFOV,
+		Aperture:      cameraDB.Aperture,
+		FocusDistance: cameraDB.FocusDistance,
 	}
 	camera.Setup(parameters)
 	return camera
