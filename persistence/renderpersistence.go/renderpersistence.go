@@ -136,6 +136,29 @@ func DoesExist(plData *config.PhotolumData, baseLog *logrus.Entry, renderName st
 	return count == 1, nil
 }
 
+func UpdateImageData(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, imageData []byte) error {
+	event := "updateimagedata"
+	log := baseLog.WithFields(logrus.Fields{
+		"entity": entity,
+		"event":  event,
+	})
+	log.Trace("database event initiated")
+
+	tag, err := plData.DB.Exec(context.Background(), `
+		UPDATE renders 
+		SET image_data = $2
+		WHERE render_name = $1`,
+		renderName,
+		imageData,
+	)
+	if err != nil || tag.RowsAffected() != 1 {
+		return err
+	}
+
+	log.Trace("database event completed")
+	return nil
+}
+
 func UpdateRenderStatus(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, renderStatus renderstatus.RenderStatus) error {
 	event := "updaterenderstatus"
 	log := baseLog.WithFields(logrus.Fields{

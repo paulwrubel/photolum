@@ -14,13 +14,8 @@ import (
 
 func RunWorker(plData *config.PhotolumData, log *logrus.Entry, renderName string, encodingChan <-chan *config.TracingPayload) {
 	log.Debug("running encoding worker")
-	// get initial render from DB
-	renderDB, err := renderpersistence.Get(plData, log, renderName)
-	if err != nil {
-		log.WithError(err).Error("error getting render from db")
-		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
-	}
 
+	var err error
 	for {
 		tracingPayload, active := <-encodingChan
 		if active {
@@ -36,8 +31,7 @@ func RunWorker(plData *config.PhotolumData, log *logrus.Entry, renderName string
 				log.WithError(err).Error("error encoding image")
 				renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 			}
-			renderDB.ImageData = buffer.Bytes()
-			err = renderpersistence.Update(plData, log, renderDB)
+			err = renderpersistence.UpdateImageData(plData, log, renderName, buffer.Bytes())
 			if err != nil {
 				log.WithError(err).Error("error updating render")
 				renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
