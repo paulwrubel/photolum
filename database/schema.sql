@@ -151,5 +151,5 @@ CREATE TABLE renders (
     render_status RENDER_STATUS NOT NULL,
     completed_rounds INTEGER NOT NULL,
     render_progress DOUBLE PRECISION NOT NULL,
-    image_data BYTEA,
+    image_data BYTEA
 );
