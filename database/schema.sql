@@ -149,5 +149,7 @@ CREATE TABLE renders (
     parameters_name TEXT NOT NULL REFERENCES parameters(parameters_name),
     scene_name TEXT NOT NULL REFERENCES scenes(scene_name),
     render_status RENDER_STATUS NOT NULL,
-    image_data BYTEA
+    completed_rounds INTEGER NOT NULL,
+    render_progress DOUBLE PRECISION NOT NULL,
+    image_data BYTEA,
 );

@@ -3,6 +3,7 @@ module github.com/paulwrubel/photolum
 go 1.15
 
 require (
+	github.com/davecgh/go-spew v1.1.1
 	github.com/go-gl/mathgl v1.0.0
 	github.com/gofrs/uuid v3.3.0+incompatible // indirect
 	github.com/google/uuid v1.1.2

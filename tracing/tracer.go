@@ -20,7 +20,11 @@ import (
 	"golang.org/x/sync/semaphore"
 )
 
-func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *config.Parameters, renderName string, encodingChan chan<- *config.TracingPayload) {
+func RunWorker(plData *config.PhotolumData,
+	log *logrus.Entry,
+	parameters *config.Parameters,
+	renderName string,
+	encodingChan chan<- *config.TracingPayload) {
 	log.Debug("running tracing worker")
 
 	// create new image
@@ -33,9 +37,14 @@ func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *confi
 	// 	tiles[i], tiles[j] = tiles[j], tiles[i]
 	// })
 
+	roundChan := make(chan bool)
+	tileChan := make(chan bool)
+	doneChan := make(chan bool)
+	go runProgressWorker(plData, log, renderName, parameters.RoundCount, len(tiles), roundChan, tileChan, doneChan)
+
 	for round := 1; round <= parameters.RoundCount; round++ {
 		log.Debugf("beginning round %d", round)
-		traceRound(parameters, log, img, tiles, round)
+		traceRound(parameters, log, img, tiles, round, tileChan)
 		log.Debugf("round %d finished, copying image", round)
 		bounds := img.Bounds()
 		imgCopy := image.NewRGBA64(bounds)
@@ -46,7 +55,9 @@ func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *confi
 		}
 		log.Debugf("image copied, sending to encoder")
 		encodingChan <- payload
+		roundChan <- true
 	}
+	doneChan <- true
 	close(encodingChan)
 
 	err := renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Completed)
@@ -58,7 +69,40 @@ func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *confi
 	log.Debug("closing tracing worker")
 }
 
-func traceRound(params *config.Parameters, log *logrus.Entry, img *image.RGBA64, tiles []config.Tile, roundNum int) {
+func runProgressWorker(plData *config.PhotolumData,
+	log *logrus.Entry,
+	renderName string,
+	totalRounds int,
+	totalTiles int,
+	roundChan <-chan bool,
+	tileChan <-chan bool,
+	doneChan <-chan bool) {
+	completedRounds := 0
+	completedTiles := 0
+	roundPercentage := 1.0 / float64(totalRounds)
+	for {
+		select {
+		case <-roundChan:
+			completedRounds++
+			completedTiles = 0
+			_ = renderpersistence.UpdateCompletedRounds(plData, log, renderName, uint32(completedRounds))
+		case <-tileChan:
+			completedTiles++
+			progress := (float64(completedRounds) / float64(totalRounds)) + roundPercentage*(float64(completedTiles)/float64(totalTiles))
+			_ = renderpersistence.UpdateRenderProgress(plData, log, renderName, progress)
+		case <-doneChan:
+			return
+		}
+	}
+}
+
+func traceRound(params *config.Parameters,
+	log *logrus.Entry,
+	img *image.RGBA64,
+	tiles []config.Tile,
+	roundNum int,
+	tileChan chan<- bool) {
+
 	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
 
 	wg := sync.WaitGroup{}
@@ -66,13 +110,22 @@ func traceRound(params *config.Parameters, log *logrus.Entry, img *image.RGBA64,
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		sem.Acquire(context.Background(), 1)
 		wg.Add(1)
-		go traceTile(params, log, r, img, sem, &wg, tile, roundNum)
+		go traceTile(params, log, r, img, sem, &wg, tile, roundNum, tileChan)
 	}
 	wg.Wait()
 }
 
 // traceTile iterates over the pixels in a tile and writes the received colors to the image
-func traceTile(p *config.Parameters, log *logrus.Entry, rng *rand.Rand, img *image.RGBA64, sem *semaphore.Weighted, wg *sync.WaitGroup, t config.Tile, roundNum int) {
+func traceTile(p *config.Parameters,
+	log *logrus.Entry,
+	rng *rand.Rand,
+	img *image.RGBA64,
+	sem *semaphore.Weighted,
+	wg *sync.WaitGroup,
+	t config.Tile,
+	roundNum int,
+	tileChan chan<- bool) {
+
 	defer sem.Release(1)
 	defer wg.Done()
 	//log.Tracef("tracing tile id: %s", t.ID)
@@ -86,6 +139,7 @@ func traceTile(p *config.Parameters, log *logrus.Entry, rng *rand.Rand, img *ima
 			img.SetRGBA64(int(x), p.ImageHeight-int(y)-1, weightedColor.ToRGBA64())
 		}
 	}
+	tileChan <- true
 	// dc <- 1
 }
 

@@ -2,6 +2,7 @@ package rendercontroller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -23,10 +24,12 @@ type GetRequest struct {
 }
 
 type GetResponse struct {
-	RenderName     string `json:"render_name"`
-	ParametersName string `json:"parameters_name"`
-	SceneName      string `json:"scene_name"`
-	RenderStatus   string `json:"render_status"`
+	RenderName      string `json:"render_name"`
+	ParametersName  string `json:"parameters_name"`
+	SceneName       string `json:"scene_name"`
+	RenderStatus    string `json:"render_status"`
+	CompletedRounds string `json:"completed_rounds"`
+	RenderProgress  string `json:"render_progress"`
 }
 
 type PostRequest struct {
@@ -97,11 +100,24 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		return
 	}
 
+	// get parameters from db
+	parameters, err := parameterspersistence.Get(plData, log, render.ParametersName)
+	if err != nil {
+		errorMessage := "error getting parameters from database"
+		errorStatusCode := http.StatusInternalServerError
+
+		log.WithError(err).Error(errorMessage)
+		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+		return
+	}
+
 	getResponse := GetResponse{
-		RenderName:     render.RenderName,
-		ParametersName: render.ParametersName,
-		SceneName:      render.SceneName,
-		RenderStatus:   render.RenderStatus,
+		RenderName:      render.RenderName,
+		ParametersName:  render.ParametersName,
+		SceneName:       render.SceneName,
+		RenderStatus:    render.RenderStatus,
+		CompletedRounds: fmt.Sprintf("%d/%d", render.CompletedRounds, parameters.RoundCount),
+		RenderProgress:  fmt.Sprintf("%.2f%%", 100*render.RenderProgress),
 	}
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
@@ -202,10 +218,12 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 
 	// assemble render
 	render := &renderpersistence.Render{
-		RenderName:     *postRequest.RenderName,
-		ParametersName: *postRequest.ParametersName,
-		SceneName:      *postRequest.SceneName,
-		RenderStatus:   string(renderstatus.Created),
+		RenderName:      *postRequest.RenderName,
+		ParametersName:  *postRequest.ParametersName,
+		SceneName:       *postRequest.SceneName,
+		RenderStatus:    string(renderstatus.Created),
+		CompletedRounds: 0,
+		RenderProgress:  0.0,
 	}
 
 	// save render to db

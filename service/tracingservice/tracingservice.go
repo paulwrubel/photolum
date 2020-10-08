@@ -44,7 +44,7 @@ import (
 
 func StartRender(plData *config.PhotolumData, baseLog *logrus.Logger, renderName string) error {
 	log := baseLog.WithFields(logrus.Fields{
-		"rendername": renderName,
+		"render_name": renderName,
 	})
 	log.Debug("starting render")
 
