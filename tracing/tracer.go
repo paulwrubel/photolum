@@ -49,9 +49,9 @@ func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *confi
 	}
 	close(encodingChan)
 
-	err := renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Running)
+	err := renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Completed)
 	if err != nil {
-		log.WithError(err).Error("error setting render to running")
+		log.WithError(err).Error("error setting render to completed")
 		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 	}
 
