@@ -487,8 +487,8 @@ func decodeMaterial(plData *config.PhotolumData, log *logrus.Entry, materialDB *
 	switch materialtype.MaterialType(materialDB.MaterialType) {
 	case materialtype.Lambertian:
 		newMaterial := &material.Lambertian{
-			ReflectanceTexture: &texture.Color{shading.ColorBlack},
-			EmittanceTexture:   &texture.Color{shading.ColorBlack},
+			ReflectanceTexture: &texture.Color{Color: shading.ColorBlack},
+			EmittanceTexture:   &texture.Color{Color: shading.ColorBlack},
 		}
 		if materialDB.ReflectanceTextureName != nil {
 			textureDB, err := texturepersistence.Get(plData, log, *materialDB.ReflectanceTextureName)
@@ -513,8 +513,8 @@ func decodeMaterial(plData *config.PhotolumData, log *logrus.Entry, materialDB *
 		return newMaterial, nil
 	case materialtype.Metal:
 		newMaterial := &material.Metal{
-			ReflectanceTexture: &texture.Color{shading.ColorBlack},
-			EmittanceTexture:   &texture.Color{shading.ColorBlack},
+			ReflectanceTexture: &texture.Color{Color: shading.ColorBlack},
+			EmittanceTexture:   &texture.Color{Color: shading.ColorBlack},
 			Fuzziness:          *materialDB.Fuzziness,
 		}
 		if materialDB.ReflectanceTextureName != nil {
@@ -540,8 +540,8 @@ func decodeMaterial(plData *config.PhotolumData, log *logrus.Entry, materialDB *
 		return newMaterial, nil
 	case materialtype.Dielectric:
 		newMaterial := &material.Dielectric{
-			ReflectanceTexture: &texture.Color{shading.ColorBlack},
-			EmittanceTexture:   &texture.Color{shading.ColorBlack},
+			ReflectanceTexture: &texture.Color{Color: shading.ColorBlack},
+			EmittanceTexture:   &texture.Color{Color: shading.ColorBlack},
 			RefractiveIndex:    *materialDB.RefractiveIndex,
 		}
 		if materialDB.ReflectanceTextureName != nil {
