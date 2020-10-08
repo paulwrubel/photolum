@@ -13,12 +13,14 @@ import (
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/shading"
+	"github.com/paulwrubel/photolum/enumeration/renderstatus"
+	"github.com/paulwrubel/photolum/persistence/renderpersistence.go"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/image/draw"
 	"golang.org/x/sync/semaphore"
 )
 
-func RunWorker(parameters *config.Parameters, log *logrus.Entry, encodingChan chan<- *config.TracingPayload) {
+func RunWorker(plData *config.PhotolumData, log *logrus.Entry, parameters *config.Parameters, renderName string, encodingChan chan<- *config.TracingPayload) {
 	log.Debug("running tracing worker")
 
 	// create new image
@@ -46,6 +48,13 @@ func RunWorker(parameters *config.Parameters, log *logrus.Entry, encodingChan ch
 		encodingChan <- payload
 	}
 	close(encodingChan)
+
+	err := renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Running)
+	if err != nil {
+		log.WithError(err).Error("error setting render to running")
+		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
+	}
+
 	log.Debug("closing tracing worker")
 }
 
@@ -66,7 +75,7 @@ func traceRound(params *config.Parameters, log *logrus.Entry, img *image.RGBA64,
 func traceTile(p *config.Parameters, log *logrus.Entry, rng *rand.Rand, img *image.RGBA64, sem *semaphore.Weighted, wg *sync.WaitGroup, t config.Tile, roundNum int) {
 	defer sem.Release(1)
 	defer wg.Done()
-	log.Tracef("tracing tile id: %s", t.ID)
+	//log.Tracef("tracing tile id: %s", t.ID)
 	for y := t.Origin.Y; y < t.Origin.Y+t.Span.Y; y++ {
 		for x := t.Origin.X; x < t.Origin.X+t.Span.X; x++ {
 			pixelColor := tracePixel(p, int(x), int(y), rng)

@@ -50,7 +50,7 @@ func StartRender(plData *config.PhotolumData, baseLog *logrus.Logger, renderName
 
 	err := renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Starting)
 	if err != nil {
-		log.WithError(err).Error("error setting render to start")
+		log.WithError(err).Error("error setting render to starting")
 		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 		return err
 	}
@@ -68,11 +68,11 @@ func StartRender(plData *config.PhotolumData, baseLog *logrus.Logger, renderName
 	// start encoding worker
 	go encoding.RunWorker(plData, log, renderName, encodingChan)
 	// start tracing worker
-	go tracing.RunWorker(parameters, log, encodingChan)
+	go tracing.RunWorker(plData, log, parameters, renderName, encodingChan)
 
 	err = renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Running)
 	if err != nil {
-		log.WithError(err).Error("error setting render to start")
+		log.WithError(err).Error("error setting render to running")
 		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 		return err
 	}
