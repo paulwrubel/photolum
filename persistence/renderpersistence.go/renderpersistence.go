@@ -14,7 +14,7 @@ type Render struct {
 	SceneName       string
 	RenderStatus    string
 	CompletedRounds uint32
-	RenderProgress  float64
+	RoundProgress   float64
 	ImageData       []byte
 }
 
@@ -35,7 +35,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) er
 			scene_name,
 			render_status,
 			completed_rounds,
-			render_progress,
+			round_progress,
 			image_data
 		) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
 		render.RenderName,
@@ -43,7 +43,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) er
 		render.SceneName,
 		render.RenderStatus,
 		render.CompletedRounds,
-		render.RenderProgress,
+		render.RoundProgress,
 		render.ImageData,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
@@ -70,7 +70,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string) 
 			scene_name,
 			render_status,
 			completed_rounds,
-			render_progress,
+			round_progress,
 			image_data
 		FROM renders
 		WHERE render_name = $1`, renderName).Scan(
@@ -79,7 +79,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string) 
 		&render.SceneName,
 		&render.RenderStatus,
 		&render.CompletedRounds,
-		&render.RenderProgress,
+		&render.RoundProgress,
 		&render.ImageData,
 	)
 	if err != nil {
@@ -106,7 +106,7 @@ func Update(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) 
 			scene_name = $3,
 			render_status = $4,
 			completed_rounds = $5,
-			render_progress = $6,
+			round_progress = $6,
 			image_data = $7
 		WHERE render_name = $1`,
 		render.RenderName,
@@ -114,7 +114,7 @@ func Update(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) 
 		render.SceneName,
 		render.RenderStatus,
 		render.CompletedRounds,
-		render.RenderProgress,
+		render.RoundProgress,
 		render.ImageData,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
@@ -197,26 +197,26 @@ func UpdateCompletedRounds(plData *config.PhotolumData, baseLog *logrus.Entry, r
 	return nil
 }
 
-func UpdateRenderProgress(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, renderProgress float64) error {
-	event := "update render_status"
-	log := baseLog.WithFields(logrus.Fields{
-		"entity": entity,
-		"event":  event,
-	})
-	log.Trace("database event initiated")
+func UpdateRoundProgress(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, roundProgress float64) error {
+	//event := "update render_status"
+	// log := baseLog.WithFields(logrus.Fields{
+	// 	"entity": entity,
+	// 	"event":  event,
+	// })
+	//log.Trace("database event initiated")
 
 	tag, err := plData.DB.Exec(context.Background(), `
 		UPDATE renders 
-		SET render_progress = $2
+		SET round_progress = $2
 		WHERE render_name = $1`,
 		renderName,
-		renderProgress,
+		roundProgress,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
 		return err
 	}
 
-	log.Trace("database event completed")
+	//log.Trace("database event completed")
 	return nil
 }
 

@@ -37,7 +37,7 @@ func (t *Triangle) Setup() (*Triangle, error) {
 	return t, nil
 }
 
-// Intersection computer the intersection of this object and a given ray if it exists
+// Intersection computes the intersection of this object and a given ray if it exists
 func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	ab := t.A.To(t.B)
 	ac := t.A.To(t.C)

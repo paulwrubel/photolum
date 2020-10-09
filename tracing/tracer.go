@@ -40,7 +40,7 @@ func RunWorker(plData *config.PhotolumData,
 	roundChan := make(chan bool)
 	tileChan := make(chan bool)
 	doneChan := make(chan bool)
-	go runProgressWorker(plData, log, renderName, parameters.RoundCount, len(tiles), roundChan, tileChan, doneChan)
+	go runProgressWorker(plData, log, renderName, len(tiles), roundChan, tileChan, doneChan)
 
 	for round := 1; round <= parameters.RoundCount; round++ {
 		log.Debugf("beginning round %d", round)
@@ -72,24 +72,22 @@ func RunWorker(plData *config.PhotolumData,
 func runProgressWorker(plData *config.PhotolumData,
 	log *logrus.Entry,
 	renderName string,
-	totalRounds int,
 	totalTiles int,
 	roundChan <-chan bool,
 	tileChan <-chan bool,
 	doneChan <-chan bool) {
 	completedRounds := 0
 	completedTiles := 0
-	roundPercentage := 1.0 / float64(totalRounds)
 	for {
 		select {
 		case <-roundChan:
 			completedRounds++
 			completedTiles = 0
 			_ = renderpersistence.UpdateCompletedRounds(plData, log, renderName, uint32(completedRounds))
+			_ = renderpersistence.UpdateRoundProgress(plData, log, renderName, 0.0)
 		case <-tileChan:
 			completedTiles++
-			progress := (float64(completedRounds) / float64(totalRounds)) + roundPercentage*(float64(completedTiles)/float64(totalTiles))
-			_ = renderpersistence.UpdateRenderProgress(plData, log, renderName, progress)
+			_ = renderpersistence.UpdateRoundProgress(plData, log, renderName, float64(completedTiles)/float64(totalTiles))
 		case <-doneChan:
 			return
 		}

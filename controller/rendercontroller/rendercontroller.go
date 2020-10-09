@@ -29,7 +29,8 @@ type GetResponse struct {
 	SceneName       string `json:"scene_name"`
 	RenderStatus    string `json:"render_status"`
 	CompletedRounds string `json:"completed_rounds"`
-	RenderProgress  string `json:"render_progress"`
+	RoundProgress   string `json:"round_progress"`
+	TotalProgress   string `json:"total_progress"`
 }
 
 type PostRequest struct {
@@ -111,13 +112,16 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 		return
 	}
 
+	roundPercentage := 1.0 / float64(parameters.RoundCount)
+	totalProgress := (float64(render.CompletedRounds) / float64(parameters.RoundCount)) + roundPercentage*(render.RoundProgress)
 	getResponse := GetResponse{
 		RenderName:      render.RenderName,
 		ParametersName:  render.ParametersName,
 		SceneName:       render.SceneName,
 		RenderStatus:    render.RenderStatus,
 		CompletedRounds: fmt.Sprintf("%d/%d", render.CompletedRounds, parameters.RoundCount),
-		RenderProgress:  fmt.Sprintf("%.2f%%", 100*render.RenderProgress),
+		RoundProgress:   fmt.Sprintf("%.3f%%", 100*float64(render.RoundProgress)),
+		TotalProgress:   fmt.Sprintf("%.3f%%", 100*totalProgress),
 	}
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
@@ -223,7 +227,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		SceneName:       *postRequest.SceneName,
 		RenderStatus:    string(renderstatus.Created),
 		CompletedRounds: 0,
-		RenderProgress:  0.0,
+		RoundProgress:   0.0,
 	}
 
 	// save render to db
