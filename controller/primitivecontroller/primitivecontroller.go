@@ -581,7 +581,8 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	case primitivetype.Triangle:
 		if postRequest.A == nil ||
 			postRequest.B == nil ||
-			postRequest.C == nil {
+			postRequest.C == nil ||
+			postRequest.IsCulled == nil {
 			errorMessage := "missing field from request"
 			errorStatusCode := http.StatusBadRequest
 
