@@ -84,13 +84,17 @@ func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material
 		return nil, false
 	}
 
+	barycentricAlpha := v
+	baryCentricBeta := 1.0 - u - v
+	barycentryGamma := u
+
 	// At this stage we can compute time to find out where the intersection point is on the line.
 	time := inverseDeterminant * (ac.Dot(qVector))
 	if time >= tMin && time <= tMax {
 		// ray intersection
 		return &material.RayHit{
 			Ray:         ray,
-			NormalAtHit: t.normalAt(u, v),
+			NormalAtHit: t.normalAt(barycentricAlpha, baryCentricBeta, barycentryGamma),
 			Time:        time,
 			U:           0,
 			V:           0,
@@ -137,8 +141,8 @@ func (t *Triangle) Copy() primitive.Primitive {
 	return &newT
 }
 
-func (t *Triangle) normalAt(u, v float64) geometry.Vector {
-	return t.ANormal.MultScalar(u).Add(t.BNormal.MultScalar(v)).Add(t.CNormal.MultScalar(1.0 - u - v)).Unit()
+func (t *Triangle) normalAt(alpha, beta, gamma float64) geometry.Vector {
+	return t.ANormal.MultScalar(alpha).Add(t.BNormal.MultScalar(beta)).Add(t.CNormal.MultScalar(gamma)).Unit()
 }
 
 // Unit creates a unit Triangle.

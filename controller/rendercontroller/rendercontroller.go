@@ -160,8 +160,8 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 			RoundProgress:          fmt.Sprintf("%.3f%%", 100*float64(render.RoundProgress)),
 			TotalProgress:          fmt.Sprintf("%.3f%%", 100*totalProgress),
 			StartTime:              render.StartTimestamp.Local().Format("2006-01-02 15:04:05 MST"),
-			ElapsedRuntime:         elapsedRuntime.String(),
-			EstimatedTimeRemaining: estimatedTimeRemaining.String(),
+			ElapsedRuntime:         elapsedRuntime.Round(time.Second).String(),
+			EstimatedTimeRemaining: estimatedTimeRemaining.Round(time.Second).String(),
 			EstimatedEndTime:       estimatedEndTime.Local().Format("2006-01-02 15:04:05 MST"),
 		}
 	}
