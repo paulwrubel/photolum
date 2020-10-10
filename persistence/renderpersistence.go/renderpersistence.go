@@ -2,6 +2,7 @@ package renderpersistence
 
 import (
 	"context"
+	"time"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/enumeration/renderstatus"
@@ -15,6 +16,8 @@ type Render struct {
 	RenderStatus    string
 	CompletedRounds uint32
 	RoundProgress   float64
+	StartTimestamp  time.Time
+	EndTimestamp    *time.Time
 	ImageData       []byte
 }
 
@@ -217,6 +220,29 @@ func UpdateRoundProgress(plData *config.PhotolumData, baseLog *logrus.Entry, ren
 	}
 
 	//log.Trace("database event completed")
+	return nil
+}
+
+func UpdateEndTimestamp(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, endTime *time.Time) error {
+	event := "update end_timestamp"
+	log := baseLog.WithFields(logrus.Fields{
+		"entity": entity,
+		"event":  event,
+	})
+	log.Trace("database event initiated")
+
+	tag, err := plData.DB.Exec(context.Background(), `
+		UPDATE renders 
+		SET end_timestamp = $2
+		WHERE render_name = $1`,
+		renderName,
+		endTime,
+	)
+	if err != nil || tag.RowsAffected() != 1 {
+		return err
+	}
+
+	log.Trace("database event completed")
 	return nil
 }
 

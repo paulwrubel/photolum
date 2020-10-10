@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/paulwrubel/photolum/config"
@@ -23,7 +24,21 @@ type GetRequest struct {
 	RenderName *string `json:"render_name"`
 }
 
-type GetResponse struct {
+type GetIncompleteResponse struct {
+	RenderName             string `json:"render_name"`
+	ParametersName         string `json:"parameters_name"`
+	SceneName              string `json:"scene_name"`
+	RenderStatus           string `json:"render_status"`
+	CompletedRounds        string `json:"completed_rounds"`
+	RoundProgress          string `json:"round_progress"`
+	TotalProgress          string `json:"total_progress"`
+	StartTime              string `json:"start_time"`
+	ElapsedRuntime         string `json:"elapsed_runtime"`
+	EstimatedTimeRemaining string `json:"estimated_time_remaining"`
+	EstimatedEndTime       string `json:"estimated_end_time"`
+}
+
+type GetCompleteResponse struct {
 	RenderName      string `json:"render_name"`
 	ParametersName  string `json:"parameters_name"`
 	SceneName       string `json:"scene_name"`
@@ -31,6 +46,9 @@ type GetResponse struct {
 	CompletedRounds string `json:"completed_rounds"`
 	RoundProgress   string `json:"round_progress"`
 	TotalProgress   string `json:"total_progress"`
+	StartTime       string `json:"start_time"`
+	EndTime         string `json:"end_time"`
+	TotalRuntime    string `json:"total_runtime"`
 }
 
 type PostRequest struct {
@@ -114,14 +132,38 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 
 	roundPercentage := 1.0 / float64(parameters.RoundCount)
 	totalProgress := (float64(render.CompletedRounds) / float64(parameters.RoundCount)) + roundPercentage*(render.RoundProgress)
-	getResponse := GetResponse{
-		RenderName:      render.RenderName,
-		ParametersName:  render.ParametersName,
-		SceneName:       render.SceneName,
-		RenderStatus:    render.RenderStatus,
-		CompletedRounds: fmt.Sprintf("%d/%d", render.CompletedRounds, parameters.RoundCount),
-		RoundProgress:   fmt.Sprintf("%.3f%%", 100*float64(render.RoundProgress)),
-		TotalProgress:   fmt.Sprintf("%.3f%%", 100*totalProgress),
+	var getResponse interface{}
+	if renderstatus.RenderStatus(render.RenderStatus) == renderstatus.Completed {
+		totalRuntime := render.EndTimestamp.Sub(render.StartTimestamp)
+		getResponse = GetCompleteResponse{
+			RenderName:      render.RenderName,
+			ParametersName:  render.ParametersName,
+			SceneName:       render.SceneName,
+			RenderStatus:    render.RenderStatus,
+			CompletedRounds: fmt.Sprintf("%d/%d", render.CompletedRounds, parameters.RoundCount),
+			RoundProgress:   fmt.Sprintf("%.3f%%", 100*float64(render.RoundProgress)),
+			TotalProgress:   fmt.Sprintf("%.3f%%", 100*totalProgress),
+			StartTime:       render.StartTimestamp.Local().Format("2006-01-02 15:04:05 MST"),
+			EndTime:         render.EndTimestamp.Local().Format("2006-01-02 15:04:05 MST"),
+			TotalRuntime:    totalRuntime.Round(time.Second).String(),
+		}
+	} else {
+		elapsedRuntime := time.Since(render.StartTimestamp)
+		estimatedTimeRemaining := time.Duration(((1.0/totalProgress)*(1.0-totalProgress))*float64(elapsedRuntime.Nanoseconds())) * time.Nanosecond
+		estimatedEndTime := render.StartTimestamp.Add(elapsedRuntime).Add(estimatedTimeRemaining)
+		getResponse = GetIncompleteResponse{
+			RenderName:             render.RenderName,
+			ParametersName:         render.ParametersName,
+			SceneName:              render.SceneName,
+			RenderStatus:           render.RenderStatus,
+			CompletedRounds:        fmt.Sprintf("%d/%d", render.CompletedRounds, parameters.RoundCount),
+			RoundProgress:          fmt.Sprintf("%.3f%%", 100*float64(render.RoundProgress)),
+			TotalProgress:          fmt.Sprintf("%.3f%%", 100*totalProgress),
+			StartTime:              render.StartTimestamp.Local().Format("2006-01-02 15:04:05 MST"),
+			ElapsedRuntime:         elapsedRuntime.String(),
+			EstimatedTimeRemaining: estimatedTimeRemaining.String(),
+			EstimatedEndTime:       estimatedEndTime.Local().Format("2006-01-02 15:04:05 MST"),
+		}
 	}
 	response.Header().Add("Content-Type", "application/json")
 	response.WriteHeader(http.StatusOK)
@@ -228,6 +270,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		RenderStatus:    string(renderstatus.Created),
 		CompletedRounds: 0,
 		RoundProgress:   0.0,
+		StartTimestamp:  time.Now(),
 	}
 
 	// save render to db

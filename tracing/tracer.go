@@ -65,6 +65,12 @@ func RunWorker(plData *config.PhotolumData,
 		log.WithError(err).Error("error setting render to completed")
 		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
 	}
+	timeNow := time.Now()
+	err = renderpersistence.UpdateEndTimestamp(plData, log, renderName, &timeNow)
+	if err != nil {
+		log.WithError(err).Error("error setting end timestamp for render")
+		renderpersistence.UpdateRenderStatus(plData, log, renderName, renderstatus.Error)
+	}
 
 	log.Debug("closing tracing worker")
 }

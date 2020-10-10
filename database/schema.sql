@@ -151,5 +151,7 @@ CREATE TABLE renders (
     render_status RENDER_STATUS NOT NULL,
     completed_rounds INTEGER NOT NULL,
     round_progress DOUBLE PRECISION NOT NULL,
+    start_timestamp TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_timestamp TIMESTAMP WITH TIME ZONE,
     image_data BYTEA
 );
