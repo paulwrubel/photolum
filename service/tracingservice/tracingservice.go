@@ -386,6 +386,28 @@ func decodePrimitive(plData *config.PhotolumData, log *logrus.Entry, primitiveDB
 		}
 		return newSphere, nil
 	case primitivetype.Triangle:
+		var aNormal, bNormal, cNormal geometry.Vector
+		if primitiveDB.ANormal != nil {
+			aNormal = geometry.Vector{
+				X: primitiveDB.ANormal[0],
+				Y: primitiveDB.ANormal[1],
+				Z: primitiveDB.ANormal[2],
+			}
+		}
+		if primitiveDB.BNormal != nil {
+			bNormal = geometry.Vector{
+				X: primitiveDB.BNormal[0],
+				Y: primitiveDB.BNormal[1],
+				Z: primitiveDB.BNormal[2],
+			}
+		}
+		if primitiveDB.CNormal != nil {
+			cNormal = geometry.Vector{
+				X: primitiveDB.CNormal[0],
+				Y: primitiveDB.CNormal[1],
+				Z: primitiveDB.CNormal[2],
+			}
+		}
 		newTriangle, err := (&triangle.Triangle{
 			A: geometry.Point{
 				X: primitiveDB.A[0],
@@ -402,6 +424,9 @@ func decodePrimitive(plData *config.PhotolumData, log *logrus.Entry, primitiveDB
 				Y: primitiveDB.C[1],
 				Z: primitiveDB.C[2],
 			},
+			ANormal:  aNormal,
+			BNormal:  bNormal,
+			CNormal:  cNormal,
 			IsCulled: *primitiveDB.IsCulled,
 		}).Setup()
 		if err != nil {

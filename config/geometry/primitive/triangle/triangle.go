@@ -39,12 +39,20 @@ func (t *Triangle) Setup() (*Triangle, error) {
 	faceNormal := t.A.To(t.B).Cross(t.A.To(t.C)).Unit()
 	if t.ANormal == geometry.VectorZero {
 		t.ANormal = faceNormal
+	} else {
+		t.ANormal = t.ANormal.Unit()
 	}
+
 	if t.BNormal == geometry.VectorZero {
 		t.BNormal = faceNormal
+	} else {
+		t.BNormal = t.BNormal.Unit()
 	}
+
 	if t.CNormal == geometry.VectorZero {
 		t.CNormal = faceNormal
+	} else {
+		t.CNormal = t.CNormal.Unit()
 	}
 	return t, nil
 }
