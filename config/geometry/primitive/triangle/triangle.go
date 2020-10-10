@@ -12,11 +12,14 @@ import (
 
 // Triangle is an internal representation of a Triangle geometry contruct
 type Triangle struct {
-	A        geometry.Point  `json:"a"`
-	B        geometry.Point  `json:"b"`
-	C        geometry.Point  `json:"c"`
-	normal   geometry.Vector // normal of the Triangle's surface
-	IsCulled bool            `json:"is_culled"` // whether or not the Triangle is culled, or single-sided
+	A       geometry.Point  `json:"a"`
+	B       geometry.Point  `json:"b"`
+	C       geometry.Point  `json:"c"`
+	ANormal geometry.Vector `json:"a_normal"`
+	BNormal geometry.Vector `json:"b_normal"`
+	CNormal geometry.Vector `json:"c_normal"`
+	//normal   geometry.Vector // normal of the Triangle's surface
+	IsCulled bool `json:"is_culled"` // whether or not the Triangle is culled, or single-sided
 	mat      material.Material
 }
 
@@ -33,7 +36,16 @@ func (t *Triangle) Setup() (*Triangle, error) {
 	if t.A == t.B || t.A == t.C || t.B == t.C {
 		return nil, fmt.Errorf("Triangle resolves to line or point")
 	}
-	t.normal = t.A.To(t.B).Cross(t.A.To(t.C)).Unit()
+	faceNormal := t.A.To(t.B).Cross(t.A.To(t.C)).Unit()
+	if t.ANormal == geometry.VectorZero {
+		t.ANormal = faceNormal
+	}
+	if t.BNormal == geometry.VectorZero {
+		t.BNormal = faceNormal
+	}
+	if t.CNormal == geometry.VectorZero {
+		t.CNormal = faceNormal
+	}
 	return t, nil
 }
 
@@ -70,7 +82,7 @@ func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material
 		// ray intersection
 		return &material.RayHit{
 			Ray:         ray,
-			NormalAtHit: t.normal,
+			NormalAtHit: t.normalAt(u, v),
 			Time:        time,
 			U:           0,
 			V:           0,
@@ -115,6 +127,10 @@ func (t *Triangle) IsClosed() bool {
 func (t *Triangle) Copy() primitive.Primitive {
 	newT := *t
 	return &newT
+}
+
+func (t *Triangle) normalAt(u, v float64) geometry.Vector {
+	return t.ANormal.MultScalar(u).Add(t.BNormal.MultScalar(v)).Add(t.CNormal.MultScalar(1.0 - u - v)).Unit()
 }
 
 // Unit creates a unit Triangle.

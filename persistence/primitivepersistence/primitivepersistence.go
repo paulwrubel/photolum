@@ -14,6 +14,9 @@ type Primitive struct {
 	A                         []float64
 	B                         []float64
 	C                         []float64
+	ANormal                   []float64
+	BNormal                   []float64
+	CNormal                   []float64
 	Point                     []float64
 	Normal                    []float64
 	Center                    []float64
@@ -49,6 +52,9 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, primitive *Primiti
 			a,
 			b,
 			c,
+			a_normal,
+			b_normal,
+			c_normal,
 			point,
 			normal,
 			center,
@@ -64,13 +70,16 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, primitive *Primiti
 			is_culled,
 			has_negative_normal,
 			has_inverted_normals
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21)`,
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`,
 		primitive.PrimitiveName,
 		primitive.PrimitiveType,
 		primitive.EncapsulatedPrimitiveName,
 		primitive.A,
 		primitive.B,
 		primitive.C,
+		primitive.ANormal,
+		primitive.BNormal,
+		primitive.CNormal,
 		primitive.Point,
 		primitive.Normal,
 		primitive.Center,
@@ -112,6 +121,9 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, primitiveName strin
 			a,
 			b,
 			c,
+			a_normal,
+			b_normal,
+			c_normal,
 			point,
 			normal,
 			center,
@@ -135,6 +147,9 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, primitiveName strin
 		&primitive.A,
 		&primitive.B,
 		&primitive.C,
+		&primitive.ANormal,
+		&primitive.BNormal,
+		&primitive.CNormal,
 		&primitive.Point,
 		&primitive.Normal,
 		&primitive.Center,

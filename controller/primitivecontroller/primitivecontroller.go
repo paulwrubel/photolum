@@ -65,6 +65,17 @@ type TriangleGetResponse struct {
 	C             geometry.Point `json:"c"`
 }
 
+type TriangleWithNormalsGetResponse struct {
+	PrimitiveName string          `json:"primitive_name"`
+	PrimitiveType string          `json:"primitive_type"`
+	A             geometry.Point  `json:"a"`
+	B             geometry.Point  `json:"b"`
+	C             geometry.Point  `json:"c"`
+	ANormal       geometry.Vector `json:"a_normal"`
+	BNormal       geometry.Vector `json:"b_normal"`
+	CNormal       geometry.Vector `json:"c_normal"`
+}
+
 type PlaneGetResponse struct {
 	PrimitiveName string          `json:"primitive_name"`
 	PrimitiveType string          `json:"primitive_type"`
@@ -125,6 +136,9 @@ type PostRequest struct {
 	A                         *VectorRequest `json:"a"`
 	B                         *VectorRequest `json:"b"`
 	C                         *VectorRequest `json:"c"`
+	ANormal                   *VectorRequest `json:"a_normal"`
+	BNormal                   *VectorRequest `json:"b_normal"`
+	CNormal                   *VectorRequest `json:"c_normal"`
 	Point                     *VectorRequest `json:"point"`
 	Normal                    *VectorRequest `json:"normal"`
 	Center                    *VectorRequest `json:"center"`
@@ -270,24 +284,61 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 			HasNegativeNormal: *primitive.HasNegativeNormal,
 		}
 	case primitivetype.Triangle:
-		getResponse = TriangleGetResponse{
-			PrimitiveName: primitive.PrimitiveName,
-			PrimitiveType: primitive.PrimitiveType,
-			A: geometry.Point{
-				X: primitive.A[0],
-				Y: primitive.A[1],
-				Z: primitive.A[2],
-			},
-			B: geometry.Point{
-				X: primitive.B[0],
-				Y: primitive.B[1],
-				Z: primitive.B[2],
-			},
-			C: geometry.Point{
-				X: primitive.C[0],
-				Y: primitive.C[1],
-				Z: primitive.C[2],
-			},
+		if primitive.ANormal == nil || primitive.BNormal == nil || primitive.CNormal == nil {
+			getResponse = TriangleGetResponse{
+				PrimitiveName: primitive.PrimitiveName,
+				PrimitiveType: primitive.PrimitiveType,
+				A: geometry.Point{
+					X: primitive.A[0],
+					Y: primitive.A[1],
+					Z: primitive.A[2],
+				},
+				B: geometry.Point{
+					X: primitive.B[0],
+					Y: primitive.B[1],
+					Z: primitive.B[2],
+				},
+				C: geometry.Point{
+					X: primitive.C[0],
+					Y: primitive.C[1],
+					Z: primitive.C[2],
+				},
+			}
+		} else {
+			getResponse = TriangleWithNormalsGetResponse{
+				PrimitiveName: primitive.PrimitiveName,
+				PrimitiveType: primitive.PrimitiveType,
+				A: geometry.Point{
+					X: primitive.A[0],
+					Y: primitive.A[1],
+					Z: primitive.A[2],
+				},
+				B: geometry.Point{
+					X: primitive.B[0],
+					Y: primitive.B[1],
+					Z: primitive.B[2],
+				},
+				C: geometry.Point{
+					X: primitive.C[0],
+					Y: primitive.C[1],
+					Z: primitive.C[2],
+				},
+				ANormal: geometry.Vector{
+					X: primitive.ANormal[0],
+					Y: primitive.ANormal[1],
+					Z: primitive.ANormal[2],
+				},
+				BNormal: geometry.Vector{
+					X: primitive.BNormal[0],
+					Y: primitive.BNormal[1],
+					Z: primitive.BNormal[2],
+				},
+				CNormal: geometry.Vector{
+					X: primitive.CNormal[0],
+					Y: primitive.CNormal[1],
+					Z: primitive.CNormal[2],
+				},
+			}
 		}
 	case primitivetype.Plane:
 		getResponse = PlaneGetResponse{
@@ -574,6 +625,45 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		case 3:
 			errorMessage = "triangle must not resolve to a point"
 		}
+
+		normalCount := 0
+		if postRequest.ANormal != nil {
+			normalCount++
+		}
+		if postRequest.BNormal == nil {
+			normalCount++
+		}
+		if postRequest.CNormal == nil {
+			normalCount++
+		}
+		if normalCount != 0 && normalCount != 3 {
+			errorMessage = "triangle must have either all vertex normals specified or no vertex normals specified"
+		} else if normalCount == 3 {
+			aNormal := geometry.Vector{
+				X: *postRequest.ANormal.X,
+				Y: *postRequest.ANormal.Y,
+				Z: *postRequest.ANormal.Z,
+			}
+			bNormal := geometry.Vector{
+				X: *postRequest.BNormal.X,
+				Y: *postRequest.BNormal.Y,
+				Z: *postRequest.BNormal.Z,
+			}
+			cNormal := geometry.Vector{
+				X: *postRequest.CNormal.X,
+				Y: *postRequest.CNormal.Y,
+				Z: *postRequest.CNormal.Z,
+			}
+			if aNormal.Magnitude() == 0.0 {
+				errorMessage = "triangle a_normal must not have zero magnitude"
+			}
+			if bNormal.Magnitude() == 0.0 {
+				errorMessage = "triangle b_normal must not have zero magnitude"
+			}
+			if cNormal.Magnitude() == 0.0 {
+				errorMessage = "triangle c_normal must not have zero magnitude"
+			}
+		}
 	case primitivetype.Plane:
 		if postRequest.Point == nil ||
 			postRequest.Normal == nil ||
@@ -748,6 +838,24 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	} else {
 		c = []float64{*postRequest.C.X, *postRequest.C.Y, *postRequest.C.Z}
 	}
+	var aNormal []float64
+	if postRequest.ANormal == nil {
+		aNormal = nil
+	} else {
+		aNormal = []float64{*postRequest.ANormal.X, *postRequest.ANormal.Y, *postRequest.ANormal.Z}
+	}
+	var bNormal []float64
+	if postRequest.BNormal == nil {
+		bNormal = nil
+	} else {
+		bNormal = []float64{*postRequest.BNormal.X, *postRequest.BNormal.Y, *postRequest.BNormal.Z}
+	}
+	var cNormal []float64
+	if postRequest.CNormal == nil {
+		cNormal = nil
+	} else {
+		cNormal = []float64{*postRequest.CNormal.X, *postRequest.CNormal.Y, *postRequest.CNormal.Z}
+	}
 	var point []float64
 	if postRequest.Point == nil {
 		point = nil
@@ -779,6 +887,9 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		A:                         a,
 		B:                         b,
 		C:                         c,
+		ANormal:                   aNormal,
+		BNormal:                   bNormal,
+		CNormal:                   cNormal,
 		Point:                     point,
 		Normal:                    normal,
 		Center:                    center,
