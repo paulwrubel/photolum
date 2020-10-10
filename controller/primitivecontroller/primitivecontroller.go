@@ -630,10 +630,10 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		if postRequest.ANormal != nil {
 			normalCount++
 		}
-		if postRequest.BNormal == nil {
+		if postRequest.BNormal != nil {
 			normalCount++
 		}
-		if postRequest.CNormal == nil {
+		if postRequest.CNormal != nil {
 			normalCount++
 		}
 		if normalCount != 0 && normalCount != 3 {
