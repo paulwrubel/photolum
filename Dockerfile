@@ -10,6 +10,10 @@ FROM alpine:3.12
 # TODO: Stop using Ubuntu
 # FROM ubuntu:focal
 
+# add timezone data
+# this allows the user to specify a timezone as an environment variable: TZ
+RUN apk add --no-cache tzdata
+
 # copy go binary into container
 COPY photolum /app/photolum
 
