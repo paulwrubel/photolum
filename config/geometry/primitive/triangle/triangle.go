@@ -84,9 +84,9 @@ func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material
 		return nil, false
 	}
 
-	barycentricAlpha := v
-	baryCentricBeta := 1.0 - u - v
-	barycentryGamma := u
+	barycentricAlpha := 1.0 - u - v
+	baryCentricBeta := u
+	barycentryGamma := v
 
 	// At this stage we can compute time to find out where the intersection point is on the line.
 	time := inverseDeterminant * (ac.Dot(qVector))
