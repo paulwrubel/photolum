@@ -39,6 +39,8 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) er
 			render_status,
 			completed_rounds,
 			round_progress,
+			start_timestamp,
+			end_timestamp,
 			image_data
 		) VALUES ($1,$2,$3,$4,$5,$6,$7)`,
 		render.RenderName,
@@ -47,6 +49,8 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) er
 		render.RenderStatus,
 		render.CompletedRounds,
 		render.RoundProgress,
+		render.StartTimestamp,
+		render.EndTimestamp,
 		render.ImageData,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
@@ -74,6 +78,8 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string) 
 			render_status,
 			completed_rounds,
 			round_progress,
+			start_timestamp,
+			end_timestamp,
 			image_data
 		FROM renders
 		WHERE render_name = $1`, renderName).Scan(
@@ -83,6 +89,8 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string) 
 		&render.RenderStatus,
 		&render.CompletedRounds,
 		&render.RoundProgress,
+		&render.StartTimestamp,
+		&render.EndTimestamp,
 		&render.ImageData,
 	)
 	if err != nil {
@@ -110,7 +118,9 @@ func Update(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) 
 			render_status = $4,
 			completed_rounds = $5,
 			round_progress = $6,
-			image_data = $7
+			start_timestamp = $7,
+			end_timestamps = $8,
+			image_data = $9
 		WHERE render_name = $1`,
 		render.RenderName,
 		render.ParametersName,
@@ -118,6 +128,8 @@ func Update(plData *config.PhotolumData, baseLog *logrus.Entry, render *Render) 
 		render.RenderStatus,
 		render.CompletedRounds,
 		render.RoundProgress,
+		render.StartTimestamp,
+		render.EndTimestamp,
 		render.ImageData,
 	)
 	if err != nil || tag.RowsAffected() != 1 {
