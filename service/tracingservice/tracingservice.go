@@ -606,7 +606,7 @@ func decodeTexture(plData *config.PhotolumData, log *logrus.Entry, textureDB *te
 			},
 		}
 		return newTexture, nil
-	case "Image":
+	case texturetype.Image:
 		newTexture := &texture.Image{
 			ImageData: textureDB.ImageData,
 			Gamma:     *textureDB.Gamma,
