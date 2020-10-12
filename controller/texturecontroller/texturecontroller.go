@@ -6,6 +6,7 @@ import (
 	"image"
 	_ "image/jpeg"
 	_ "image/png"
+	"io/ioutil"
 	"net/http"
 	"strings"
 
@@ -153,75 +154,153 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	})
 	log.Debug("request received")
 
-	// decode request
-	var postRequest *PostRequest
 	if request.Body != nil {
 		defer request.Body.Close()
 	}
-	err := json.NewDecoder(request.Body).Decode(&postRequest)
-	if err != nil {
-		errorMessage := "error decoding request body"
-		errorStatusCode := http.StatusBadRequest
 
-		log.WithError(err).Error(errorMessage)
-		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
-		return
-	}
-	// check for missing fields
-	if postRequest.TextureName == nil ||
-		postRequest.TextureType == nil {
-		errorMessage := "missing field from request"
-		errorStatusCode := http.StatusBadRequest
-
-		log.Error(errorMessage)
-		controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
-		return
-	}
-
-	// validate input
+	// decode request
+	var postRequest *PostRequest
 	errorMessage := ""
-	switch texturetype.TextureType(strings.ToUpper(*postRequest.TextureType)) {
-	case texturetype.Color:
-		if postRequest.Color == nil {
-			errorMessage := "missing field from request"
+
+	contentType := request.Header.Get("Content-Type")
+	isForm := strings.HasPrefix(contentType, "multipart/form-data")
+	if isForm {
+		err := request.ParseMultipartForm(256 << 20)
+		if err != nil {
+			errorMessage := "error decoding request body"
+			errorStatusCode := http.StatusBadRequest
+
+			log.WithError(err).Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+			return
+		}
+		metadataString := request.FormValue("metadata")
+
+		err = json.NewDecoder(strings.NewReader(metadataString)).Decode(&postRequest)
+		if err != nil {
+			errorMessage := "error decoding metadata field"
+			errorStatusCode := http.StatusBadRequest
+
+			log.WithError(err).Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+			return
+		}
+
+		// validate input
+		// check for missing fields
+		if postRequest.TextureName == nil ||
+			postRequest.TextureType == nil {
+			errorMessage := "missing field from metadata"
 			errorStatusCode := http.StatusBadRequest
 
 			log.Error(errorMessage)
 			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
 			return
 		}
-		if *postRequest.Color.Red < 0.0 || *postRequest.Color.Green < 0.0 || *postRequest.Color.Blue < 0.0 {
-			errorMessage = "color fields must be greater than or equal to zero"
-		}
-	case texturetype.Image:
-		if postRequest.Gamma == nil ||
-			postRequest.Magnitude == nil ||
-			postRequest.ImageData == nil {
-			errorMessage := "missing field from request"
-			errorStatusCode := http.StatusBadRequest
+		switch texturetype.TextureType(strings.ToUpper(*postRequest.TextureType)) {
+		case texturetype.Image:
+			if postRequest.Gamma == nil ||
+				postRequest.Magnitude == nil {
+				errorMessage := "missing field from metadata"
+				errorStatusCode := http.StatusBadRequest
 
-			log.Error(errorMessage)
-			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
-			return
-		}
-		if *postRequest.Gamma <= 0.0 {
-			errorMessage = "gamma must be greater than zero"
-		} else if *postRequest.Magnitude < 0 {
-			errorMessage = "magnitude must be greater than or equal to zero"
-		} else {
-			imageDataReader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*postRequest.ImageData))
-			_, _, err = image.Decode(imageDataReader)
-			if err != nil {
-				errMessage := "could not decode image_data"
-				errorStatusCode := http.StatusInternalServerError
-
-				log.WithError(err).Error(errorMessage)
-				controller.WriteErrorResponse(&response, errorStatusCode, errMessage, err)
+				log.Error(errorMessage)
+				controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
 				return
 			}
+			if *postRequest.Gamma <= 0.0 {
+				errorMessage = "gamma must be greater than zero"
+			} else if *postRequest.Magnitude < 0 {
+				errorMessage = "magnitude must be greater than or equal to zero"
+			} else {
+				imageDataFile, _, err := request.FormFile("image_data")
+				defer imageDataFile.Close()
+				_, _, err = image.Decode(imageDataFile)
+				if err != nil {
+					errMessage := "could not decode image_data file"
+					errorStatusCode := http.StatusInternalServerError
+
+					log.WithError(err).Error(errorMessage)
+					controller.WriteErrorResponse(&response, errorStatusCode, errMessage, err)
+					return
+				}
+				err = imageDataFile.Close()
+				if err != nil {
+					errMessage := "could not close image_data file"
+					errorStatusCode := http.StatusInternalServerError
+
+					log.WithError(err).Error(errorMessage)
+					controller.WriteErrorResponse(&response, errorStatusCode, errMessage, err)
+					return
+				}
+			}
+		default:
+			errorMessage = "invalid texture_type"
 		}
-	default:
-		errorMessage = "invalid texture_type"
+	} else {
+		err := json.NewDecoder(request.Body).Decode(&postRequest)
+		if err != nil {
+			errorMessage := "error decoding request body"
+			errorStatusCode := http.StatusBadRequest
+
+			log.WithError(err).Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, err)
+			return
+		}
+		// validate input
+		// check for missing fields
+		if postRequest.TextureName == nil ||
+			postRequest.TextureType == nil {
+			errorMessage := "missing field from request"
+			errorStatusCode := http.StatusBadRequest
+
+			log.Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
+			return
+		}
+		switch texturetype.TextureType(strings.ToUpper(*postRequest.TextureType)) {
+		case texturetype.Color:
+			if postRequest.Color == nil {
+				errorMessage := "missing field from request"
+				errorStatusCode := http.StatusBadRequest
+
+				log.Error(errorMessage)
+				controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
+				return
+			}
+			if *postRequest.Color.Red < 0.0 || *postRequest.Color.Green < 0.0 || *postRequest.Color.Blue < 0.0 {
+				errorMessage = "color fields must be greater than or equal to zero"
+			}
+		case texturetype.Image:
+			if postRequest.Gamma == nil ||
+				postRequest.Magnitude == nil ||
+				postRequest.ImageData == nil {
+				errorMessage := "missing field from request"
+				errorStatusCode := http.StatusBadRequest
+
+				log.Error(errorMessage)
+				controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
+				return
+			}
+			if *postRequest.Gamma <= 0.0 {
+				errorMessage = "gamma must be greater than zero"
+			} else if *postRequest.Magnitude < 0 {
+				errorMessage = "magnitude must be greater than or equal to zero"
+			} else {
+				imageDataReader := base64.NewDecoder(base64.StdEncoding, strings.NewReader(*postRequest.ImageData))
+				_, _, err = image.Decode(imageDataReader)
+				if err != nil {
+					errMessage := "could not decode image_data"
+					errorStatusCode := http.StatusInternalServerError
+
+					log.WithError(err).Error(errorMessage)
+					controller.WriteErrorResponse(&response, errorStatusCode, errMessage, err)
+					return
+				}
+			}
+		default:
+			errorMessage = "invalid texture_type"
+		}
 	}
 
 	// send error
@@ -260,7 +339,11 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		textureColor = []float64{*postRequest.Color.Red, *postRequest.Color.Green, *postRequest.Color.Blue}
 	}
 	var imageData []byte
-	if postRequest.ImageData == nil {
+	if isForm {
+		imageFile, _, _ := request.FormFile("image_data")
+		defer imageFile.Close()
+		imageData, _ = ioutil.ReadAll(imageFile)
+	} else if postRequest.ImageData == nil {
 		imageData = nil
 	} else {
 		imageData, _ = base64.StdEncoding.DecodeString(*postRequest.ImageData)
