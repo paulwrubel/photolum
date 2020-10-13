@@ -13,10 +13,10 @@ import (
 
 // ParticipatingVolume represents a participating volume geometry primitive (smoke, fog, fire, etc.)
 type ParticipatingVolume struct {
-	Density                 float64
-	Primitive               primitive.Primitive
-	negativeInvserseDensity float64
-	mat                     material.Material
+	Density                float64
+	Primitive              primitive.Primitive
+	negativeInverseDensity float64
+	mat                    material.Material
 }
 
 // Setup sets up a participating volume
@@ -24,7 +24,7 @@ func (pv *ParticipatingVolume) Setup() (*ParticipatingVolume, error) {
 	if pv.Density <= 0.0 {
 		return nil, fmt.Errorf("Density must be greater than zero")
 	}
-	pv.negativeInvserseDensity = -1.0 / pv.Density
+	pv.negativeInverseDensity = -1.0 / pv.Density
 	return pv, nil
 }
 
@@ -59,7 +59,7 @@ func (pv *ParticipatingVolume) Intersection(ray geometry.Ray, tMin, tMax float64
 
 	rayMagnitude := ray.Direction.Magnitude()
 	distanceInsideBoundary := (rayHit2.Time - rayHit1.Time) * rayMagnitude
-	hitDistance := pv.negativeInvserseDensity * math.Log(rng.Float64())
+	hitDistance := pv.negativeInverseDensity * math.Log(rng.Float64())
 
 	if hitDistance > distanceInsideBoundary {
 		return nil, false

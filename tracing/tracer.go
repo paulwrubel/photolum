@@ -107,13 +107,13 @@ func traceRound(params *config.Parameters,
 	roundNum int,
 	tileChan chan<- bool) {
 
-	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
+	sem := semaphore.NewWeighted(int64(runtime.NumCPU() * 2))
 
 	wg := sync.WaitGroup{}
 	for _, tile := range tiles {
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		sem.Acquire(context.Background(), 1)
 		wg.Add(1)
+		sem.Acquire(context.Background(), 1)
 		go traceTile(params, log, r, img, sem, &wg, tile, roundNum, tileChan)
 	}
 	wg.Wait()
@@ -130,8 +130,8 @@ func traceTile(p *config.Parameters,
 	roundNum int,
 	tileChan chan<- bool) {
 
-	defer sem.Release(1)
 	defer wg.Done()
+	defer sem.Release(1)
 	//log.Tracef("tracing tile id: %s", t.ID)
 	for y := t.Origin.Y; y < t.Origin.Y+t.Span.Y; y++ {
 		for x := t.Origin.X; x < t.Origin.X+t.Span.X; x++ {
