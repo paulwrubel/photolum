@@ -89,12 +89,12 @@ func (pv *ParticipatingVolume) SetMaterial(m material.Material) {
 
 // IsInfinite returns whether this object is infinite
 func (pv *ParticipatingVolume) IsInfinite() bool {
-	return pv.IsInfinite()
+	return pv.Primitive.IsInfinite()
 }
 
 // IsClosed returns whether this object is closed
 func (pv *ParticipatingVolume) IsClosed() bool {
-	return pv.IsClosed()
+	return pv.Primitive.IsClosed()
 }
 
 // Copy returns a shallow copy of this object
