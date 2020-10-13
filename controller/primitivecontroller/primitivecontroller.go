@@ -931,6 +931,7 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		OuterRadius:               postRequest.OuterRadius,
 		Height:                    postRequest.Height,
 		Angle:                     postRequest.Angle,
+		Density:                   postRequest.Density,
 		IsCulled:                  postRequest.IsCulled,
 		HasNegativeNormal:         postRequest.HasNegativeNormal,
 		HasInvertedNormals:        postRequest.HasInvertedNormals,
