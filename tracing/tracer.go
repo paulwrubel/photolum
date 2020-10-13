@@ -177,7 +177,7 @@ func traceRay(parameters *config.Parameters, r geometry.Ray, rng *rand.Rand, dep
 		return shading.ColorBlack
 	}
 	// check if we've hit something
-	rayHit, hitSomething := parameters.Scene.Objects.Intersection(r, parameters.TMin, parameters.TMax)
+	rayHit, hitSomething := parameters.Scene.Objects.Intersection(r, parameters.TMin, parameters.TMax, rng)
 	// if we did not hit something...
 	if !hitSomething {
 		// ...return the background color

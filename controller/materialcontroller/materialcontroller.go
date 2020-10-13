@@ -44,6 +44,13 @@ type DielectricGetResponse struct {
 	RefractiveIndex        float64 `json:"refractive_index"`
 }
 
+type IsotropicGetResponse struct {
+	MaterialName           string `json:"material_name"`
+	MaterialType           string `json:"material_type"`
+	ReflectanceTextureName string `json:"reflectance_texture_name,omitempty"`
+	EmittanceTextureName   string `json:"emittance_texture_name,omitempty"`
+}
+
 type PostRequest struct {
 	MaterialName           *string  `json:"material_name"`
 	MaterialType           *string  `json:"material_type"`
@@ -146,6 +153,13 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 			ReflectanceTextureName: reflectanceTextureName,
 			EmittanceTextureName:   emittanceTextureName,
 			RefractiveIndex:        *material.RefractiveIndex,
+		}
+	case materialtype.Isotropic:
+		getResponse = IsotropicGetResponse{
+			MaterialName:           material.MaterialName,
+			MaterialType:           material.MaterialType,
+			ReflectanceTextureName: reflectanceTextureName,
+			EmittanceTextureName:   emittanceTextureName,
 		}
 	}
 
@@ -251,6 +265,8 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 		if *postRequest.RefractiveIndex <= 1.0 {
 			errorMessage = "refractive_index must be greater than 1.0"
 		}
+	case materialtype.Isotropic:
+		// no unique validation necessary
 	default:
 		errorMessage = "invalid material_type"
 	}

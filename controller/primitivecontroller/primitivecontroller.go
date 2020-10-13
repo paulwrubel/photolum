@@ -23,6 +23,13 @@ type GetRequest struct {
 	PrimitiveName *string `json:"primitive_name"`
 }
 
+type ParticipatingVolumeGetResponse struct {
+	PrimitiveName             string  `json:"primitive_name"`
+	PrimitiveType             string  `json:"primitive_type"`
+	EncapsulatedPrimitiveName string  `json:"encapsulated_primitive_name"`
+	Density                   float64 `json:"density"`
+}
+
 type SphereGetResponse struct {
 	PrimitiveName      string         `json:"primitive_name"`
 	PrimitiveType      string         `json:"primitive_type"`
@@ -151,6 +158,7 @@ type PostRequest struct {
 	OuterRadius               *float64       `json:"outer_radius"`
 	Height                    *float64       `json:"height"`
 	Angle                     *float64       `json:"angle"`
+	Density                   *float64       `json:"density"`
 	IsCulled                  *bool          `json:"is_culled"`
 	HasNegativeNormal         *bool          `json:"has_negative_normal"`
 	HasInvertedNormals        *bool          `json:"has_inverted_normals"`
@@ -221,6 +229,13 @@ func GetHandler(response http.ResponseWriter, request *http.Request, plData *con
 
 	var getResponse interface{}
 	switch primitivetype.PrimitiveType(primitive.PrimitiveType) {
+	case primitivetype.ParticipatingVolume:
+		getResponse = ParticipatingVolumeGetResponse{
+			PrimitiveName:             primitive.PrimitiveName,
+			PrimitiveType:             primitive.PrimitiveType,
+			EncapsulatedPrimitiveName: *primitive.EncapsulatedPrimitiveName,
+			Density:                   *primitive.Density,
+		}
 	case primitivetype.Sphere:
 		getResponse = SphereGetResponse{
 			PrimitiveName: primitive.PrimitiveName,
@@ -477,6 +492,19 @@ func PostHandler(response http.ResponseWriter, request *http.Request, plData *co
 	}
 
 	switch primitivetype.PrimitiveType(strings.ToUpper(*postRequest.PrimitiveType)) {
+	case primitivetype.ParticipatingVolume:
+		if postRequest.EncapsulatedPrimitiveName == nil ||
+			postRequest.Density == nil {
+			errorMessage := "missing field from request"
+			errorStatusCode := http.StatusBadRequest
+
+			log.Error(errorMessage)
+			controller.WriteErrorResponse(&response, errorStatusCode, errorMessage, nil)
+			return
+		}
+		if *postRequest.Density <= 0.0 {
+			errorMessage = "density must be greater than zero"
+		}
 	case primitivetype.Sphere:
 		if postRequest.Center == nil ||
 			postRequest.Radius == nil ||

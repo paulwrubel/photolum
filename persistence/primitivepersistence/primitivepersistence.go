@@ -29,6 +29,7 @@ type Primitive struct {
 	OuterRadius               *float64
 	Height                    *float64
 	Angle                     *float64
+	Density                   *float64
 	IsCulled                  *bool
 	HasNegativeNormal         *bool
 	HasInvertedNormals        *bool
@@ -67,10 +68,11 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, primitive *Primiti
 			outer_radius,
 			height,
 			angle,
+			density,
 			is_culled,
 			has_negative_normal,
 			has_inverted_normals
-		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24)`,
+		) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,$21,$22,$23,$24,$25)`,
 		primitive.PrimitiveName,
 		primitive.PrimitiveType,
 		primitive.EncapsulatedPrimitiveName,
@@ -92,6 +94,7 @@ func Save(plData *config.PhotolumData, baseLog *logrus.Entry, primitive *Primiti
 		primitive.OuterRadius,
 		primitive.Height,
 		primitive.Angle,
+		primitive.Density,
 		primitive.IsCulled,
 		primitive.HasNegativeNormal,
 		primitive.HasInvertedNormals,
@@ -136,6 +139,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, primitiveName strin
 			outer_radius,
 			height,
 			angle,
+			density,
 			is_culled,
 			has_negative_normal,
 			has_inverted_normals
@@ -162,6 +166,7 @@ func Get(plData *config.PhotolumData, baseLog *logrus.Entry, primitiveName strin
 		&primitive.OuterRadius,
 		&primitive.Height,
 		&primitive.Angle,
+		&primitive.Density,
 		&primitive.IsCulled,
 		&primitive.HasNegativeNormal,
 		&primitive.HasInvertedNormals,

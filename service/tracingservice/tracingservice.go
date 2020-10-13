@@ -11,6 +11,7 @@ import (
 	"github.com/paulwrubel/photolum/config/geometry/primitive/bvh"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/cylinder"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/hollowcylinder"
+	"github.com/paulwrubel/photolum/config/geometry/primitive/participatingvolume"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/plane"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/primitivelist"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/pyramid"
@@ -156,14 +157,31 @@ func loadConfigurations(plData *config.PhotolumData, log *logrus.Entry, renderNa
 			return nil, fmt.Errorf("error decoding material: %s", err.Error())
 		}
 
-		// this is a check to ensure that materials that have a transmission component (i.e. Dielectrics)
+		// this is a check to ensure that materials that have a transmission component (i.e. Dielectrics, isotropics)
 		// are not attached to "open" geometry, such as single-sided triangles and rectangles, so the
 		// transmission commponent can be reversed
 		// this is an arbitrary restriction that is likely to be removed in the future with the user choosing to self-restrict
 		// themselves in a similar manner
 		if reflect.TypeOf(selectedMaterial) == reflect.TypeOf(&material.Dielectric{}) && !selectedPrimitive.IsClosed() {
-			return nil, fmt.Errorf("cannot attach refractive or volumetric materials (%s) to non-closed geometry (%s)",
+			return nil, fmt.Errorf("cannot attach refractive materials (%s) to non-closed geometry (%s)",
 				spm.MaterialName, spm.PrimitiveName)
+		}
+		if reflect.TypeOf(selectedMaterial) == reflect.TypeOf(&material.Isotropic{}) && !selectedPrimitive.IsClosed() {
+			return nil, fmt.Errorf("cannot attach volumetric materials (%s) to non-closed geometry (%s)",
+				spm.MaterialName, spm.PrimitiveName)
+		}
+
+		// additionally, isotropics specifically must be attached to participating volumes
+		if reflect.TypeOf(selectedMaterial) == reflect.TypeOf(&material.Isotropic{}) &&
+			reflect.TypeOf(selectedPrimitive) != reflect.TypeOf(&participatingvolume.ParticipatingVolume{}) {
+			return nil, fmt.Errorf("cannot attach isotropic materials (%s) to primitive not of type participating_volume (%s)",
+				spm.MaterialName, spm.PrimitiveName)
+		}
+		// ...and vice versa as well
+		if reflect.TypeOf(selectedPrimitive) == reflect.TypeOf(&participatingvolume.ParticipatingVolume{}) &&
+			reflect.TypeOf(selectedMaterial) != reflect.TypeOf(&material.Isotropic{}) {
+			return nil, fmt.Errorf("cannot attach to participating volume (%s) a material not of type isotropic (%s)",
+				spm.PrimitiveName, spm.MaterialName)
 		}
 
 		selectedPrimitive.SetMaterial(selectedMaterial)
@@ -256,6 +274,23 @@ func decodeCamera(cameraDB *camerapersistence.Camera, parameters *config.Paramet
 
 func decodePrimitive(plData *config.PhotolumData, log *logrus.Entry, primitiveDB *primitivepersistence.Primitive) (primitive.Primitive, error) {
 	switch primitivetype.PrimitiveType(primitiveDB.PrimitiveType) {
+	case primitivetype.ParticipatingVolume:
+		corePrimitiveDB, err := primitivepersistence.Get(plData, log, *primitiveDB.EncapsulatedPrimitiveName)
+		if err != nil {
+			return nil, err
+		}
+		corePrimitive, err := decodePrimitive(plData, log, corePrimitiveDB)
+		if err != nil {
+			return nil, err
+		}
+		newPV, err := (&participatingvolume.ParticipatingVolume{
+			Density:   *primitiveDB.Density,
+			Primitive: corePrimitive,
+		}).Setup()
+		if err != nil {
+			return nil, err
+		}
+		return newPV, nil
 	case primitivetype.Box:
 		newBox, err := (&box.Box{
 			A: geometry.Point{
@@ -567,6 +602,32 @@ func decodeMaterial(plData *config.PhotolumData, log *logrus.Entry, materialDB *
 			ReflectanceTexture: &texture.Color{Color: shading.ColorBlack},
 			EmittanceTexture:   &texture.Color{Color: shading.ColorBlack},
 			RefractiveIndex:    *materialDB.RefractiveIndex,
+		}
+		if materialDB.ReflectanceTextureName != nil {
+			textureDB, err := texturepersistence.Get(plData, log, *materialDB.ReflectanceTextureName)
+			if err != nil {
+				return nil, err
+			}
+			newMaterial.ReflectanceTexture, err = decodeTexture(plData, log, textureDB)
+			if err != nil {
+				return nil, err
+			}
+		}
+		if materialDB.EmittanceTextureName != nil {
+			textureDB, err := texturepersistence.Get(plData, log, *materialDB.EmittanceTextureName)
+			if err != nil {
+				return nil, err
+			}
+			newMaterial.EmittanceTexture, err = decodeTexture(plData, log, textureDB)
+			if err != nil {
+				return nil, err
+			}
+		}
+		return newMaterial, nil
+	case materialtype.Isotropic:
+		newMaterial := &material.Isotropic{
+			ReflectanceTexture: &texture.Color{Color: shading.ColorBlack},
+			EmittanceTexture:   &texture.Color{Color: shading.ColorBlack},
 		}
 		if materialDB.ReflectanceTextureName != nil {
 			textureDB, err := texturepersistence.Get(plData, log, *materialDB.ReflectanceTextureName)

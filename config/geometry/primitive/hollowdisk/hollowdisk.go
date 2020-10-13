@@ -3,6 +3,7 @@ package hollowdisk
 import (
 	"fmt"
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -54,7 +55,7 @@ func (hd *HollowDisk) Setup() (*HollowDisk, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (hd *HollowDisk) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (hd *HollowDisk) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 	denominator := ray.Direction.Dot(hd.Normal)
 	if hd.IsCulled && denominator > -1e-7 {
 		return nil, false

@@ -94,6 +94,7 @@ CREATE TABLE primitives (
     outer_radius DOUBLE PRECISION,
     height DOUBLE PRECISION,
     angle DOUBLE PRECISION,
+    density DOUBLE PRECISION,
     is_culled BOOLEAN,
     has_negative_normal BOOLEAN,
     has_inverted_normals BOOLEAN
@@ -116,7 +117,8 @@ CREATE TABLE textures (
 CREATE TYPE MATERIAL_TYPE AS ENUM (
     'LAMBERTIAN', 
     'METAL', 
-    'DIELECTRIC'
+    'DIELECTRIC',
+    'ISOTROPIC'
 );
 
 CREATE TABLE materials (

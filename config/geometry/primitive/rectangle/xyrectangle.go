@@ -2,6 +2,7 @@ package rectangle
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -54,7 +55,7 @@ func newXYRectangle(a, b geometry.Point, isCulled, hasNegativeNormal bool) *xyRe
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (r *xyRectangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (r *xyRectangle) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 	// Ray is coming from behind rectangle
 	denominator := ray.Direction.Dot(r.normal)
 	if r.isCulled && denominator > -1e-7 {
