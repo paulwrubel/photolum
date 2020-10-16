@@ -10,6 +10,7 @@ steps:
   image: alpine/git
   commands:
   - git clone --no-checkout https://github.com/paulwrubel/photolum.git .
+  - du -shc *
   - git config core.sparseCheckout true
   - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
   - cat .git/info/sparse-checkout
