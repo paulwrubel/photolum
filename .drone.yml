@@ -9,7 +9,7 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --depth=1 git@github.com:paulwrubel/photolum.git
+  - git clone --depth=1 https://github.com/paulwrubel/photolum.git
   - du -sh .
   # - git config core.sparseCheckout true
   # - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
