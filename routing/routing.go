@@ -2,6 +2,7 @@ package routing
 
 import (
 	"net/http"
+	"net/http/pprof"
 
 	"github.com/gorilla/mux"
 	"github.com/paulwrubel/photolum/config"
@@ -96,6 +97,18 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	imageRouter.HandleFunc("", func(w http.ResponseWriter, r *http.Request) {
 		imagecontroller.GetHandler(w, r, plData, log)
 	}).Methods("GET")
+
+	pprofRouter := router.PathPrefix("/debug/pprof").Subrouter()
+	pprofRouter.HandleFunc("/", pprof.Index)
+	pprofRouter.HandleFunc("/cmdline", pprof.Cmdline)
+	pprofRouter.HandleFunc("/profile", pprof.Profile)
+	pprofRouter.HandleFunc("/symbol", pprof.Symbol)
+
+	// Manually add support for paths linked to by index page at /debug/pprof/
+	pprofRouter.Handle("/goroutine", pprof.Handler("goroutine"))
+	pprofRouter.Handle("/heap", pprof.Handler("heap"))
+	pprofRouter.Handle("/threadcreate", pprof.Handler("threadcreate"))
+	pprofRouter.Handle("/block", pprof.Handler("block"))
 
 	return router
 }
