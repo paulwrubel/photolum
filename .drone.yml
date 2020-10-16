@@ -9,9 +9,9 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --no-checkout https://github.com/paulwrubel/photolum.git . --depth=1
+  - git clone --no-checkout https://github.com/paulwrubel/photolum.git .
   - git config core.sparseCheckout true
-  - echo -e "/*\n!sample-output\n!resources" >> .git/info/sparse-checkout
+  - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
   - cat .git/info/sparse-checkout
   - git checkout $DRONE_COMMIT
 
