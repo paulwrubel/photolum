@@ -17,6 +17,7 @@ steps:
   - cat .git/info/sparse-checkout
   - git pull origin $DRONE_COMMIT
   - du -sh .
+  - ls -la
   - git checkout $DRONE_COMMIT
 
 - name: build
