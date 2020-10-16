@@ -9,8 +9,15 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --verbose https://github.com/paulwrubel/photolum.git .
-  - git checkout $DRONE_COMMIT
+  - git clone --single-branch --branch $DRONE_SOURCE_BRANCH --depth=1 $DRONE_GIT_HTTP_URL .
+  - du -sh .
+  # - git config core.sparseCheckout true
+  # - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
+  # - cat .git/info/sparse-checkout
+  # - git fetch --depth=1 origin $DRONE_COMMIT
+  # - du -sh .
+  - ls -la
+  # - git checkout $DRONE_COMMIT_BRANCH
 
 - name: build
   image: golang:1.15-buster
