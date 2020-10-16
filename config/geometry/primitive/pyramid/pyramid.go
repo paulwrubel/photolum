@@ -2,7 +2,6 @@ package pyramid
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -110,9 +109,9 @@ func (p *Pyramid) Setup() (*Pyramid, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (p *Pyramid) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (p *Pyramid) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	if p.box.Intersection(ray, tMin, tMax) {
-		return p.list.Intersection(ray, tMin, tMax, rng)
+		return p.list.Intersection(ray, tMin, tMax)
 	}
 	return nil, false
 }

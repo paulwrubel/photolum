@@ -3,7 +3,6 @@ package infinitecylinder
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -48,7 +47,7 @@ func (ic *InfiniteCylinder) Setup() (*InfiniteCylinder, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (ic *InfiniteCylinder) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (ic *InfiniteCylinder) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	deltaP := ic.Ray.Origin.To(ray.Origin)
 	preA := ray.Direction.Sub(ic.Ray.Direction.MultScalar(ray.Direction.Dot(ic.Ray.Direction)))
 	preB := deltaP.Sub(ic.Ray.Direction.MultScalar(deltaP.Dot(ic.Ray.Direction)))

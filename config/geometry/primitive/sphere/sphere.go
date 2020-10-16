@@ -3,7 +3,6 @@ package sphere
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -40,7 +39,7 @@ func (s *Sphere) Setup() (*Sphere, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (s *Sphere) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (s *Sphere) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	// if !s.box.Intersection(ray, tMin, tMax) {
 	// 	return nil, false
 	// }

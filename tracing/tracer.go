@@ -40,7 +40,8 @@ func RunWorker(plData *config.PhotolumData,
 	roundChan := make(chan bool)
 	tileChan := make(chan bool)
 	doneChan := make(chan bool)
-	go runProgressWorker(plData, log, renderName, len(tiles), roundChan, tileChan, doneChan)
+	databaseWaitGroup := &sync.WaitGroup{}
+	go runProgressWorker(plData, log, renderName, len(tiles), roundChan, tileChan, doneChan, databaseWaitGroup)
 
 	for round := 1; round <= parameters.RoundCount; round++ {
 		log.Debugf("beginning round %d", round)
@@ -55,6 +56,7 @@ func RunWorker(plData *config.PhotolumData,
 		}
 		log.Debugf("image copied, sending to encoder")
 		encodingChan <- payload
+		databaseWaitGroup.Wait()
 		roundChan <- true
 	}
 	doneChan <- true
@@ -81,7 +83,8 @@ func runProgressWorker(plData *config.PhotolumData,
 	totalTiles int,
 	roundChan <-chan bool,
 	tileChan <-chan bool,
-	doneChan <-chan bool) {
+	doneChan <-chan bool,
+	databaseWaitGroup *sync.WaitGroup) {
 	completedRounds := 0
 	completedTiles := 0
 	for {
@@ -90,10 +93,11 @@ func runProgressWorker(plData *config.PhotolumData,
 			completedRounds++
 			completedTiles = 0
 			_ = renderpersistence.UpdateCompletedRounds(plData, log, renderName, uint32(completedRounds))
-			_ = renderpersistence.UpdateRoundProgress(plData, log, renderName, 0.0)
+			_ = renderpersistence.UpdateRoundProgress(plData, log, renderName, 0.0, nil)
 		case <-tileChan:
 			completedTiles++
-			_ = renderpersistence.UpdateRoundProgress(plData, log, renderName, float64(completedTiles)/float64(totalTiles))
+			databaseWaitGroup.Add(1)
+			go renderpersistence.UpdateRoundProgress(plData, log, renderName, float64(completedTiles)/float64(totalTiles), databaseWaitGroup)
 		case <-doneChan:
 			return
 		}
@@ -107,14 +111,13 @@ func traceRound(params *config.Parameters,
 	roundNum int,
 	tileChan chan<- bool) {
 
-	sem := semaphore.NewWeighted(int64(runtime.NumCPU() * 2))
+	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
 
 	wg := sync.WaitGroup{}
 	for _, tile := range tiles {
-		r := rand.New(rand.NewSource(time.Now().UnixNano()))
 		wg.Add(1)
 		sem.Acquire(context.Background(), 1)
-		go traceTile(params, log, r, img, sem, &wg, tile, roundNum, tileChan)
+		go traceTile(params, log, img, sem, &wg, tile, roundNum, tileChan)
 	}
 	wg.Wait()
 }
@@ -122,7 +125,6 @@ func traceRound(params *config.Parameters,
 // traceTile iterates over the pixels in a tile and writes the received colors to the image
 func traceTile(p *config.Parameters,
 	log *logrus.Entry,
-	rng *rand.Rand,
 	img *image.RGBA64,
 	sem *semaphore.Weighted,
 	wg *sync.WaitGroup,
@@ -135,7 +137,7 @@ func traceTile(p *config.Parameters,
 	//log.Tracef("tracing tile id: %s", t.ID)
 	for y := t.Origin.Y; y < t.Origin.Y+t.Span.Y; y++ {
 		for x := t.Origin.X; x < t.Origin.X+t.Span.X; x++ {
-			pixelColor := tracePixel(p, int(x), int(y), rng)
+			pixelColor := tracePixel(p, int(x), int(y))
 
 			// we need to weight the color value by what round we just finished
 			imgColor := shading.MakeColor(img.RGBA64At(int(x), p.ImageHeight-int(y)-1))
@@ -148,17 +150,17 @@ func traceTile(p *config.Parameters,
 }
 
 // tracePixel gets the color for a pixel
-func tracePixel(p *config.Parameters, x, y int, rng *rand.Rand) shading.Color {
+func tracePixel(p *config.Parameters, x, y int) shading.Color {
 	pixelColor := shading.Color{}
 	for s := 0; s < p.SamplesPerRound; s++ {
 		// pick a random spot on the pixel to shoot a ray into
 		// this is purely random, NOT stratified
-		u := (float64(x) + rng.Float64()) / float64(p.ImageWidth)
-		v := (float64(y) + rng.Float64()) / float64(p.ImageHeight)
+		u := (float64(x) + rand.Float64()) / float64(p.ImageWidth)
+		v := (float64(y) + rand.Float64()) / float64(p.ImageHeight)
 
-		ray := p.Scene.Camera.GetRay(u, v, rng)
+		ray := p.Scene.Camera.GetRay(u, v)
 
-		tempColor := traceRay(p, ray, rng, 0)
+		tempColor := traceRay(p, ray, 0)
 		pixelColor = pixelColor.Add(tempColor)
 	}
 	if p.UseScalingTruncation {
@@ -169,7 +171,7 @@ func tracePixel(p *config.Parameters, x, y int, rng *rand.Rand) shading.Color {
 }
 
 // traceRay casts in individual ray into the scene
-func traceRay(parameters *config.Parameters, r geometry.Ray, rng *rand.Rand, depth int) shading.Color {
+func traceRay(parameters *config.Parameters, r geometry.Ray, depth int) shading.Color {
 
 	// if we've gone too deep...
 	if depth > parameters.MaxBounces {
@@ -177,7 +179,7 @@ func traceRay(parameters *config.Parameters, r geometry.Ray, rng *rand.Rand, dep
 		return shading.ColorBlack
 	}
 	// check if we've hit something
-	rayHit, hitSomething := parameters.Scene.Objects.Intersection(r, parameters.TMin, parameters.TMax, rng)
+	rayHit, hitSomething := parameters.Scene.Objects.Intersection(r, parameters.TMin, parameters.TMax)
 	// if we did not hit something...
 	if !hitSomething {
 		// ...return the background color
@@ -194,13 +196,13 @@ func traceRay(parameters *config.Parameters, r geometry.Ray, rng *rand.Rand, dep
 	}
 
 	// get the reflection incoming ray
-	scatteredRay, wasScattered := rayHit.Material.Scatter(*rayHit, rng)
+	scatteredRay, wasScattered := rayHit.Material.Scatter(*rayHit)
 	// if no ray could have reflected to us, we just return BLACK
 	if !wasScattered {
 		return shading.ColorBlack
 	}
 	// get the color that came to this point and gave us the outgoing ray
-	incomingColor := traceRay(parameters, scatteredRay, rng, depth+1)
+	incomingColor := traceRay(parameters, scatteredRay, depth+1)
 	// return the (very-roughly approximated) value of the rendering equation
 	return mat.Emittance(rayHit.U, rayHit.V).Add(mat.Reflectance(rayHit.U, rayHit.V).MultColor(incomingColor))
 }

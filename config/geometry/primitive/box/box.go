@@ -2,7 +2,6 @@ package box
 
 import (
 	"fmt"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -122,9 +121,9 @@ func (b *Box) Setup() (*Box, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (b *Box) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (b *Box) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	if b.box.Intersection(ray, tMin, tMax) {
-		return b.list.Intersection(ray, tMin, tMax, rng)
+		return b.list.Intersection(ray, tMin, tMax)
 	}
 	return nil, false
 }

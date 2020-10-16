@@ -29,15 +29,15 @@ func (pv *ParticipatingVolume) Setup() (*ParticipatingVolume, error) {
 }
 
 // Intersection computer the intersection of this primitive and a given ray
-func (pv *ParticipatingVolume) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (pv *ParticipatingVolume) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 
 	// hit first part of surface
-	rayHit1, wasHit := pv.Primitive.Intersection(ray, -math.MaxFloat64, math.MaxFloat64, rng)
+	rayHit1, wasHit := pv.Primitive.Intersection(ray, -math.MaxFloat64, math.MaxFloat64)
 	if !wasHit {
 		return nil, false
 	}
 	// hit second part of surface
-	rayHit2, wasHit := pv.Primitive.Intersection(ray, rayHit1.Time+0.0001, math.MaxFloat64, rng)
+	rayHit2, wasHit := pv.Primitive.Intersection(ray, rayHit1.Time+0.0001, math.MaxFloat64)
 	if !wasHit {
 		return nil, false
 	}
@@ -59,7 +59,7 @@ func (pv *ParticipatingVolume) Intersection(ray geometry.Ray, tMin, tMax float64
 
 	rayMagnitude := ray.Direction.Magnitude()
 	distanceInsideBoundary := (rayHit2.Time - rayHit1.Time) * rayMagnitude
-	hitDistance := pv.negativeInverseDensity * math.Log(rng.Float64())
+	hitDistance := pv.negativeInverseDensity * math.Log(rand.Float64())
 
 	if hitDistance > distanceInsideBoundary {
 		return nil, false

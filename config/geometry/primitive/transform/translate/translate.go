@@ -1,8 +1,6 @@
 package translate
 
 import (
-	"math/rand"
-
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/aabb"
@@ -23,12 +21,12 @@ func (t *Translation) Setup() (*Translation, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (t *Translation) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (t *Translation) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 
 	// translate the ray to the object
 	ray.Origin = ray.Origin.SubVector(t.Displacement)
 
-	rh, ok := t.Primitive.Intersection(ray, tMin, tMax, rng)
+	rh, ok := t.Primitive.Intersection(ray, tMin, tMax)
 	if ok {
 		rh.Ray.Origin = rh.Ray.Origin.AddVector(t.Displacement)
 	}
