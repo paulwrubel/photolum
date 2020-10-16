@@ -2,7 +2,6 @@ package rotate
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 
 	"github.com/paulwrubel/photolum/config/geometry"
@@ -69,7 +68,7 @@ func (q *Quaternion) Setup() (*Quaternion, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (q *Quaternion) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (q *Quaternion) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 
 	rotatedRay := ray
 
@@ -91,7 +90,7 @@ func (q *Quaternion) Intersection(ray geometry.Ray, tMin, tMax float64, rng *ran
 		Z: rotatedDirectionMGL.Z(),
 	}
 
-	rayHit, wasHit := q.Primitive.Intersection(rotatedRay, tMin, tMax, rng)
+	rayHit, wasHit := q.Primitive.Intersection(rotatedRay, tMin, tMax)
 	if wasHit {
 		rotatedNormalMGL := mgl64.Vec3{rayHit.NormalAtHit.X, rayHit.NormalAtHit.Y, rayHit.NormalAtHit.Z}
 		unrotatedNormalMGL := q.quaternion.Rotate(rotatedNormalMGL)

@@ -3,7 +3,6 @@ package disk
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -37,7 +36,7 @@ func (d *Disk) Setup() (*Disk, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (d *Disk) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (d *Disk) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	denominator := ray.Direction.Dot(d.Normal)
 	if d.IsCulled && denominator > -1e-7 {
 		return nil, false

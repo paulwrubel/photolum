@@ -2,6 +2,7 @@ package renderpersistence
 
 import (
 	"context"
+	"sync"
 	"time"
 
 	"github.com/paulwrubel/photolum/config"
@@ -212,13 +213,17 @@ func UpdateCompletedRounds(plData *config.PhotolumData, baseLog *logrus.Entry, r
 	return nil
 }
 
-func UpdateRoundProgress(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, roundProgress float64) error {
+func UpdateRoundProgress(plData *config.PhotolumData, baseLog *logrus.Entry, renderName string, roundProgress float64, wg *sync.WaitGroup) error {
 	//event := "update render_status"
 	// log := baseLog.WithFields(logrus.Fields{
 	// 	"entity": entity,
 	// 	"event":  event,
 	// })
 	//log.Trace("database event initiated")
+
+	if wg != nil {
+		defer wg.Done()
+	}
 
 	tag, err := plData.DB.Exec(context.Background(), `
 		UPDATE renders 

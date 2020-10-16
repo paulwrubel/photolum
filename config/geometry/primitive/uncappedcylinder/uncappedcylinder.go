@@ -3,7 +3,6 @@ package uncappedcylinder
 import (
 	"fmt"
 	"math"
-	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -52,7 +51,7 @@ func (uc *UncappedCylinder) Setup() (*UncappedCylinder, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (uc *UncappedCylinder) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (uc *UncappedCylinder) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	deltaP := uc.ray.Origin.To(ray.Origin)
 	preA := ray.Direction.Sub(uc.ray.Direction.MultScalar(ray.Direction.Dot(uc.ray.Direction)))
 	preB := deltaP.Sub(uc.ray.Direction.MultScalar(deltaP.Dot(uc.ray.Direction)))

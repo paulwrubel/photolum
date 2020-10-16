@@ -3,7 +3,6 @@ package bvh
 import (
 	"fmt"
 	"math"
-	"math/rand"
 	"sort"
 
 	"github.com/paulwrubel/photolum/config/geometry"
@@ -91,17 +90,17 @@ func New(pl *primitivelist.PrimitiveList) (*BVH, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (b *BVH) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (b *BVH) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	hitBox := b.box.Intersection(ray, tMin, tMax)
 	if hitBox {
-		leftRayHit, doesHitLeft := b.left.Intersection(ray, tMin, tMax, rng)
+		leftRayHit, doesHitLeft := b.left.Intersection(ray, tMin, tMax)
 		if b.isSingle {
 			if doesHitLeft {
 				return leftRayHit, true
 			}
 			return nil, false
 		}
-		rightRayHit, doesHitRight := b.right.Intersection(ray, tMin, tMax, rng)
+		rightRayHit, doesHitRight := b.right.Intersection(ray, tMin, tMax)
 		if doesHitLeft && doesHitRight {
 			if leftRayHit.Time < rightRayHit.Time {
 				return leftRayHit, true

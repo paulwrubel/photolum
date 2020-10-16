@@ -1,8 +1,6 @@
 package material
 
 import (
-	"math/rand"
-
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/shading"
 )
@@ -12,7 +10,7 @@ type Material interface {
 	Reflectance(u, v float64) shading.Color
 	Emittance(u, v float64) shading.Color
 	IsSpecular() bool
-	Scatter(RayHit, *rand.Rand) (geometry.Ray, bool)
+	Scatter(RayHit) (geometry.Ray, bool)
 }
 
 // RayHit is a loose gathering of information about a ray's intersection with a surface

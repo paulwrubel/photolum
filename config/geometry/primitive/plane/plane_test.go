@@ -22,7 +22,7 @@ func TestPlaneIntersectionHit(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if !h {
 		t.Errorf("Expected true (hit) but got %t\n", h)
 	}
@@ -45,7 +45,7 @@ func BenchmarkPlaneIntersectionHit(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	planeHit = h
 }
@@ -64,7 +64,7 @@ func TestPlaneIntersectionMiss(t *testing.T) {
 			Z: 0.0,
 		},
 	}
-	_, h := plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -87,7 +87,7 @@ func BenchmarkPlaneIntersectionMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = plane.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	planeHit = h
 }

@@ -1,8 +1,6 @@
 package cylinder
 
 import (
-	"math/rand"
-
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/aabb"
@@ -67,9 +65,9 @@ func (c *Cylinder) Setup() (*Cylinder, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (c *Cylinder) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (c *Cylinder) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	if c.box.Intersection(ray, tMin, tMax) {
-		return c.list.Intersection(ray, tMin, tMax, rng)
+		return c.list.Intersection(ray, tMin, tMax)
 	}
 	return nil, false
 }
