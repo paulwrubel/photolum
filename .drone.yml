@@ -9,7 +9,7 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --verbose --progress https://github.com/paulwrubel/photolum.git .
+  - git clone --verbose https://github.com/paulwrubel/photolum.git .
   - git checkout $DRONE_COMMIT
 
 - name: build
