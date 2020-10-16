@@ -1,9 +1,11 @@
 package main
 
 import (
+	"math/rand"
 	"os"
 	"os/signal"
 	"strings"
+	"time"
 
 	"github.com/paulwrubel/photolum/config"
 	"github.com/paulwrubel/photolum/routing"
@@ -19,6 +21,8 @@ func main() {
 		log.WithError(err).Fatal("cannot initialize photolum data")
 		os.Exit(1)
 	}
+
+	rand.Seed(time.Now().UnixNano())
 
 	log.Info("starting API server")
 	routing.ListenAndServe(plData, log)
