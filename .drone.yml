@@ -11,7 +11,8 @@ steps:
   commands:
   - git init .
   - git config core.sparseCheckout true
-  - echo -e "/*\n!sample-output" >> .git/info/sparse-checkout
+  - echo -e "/*\n!sample-output\n!resources" >> .git/info/sparse-checkout
+  - cat .git/info/sparse-checkout
   - git remote add -f origin https://github.com/paulwrubel/photolum.git
   - git checkout $DRONE_COMMIT
 
