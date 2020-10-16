@@ -2,7 +2,16 @@ kind: pipeline
 type: docker
 name: photolum
 
+clone:
+  disable: true
+
 steps:
+- name: clone
+  image: alpine/git
+  commands:
+  - git clone --verbose --progress https://github.com/paulwrubel/photolum.git .
+  - git checkout $DRONE_COMMIT
+
 - name: build
   image: golang:1.15-buster
   commands:
@@ -17,6 +26,7 @@ steps:
     event:
     - push
     - pull_request
+
 - name: publish
   image: plugins/docker
   settings:
