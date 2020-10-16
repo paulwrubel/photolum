@@ -10,7 +10,7 @@ steps:
   image: alpine/git
   commands:
   - git init .
-  - git add remote origin https://github.com/paulwrubel/photolum.git
+  - git remote add origin https://github.com/paulwrubel/photolum.git
   - du -sh .
   - git config core.sparseCheckout true
   - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
