@@ -9,11 +9,14 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --no-checkout https://github.com/paulwrubel/photolum.git . --depth=1
+  - git init .
+  - git add remote origin https://github.com/paulwrubel/photolum.git
   - du -sh .
   - git config core.sparseCheckout true
   - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
   - cat .git/info/sparse-checkout
+  - git pull
+  - du -sh .
   - git checkout $DRONE_COMMIT
 
 - name: build
