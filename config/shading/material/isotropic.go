@@ -1,8 +1,6 @@
 package material
 
 import (
-	"math/rand"
-
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/shading"
 	"github.com/paulwrubel/photolum/config/shading/texture"
@@ -32,9 +30,9 @@ func (i Isotropic) IsSpecular() bool {
 }
 
 // Scatter returns an incoming ray given a RayHit representing the outgoing ray
-func (i Isotropic) Scatter(rayHit RayHit, rng *rand.Rand) (geometry.Ray, bool) {
+func (i Isotropic) Scatter(rayHit RayHit) (geometry.Ray, bool) {
 	hitPoint := rayHit.Ray.PointAt(rayHit.Time)
-	direction := geometry.RandomInUnitSphere(rng)
+	direction := geometry.RandomInUnitSphere()
 	return geometry.Ray{
 		Origin:    hitPoint,
 		Direction: direction,

@@ -22,7 +22,7 @@ func TestUncappedCylinderIntersectionHit(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if !h {
 		t.Errorf("Expected true (hit) but got %t\n", h)
 	}
@@ -45,7 +45,7 @@ func BenchmarkUncappedCylinderIntersectionHit(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -64,7 +64,7 @@ func TestUncappedCylinderIntersectionSecondHit(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if !h {
 		t.Errorf("Expected true (hit) but got %t\n", h)
 	}
@@ -87,7 +87,7 @@ func BenchmarkUncappedCylinderIntersectionSecondHit(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -106,7 +106,7 @@ func TestUncappedCylinderIntersectionSideMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -129,7 +129,7 @@ func BenchmarkUncappedCylinderIntersectionSideMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -148,7 +148,7 @@ func TestUncappedCylinderIntersectionBehindMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -171,7 +171,7 @@ func BenchmarkUncappedCylinderIntersectionBehindMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -190,7 +190,7 @@ func TestUncappedCylinderIntersectionTopMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -213,7 +213,7 @@ func BenchmarkUncappedCylinderIntersectionTopMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -232,7 +232,7 @@ func TestUncappedCylinderIntersectionBottomMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -255,7 +255,7 @@ func BenchmarkUncappedCylinderIntersectionBottomMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -274,7 +274,7 @@ func TestUncappedCylinderIntersectionParallelMiss(t *testing.T) {
 			Z: 0.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -297,7 +297,7 @@ func BenchmarkUncappedCylinderIntersectionParallelMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }
@@ -316,7 +316,7 @@ func TestUncappedCylinderIntersectionInsideParallelMiss(t *testing.T) {
 			Z: 0.0,
 		},
 	}
-	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+	_, h := uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -339,7 +339,7 @@ func BenchmarkUncappedCylinderIntersectionInsideParallelMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
+		_, h = uc.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
 	}
 	ucHit = h
 }

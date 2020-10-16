@@ -1,8 +1,6 @@
 package hollowcylinder
 
 import (
-	"math/rand"
-
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
 	"github.com/paulwrubel/photolum/config/geometry/primitive/aabb"
@@ -80,9 +78,9 @@ func (hc *HollowCylinder) Setup() (*HollowCylinder, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (hc *HollowCylinder) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+func (hc *HollowCylinder) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
 	if hc.box.Intersection(ray, tMin, tMax) {
-		return hc.list.Intersection(ray, tMin, tMax, rng)
+		return hc.list.Intersection(ray, tMin, tMax)
 	}
 	return nil, false
 }
