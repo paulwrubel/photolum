@@ -9,7 +9,7 @@ steps:
 - name: clone
   image: alpine/git
   commands:
-  - git clone --depth=1 $DRONE_COMMIT_LINK .
+  - git clone --depth=1 $DRONE_GIT_HTTP_URL .
   - du -sh .
   # - git config core.sparseCheckout true
   # - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
@@ -17,7 +17,7 @@ steps:
   # - git fetch --depth=1 origin $DRONE_COMMIT
   # - du -sh .
   - ls -la
-  - git checkout $DRONE_COMMIT
+  - git checkout $DRONE_COMMIT_BRANCH
 
 - name: build
   image: golang:1.15-buster
