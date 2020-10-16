@@ -15,7 +15,7 @@ steps:
   - git config core.sparseCheckout true
   - echo -e "/*\n!sample-output/\n!resources/" >> .git/info/sparse-checkout
   - cat .git/info/sparse-checkout
-  - git pull
+  - git pull origin $DRONE_COMMIT
   - du -sh .
   - git checkout $DRONE_COMMIT
 
