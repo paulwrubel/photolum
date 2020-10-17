@@ -22,7 +22,7 @@ func TestHollowDiskIntersectionHit(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	if !h {
 		t.Errorf("Expected true (hit) but got %t\n", h)
 	}
@@ -45,7 +45,7 @@ func BenchmarkHollowDiskIntersectionHit(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	}
 	hollowDiskHit = h
 }
@@ -64,7 +64,7 @@ func TestHollowDiskIntersectionReverseHit(t *testing.T) {
 			Z: 1.0,
 		},
 	}
-	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	if !h {
 		t.Errorf("Expected true (hit) but got %t\n", h)
 	}
@@ -87,7 +87,7 @@ func BenchmarkHollowDiskIntersectionReverseHit(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	}
 	hollowDiskHit = h
 }
@@ -106,7 +106,7 @@ func TestHollowDiskIntersectionMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -129,7 +129,7 @@ func BenchmarkHollowDiskIntersectionMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	}
 	hollowDiskHit = h
 }
@@ -148,7 +148,7 @@ func TestHollowDiskIntersectionCenterMiss(t *testing.T) {
 			Z: -1.0,
 		},
 	}
-	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -171,7 +171,7 @@ func BenchmarkHollowDiskIntersectionCenterMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	}
 	hollowDiskHit = h
 }
@@ -190,7 +190,7 @@ func TestHollowDiskIntersectionParallelMiss(t *testing.T) {
 			Z: 0.0,
 		},
 	}
-	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+	_, h := hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	if h {
 		t.Errorf("Expected false (miss) but got %t\n", h)
 	}
@@ -213,7 +213,7 @@ func BenchmarkHollowDiskIntersectionParallelMiss(b *testing.B) {
 	var h bool
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308)
+		_, h = hollowDisk.Intersection(r, 1e-7, 1.797693134862315708145274237317043567981e+308, nil)
 	}
 	hollowDiskHit = h
 }

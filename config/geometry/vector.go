@@ -32,11 +32,11 @@ var VectorForward = Vector{0.0, 0.0, -1.0}
 
 // RandomOnUnitDisk returns a new Vector pointing from the origin to a
 // random point on a unit disk
-func RandomOnUnitDisk() Vector {
+func RandomOnUnitDisk(rng *rand.Rand) Vector {
 	for {
 		v := Vector{
-			X: 2.0*rand.Float64() - 1.0,
-			Y: 2.0*rand.Float64() - 1.0,
+			X: 2.0*rng.Float64() - 1.0,
+			Y: 2.0*rng.Float64() - 1.0,
 			Z: 0.0,
 		}
 		if v.Magnitude() < 1.0 {
@@ -47,12 +47,12 @@ func RandomOnUnitDisk() Vector {
 
 // RandomInUnitSphere returns a new Vector pointing from the origin to a
 // random point in a unit sphere
-func RandomInUnitSphere() Vector {
+func RandomInUnitSphere(rng *rand.Rand) Vector {
 	for {
 		v := Vector{
-			X: 2.0*rand.Float64() - 1.0,
-			Y: 2.0*rand.Float64() - 1.0,
-			Z: 2.0*rand.Float64() - 1.0,
+			X: 2.0*rng.Float64() - 1.0,
+			Y: 2.0*rng.Float64() - 1.0,
+			Z: 2.0*rng.Float64() - 1.0,
 		}
 		if v.Magnitude() < 1.0 {
 			return v

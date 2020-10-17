@@ -2,6 +2,7 @@ package rectangle
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -46,8 +47,8 @@ func (r *Rectangle) Setup() (*Rectangle, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (r *Rectangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
-	return r.axisAlignedRectangle.Intersection(ray, tMin, tMax)
+func (r *Rectangle) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
+	return r.axisAlignedRectangle.Intersection(ray, tMin, tMax, rng)
 }
 
 // BoundingBox return an AABB of this object
