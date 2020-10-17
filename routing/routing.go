@@ -103,6 +103,7 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	pprofRouter.HandleFunc("/cmdline", pprof.Cmdline)
 	pprofRouter.HandleFunc("/profile", pprof.Profile)
 	pprofRouter.HandleFunc("/symbol", pprof.Symbol)
+	pprofRouter.HandleFunc("/trace", pprof.Trace)
 
 	// Manually add support for paths linked to by index page at /debug/pprof/
 	pprofRouter.Handle("/goroutine", pprof.Handler("goroutine"))
