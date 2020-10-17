@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 
 	"github.com/paulwrubel/photolum/config"
@@ -13,6 +14,8 @@ import (
 func main() {
 	log := initLogger()
 	log.Info("starting photolum")
+
+	log.Debugf("runtime.NumCPU() = %d", runtime.NumCPU())
 
 	plData, err := config.InitPhotolumData(log)
 	if err != nil {
