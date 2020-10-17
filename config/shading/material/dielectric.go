@@ -34,7 +34,7 @@ func (d Dielectric) IsSpecular() bool {
 }
 
 // Scatter returns an incoming ray given a RayHit representing the outgoing ray
-func (d Dielectric) Scatter(rayHit RayHit) (geometry.Ray, bool) {
+func (d Dielectric) Scatter(rayHit RayHit, rng *rand.Rand) (geometry.Ray, bool) {
 	hitPoint := rayHit.Ray.PointAt(rayHit.Time)
 	normal := rayHit.NormalAtHit
 	reflectionVector := rayHit.Ray.Direction.Unit().ReflectAround(normal)
@@ -57,7 +57,7 @@ func (d Dielectric) Scatter(rayHit RayHit) (geometry.Ray, bool) {
 	var reflectionProbability float64
 	reflectionProbability = schlick(cosine, d.RefractiveIndex)
 
-	if !ok || rand.Float64() < reflectionProbability {
+	if !ok || rng.Float64() < reflectionProbability {
 		// fmt.Println("reflect!")
 		return geometry.Ray{
 			Origin:    hitPoint,

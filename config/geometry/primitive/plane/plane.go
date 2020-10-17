@@ -2,6 +2,7 @@ package plane
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -27,7 +28,7 @@ func (p *Plane) Setup() (*Plane, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (p *Plane) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (p *Plane) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 	denominator := ray.Direction.Dot(p.Normal)
 	if p.IsCulled && denominator > -1e-7 {
 		return nil, false

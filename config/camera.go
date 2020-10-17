@@ -2,6 +2,7 @@ package config
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 )
@@ -58,8 +59,8 @@ func (c *Camera) Setup(p *Parameters) error {
 }
 
 // GetRay returns a Ray from the eye location to a point on the view place u% across and v% up
-func (c *Camera) GetRay(u float64, v float64) geometry.Ray {
-	randomOnLens := geometry.RandomOnUnitDisk().MultScalar(c.lensRadius)
+func (c *Camera) GetRay(u float64, v float64, rng *rand.Rand) geometry.Ray {
+	randomOnLens := geometry.RandomOnUnitDisk(rng).MultScalar(c.lensRadius)
 	offset := c.u.MultScalar(randomOnLens.X).Add(c.v.MultScalar(randomOnLens.Y))
 	return geometry.Ray{
 		Origin: c.EyeLocation.AddVector(offset),

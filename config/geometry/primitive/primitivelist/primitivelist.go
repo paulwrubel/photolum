@@ -2,6 +2,7 @@ package primitivelist
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -75,12 +76,12 @@ func FromElements(primitives ...primitive.Primitive) (*PrimitiveList, error) {
 }
 
 // Intersection computer the intersection of this list and a given ray
-func (pl *PrimitiveList) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (pl *PrimitiveList) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 	var rayHit *material.RayHit
 	minT := math.MaxFloat64
 	hitSomething := false
 	for _, p := range pl.List {
-		rh, wasHit := p.Intersection(ray, tMin, tMax)
+		rh, wasHit := p.Intersection(ray, tMin, tMax, rng)
 		if wasHit && rh.Time < minT {
 			hitSomething = true
 			rayHit = rh

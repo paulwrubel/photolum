@@ -3,6 +3,7 @@ package triangle
 import (
 	"fmt"
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -58,7 +59,7 @@ func (t *Triangle) Setup() (*Triangle, error) {
 }
 
 // Intersection computes the intersection of this object and a given ray if it exists
-func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (t *Triangle) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 	ab := t.A.To(t.B)
 	ac := t.A.To(t.C)
 	pVector := ray.Direction.Cross(ac)

@@ -1,6 +1,8 @@
 package material
 
 import (
+	"math/rand"
+
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/shading"
 	"github.com/paulwrubel/photolum/config/shading/texture"
@@ -31,12 +33,12 @@ func (m Metal) IsSpecular() bool {
 }
 
 // Scatter returns an incoming ray given a RayHit representing the outgoing ray
-func (m Metal) Scatter(rayHit RayHit) (geometry.Ray, bool) {
+func (m Metal) Scatter(rayHit RayHit, rng *rand.Rand) (geometry.Ray, bool) {
 	hitPoint := rayHit.Ray.PointAt(rayHit.Time)
 	normal := rayHit.NormalAtHit
 
 	reflectionVector := rayHit.Ray.Direction.Unit().ReflectAround(normal)
-	reflectionVector = reflectionVector.Add(geometry.RandomInUnitSphere().MultScalar(m.Fuzziness))
+	reflectionVector = reflectionVector.Add(geometry.RandomInUnitSphere(rng).MultScalar(m.Fuzziness))
 	if reflectionVector.Dot(normal) > 0 {
 		return geometry.Ray{
 			Origin:    hitPoint,

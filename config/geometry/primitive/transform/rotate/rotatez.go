@@ -2,6 +2,7 @@ package rotate
 
 import (
 	"math"
+	"math/rand"
 
 	"github.com/paulwrubel/photolum/config/geometry"
 	"github.com/paulwrubel/photolum/config/geometry/primitive"
@@ -32,7 +33,7 @@ func (rz *RotationZ) Setup() (*RotationZ, error) {
 }
 
 // Intersection computer the intersection of this object and a given ray if it exists
-func (rz *RotationZ) Intersection(ray geometry.Ray, tMin, tMax float64) (*material.RayHit, bool) {
+func (rz *RotationZ) Intersection(ray geometry.Ray, tMin, tMax float64, rng *rand.Rand) (*material.RayHit, bool) {
 
 	rotatedRay := ray
 
@@ -42,7 +43,7 @@ func (rz *RotationZ) Intersection(ray geometry.Ray, tMin, tMax float64) (*materi
 	rotatedRay.Direction.X = rz.cosTheta*ray.Direction.X + rz.sinTheta*ray.Direction.Y
 	rotatedRay.Direction.Y = -rz.sinTheta*ray.Direction.X + rz.cosTheta*ray.Direction.Y
 
-	rayHit, wasHit := rz.Primitive.Intersection(rotatedRay, tMin, tMax)
+	rayHit, wasHit := rz.Primitive.Intersection(rotatedRay, tMin, tMax, rng)
 	if wasHit {
 		unrotatedNormal := rayHit.NormalAtHit
 		unrotatedNormal.X = rz.cosTheta*rayHit.NormalAtHit.X - rz.sinTheta*rayHit.NormalAtHit.Y
