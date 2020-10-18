@@ -18,7 +18,7 @@ func main() {
 
 	runtime.SetBlockProfileRate(1)
 	runtime.SetMutexProfileFraction(1)
-	debug.SetGCPercent(25600)
+	// debug.SetGCPercent(25600)
 
 	plData, err := config.InitPhotolumData(log)
 	if err != nil {
