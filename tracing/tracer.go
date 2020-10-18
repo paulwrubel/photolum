@@ -6,6 +6,7 @@ import (
 	"math"
 	"math/rand"
 	"runtime"
+	"runtime/debug"
 	"strconv"
 	"sync"
 	"time"
@@ -58,7 +59,7 @@ func RunWorker(plData *config.PhotolumData,
 		encodingChan <- payload
 		databaseWaitGroup.Wait()
 		log.Debugf("starting manual garbage collection")
-		runtime.GC()
+		debug.FreeOSMemory()
 		log.Debugf("manual garbage collection completed")
 		roundChan <- true
 	}
