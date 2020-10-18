@@ -111,7 +111,8 @@ func traceRound(params *config.Parameters,
 	roundNum int,
 	tileChan chan<- bool) {
 
-	sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
+	//sem := semaphore.NewWeighted(int64(runtime.NumCPU()))
+	sem := semaphore.NewWeighted(int64(len(tiles)))
 
 	wg := sync.WaitGroup{}
 	for i, tile := range tiles {
