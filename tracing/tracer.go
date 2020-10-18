@@ -57,6 +57,9 @@ func RunWorker(plData *config.PhotolumData,
 		log.Debugf("image copied, sending to encoder")
 		encodingChan <- payload
 		databaseWaitGroup.Wait()
+		log.Debugf("starting manual garbage collection")
+		runtime.GC()
+		log.Debugf("manual garbage collection completed")
 		roundChan <- true
 	}
 	doneChan <- true
