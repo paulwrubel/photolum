@@ -115,12 +115,15 @@ func traceRound(params *config.Parameters,
 
 	wg := sync.WaitGroup{}
 	for i, tile := range tiles {
+		log.Tracef("Loop iter: %d, Goroutine count: %d", i, runtime.NumGoroutine())
 		rng := rand.New(rand.NewSource(time.Now().UnixNano() - int64(i)))
 		wg.Add(1)
 		sem.Acquire(context.Background(), 1)
 		go traceTile(params, log, img, rng, sem, &wg, tile, roundNum, tileChan)
 	}
+	log.Tracef("Loop complete, waiting, Goroutine count: %d", runtime.NumGoroutine())
 	wg.Wait()
+	log.Tracef("Done waiting, Goroutine count: %d", runtime.NumGoroutine())
 }
 
 // traceTile iterates over the pixels in a tile and writes the received colors to the image
