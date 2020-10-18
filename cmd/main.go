@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"runtime"
 	"strings"
 
 	"github.com/paulwrubel/photolum/config"
@@ -13,6 +14,9 @@ import (
 func main() {
 	log := initLogger()
 	log.Info("starting photolum")
+
+	runtime.SetBlockProfileRate(1)
+	runtime.SetMutexProfileFraction(1)
 
 	plData, err := config.InitPhotolumData(log)
 	if err != nil {
