@@ -110,6 +110,7 @@ func getRouter(plData *config.PhotolumData, log *logrus.Logger) *mux.Router {
 	pprofRouter.Handle("/heap", pprof.Handler("heap"))
 	pprofRouter.Handle("/threadcreate", pprof.Handler("threadcreate"))
 	pprofRouter.Handle("/block", pprof.Handler("block"))
+	pprofRouter.Handle("/mutex", pprof.Handler("mutex"))
 
 	return router
 }
