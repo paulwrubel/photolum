@@ -19,6 +19,8 @@ func main() {
 	runtime.SetMutexProfileFraction(1)
 	// debug.SetGCPercent(25600)
 
+	log.Debugf("number of CPUs: %d", runtime.NumCPU())
+
 	plData, err := config.InitPhotolumData(log)
 	if err != nil {
 		log.WithError(err).Fatal("cannot initialize photolum data")
