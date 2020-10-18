@@ -4,7 +4,6 @@ import (
 	"os"
 	"os/signal"
 	"runtime"
-	"runtime/debug"
 	"strings"
 
 	"github.com/paulwrubel/photolum/config"
